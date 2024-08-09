@@ -1,4 +1,4 @@
-# Mapstruct extensions
+# Spring Boot Toolbox
 
 Utility library for Spring Boot projects.
 
