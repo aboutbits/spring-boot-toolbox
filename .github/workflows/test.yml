@@ -31,6 +31,10 @@ jobs:
     needs: test
     if: github.event_name == 'pull_request'
     steps:
+      - uses: actions/checkout@v4
+      - uses: aboutbits/github-actions-java/setup@v3
+        with:
+          java-version: 21
       - name: Set Version
         run: sed -i 's|<version>BUILD-SNAPSHOT</version>|<version>${{ github.event.pull_request.number }}-SNAPSHOT</version>|g' pom.xml
       - run: >-
