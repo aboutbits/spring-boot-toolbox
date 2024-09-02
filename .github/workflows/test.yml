@@ -23,3 +23,35 @@ jobs:
         env:
           GITHUB_USER_NAME: ${{ github.actor }}
           GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  snapshot:
+    name: Publish snapshot
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    needs: test
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Set Version
+        run: sed -i 's|<version>BUILD-SNAPSHOT</version>|<version>${{ github.event.pull_request.number }}-SNAPSHOT</version>|g' pom.xml
+      - run: >-
+          ./mvnw
+          -s $GITHUB_WORKSPACE/.github/workflows/maven-settings.xml
+          --batch-mode
+          -DskipTests=true
+          deploy
+        env:
+          GITHUB_USER_NAME: ${{ github.actor }}
+          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  remove-snapshot:
+    name: Remove Snapshot
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    steps:
+      - name: Authenticate with GitHub Packages
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $GITHUB_USER_NAME --password-stdin
+      - name: Remove snapshot version from repository
+        run: |
+          curl -X DELETE -u ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
+          https://maven.pkg.github.com/OWNER/REPOSITORY/com/example/myartifact/${{ github.event.pull_request.number }}-SNAPSHOT/
