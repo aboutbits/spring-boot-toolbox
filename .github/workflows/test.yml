@@ -36,7 +36,7 @@ jobs:
         with:
           java-version: 21
       - name: Set Version
-        run: sed -i 's|<version>BUILD-SNAPSHOT</version>|<version>${{ github.event.pull_request.number }}-SNAPSHOT</version>|g' pom.xml
+        run: sed -i 's|<version>BUILD-SNAPSHOT</version>|<version>PR-${{ github.event.pull_request.number }}</version>|g' pom.xml
       - run: >-
           ./mvnw
           -s $GITHUB_WORKSPACE/.github/workflows/maven-settings.xml
@@ -58,4 +58,4 @@ jobs:
       - name: Remove snapshot version from repository
         run: |
           curl -X DELETE -u ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
-          https://maven.pkg.github.com/OWNER/REPOSITORY/com/example/myartifact/${{ github.event.pull_request.number }}-SNAPSHOT/
+          https://maven.pkg.github.com/OWNER/REPOSITORY/com/example/myartifact/PR-${{ github.event.pull_request.number }}/
