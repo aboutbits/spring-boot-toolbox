@@ -8,7 +8,6 @@ jobs:
     name: Maven-Java
     runs-on: ubuntu-22.04
     timeout-minutes: 10
-    if: github.event_name == 'pull_request' && github.event.action != 'closed'
     steps:
       - uses: actions/checkout@v4
       - uses: aboutbits/github-actions-java/setup@v3
@@ -24,40 +23,3 @@ jobs:
         env:
           GITHUB_USER_NAME: ${{ github.actor }}
           GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  snapshot:
-    name: Publish Snapshot
-    runs-on: ubuntu-22.04
-    timeout-minutes: 10
-    needs: test
-    if: github.event_name == 'pull_request'
-    steps:
-      - uses: actions/checkout@v4
-      - uses: aboutbits/github-actions-java/setup@v3
-        with:
-          java-version: 21
-      - name: Set Version
-        run: sed -i 's|<version>BUILD-SNAPSHOT</version>|<version>PR-${{ github.event.pull_request.number }}</version>|g' pom.xml
-      - run: >-
-          ./mvnw
-          -s $GITHUB_WORKSPACE/.github/workflows/maven-settings.xml
-          --batch-mode
-          -DskipTests=true
-          deploy
-        env:
-          GITHUB_USER_NAME: ${{ github.actor }}
-          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  remove-snapshot:
-    name: Remove Snapshot
-    runs-on: ubuntu-22.04
-    timeout-minutes: 10
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    steps:
-      - name: Remove snapshot version from repository
-        uses: actions/delete-package-versions@v5
-        with:
-          package-type: 'maven'
-          package-name: 'it.aboutbits.spring-boot-toolbox'
-          package-version-ids: 'PR-${{ github.event.pull_request.number }}'
-          token: ${{ secrets.GITHUB_PAT }}
