@@ -1,7 +1,7 @@
 package it.aboutbits.springboot.toolbox.type;
 
 import it.aboutbits.springboot.toolbox.validation.util.IbanValidator;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 
 import java.util.Optional;
 
@@ -20,6 +20,7 @@ public record Iban(String value) implements Comparable<Iban> {
         this.value = value.toUpperCase();
     }
 
+    @NonNull
     @Override
     public String toString() {
         return value;
@@ -30,6 +31,7 @@ public record Iban(String value) implements Comparable<Iban> {
      *
      * @return An {@code Optional} containing the ABI value if the IBAN is Italian, or an empty {@code Optional} otherwise.
      */
+    @NonNull
     public Optional<String> getAbiIfItalian() {
         var iban = value();
 
@@ -40,7 +42,7 @@ public record Iban(String value) implements Comparable<Iban> {
     }
 
     @Override
-    public int compareTo(@NotNull Iban o) {
+    public int compareTo(@NonNull Iban o) {
         return value().compareTo(o.value());
     }
 }

@@ -1,7 +1,7 @@
 package it.aboutbits.springboot.toolbox.type;
 
 import it.aboutbits.springboot.toolbox.validation.util.EmailAddressValidator;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 
 /**
  * A record representing an email address, validated and stored in lowercase.
@@ -24,13 +24,14 @@ public record EmailAddress(String value) implements Comparable<EmailAddress> {
         this.value = value.toLowerCase();
     }
 
+    @NonNull
     @Override
     public String toString() {
         return value;
     }
 
     @Override
-    public int compareTo(@NotNull EmailAddress o) {
+    public int compareTo(@NonNull EmailAddress o) {
         return value().compareTo(o.value());
     }
 }
