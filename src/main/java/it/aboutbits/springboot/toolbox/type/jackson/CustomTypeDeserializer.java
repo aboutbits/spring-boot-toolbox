@@ -50,23 +50,29 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
     private static Function<JsonParser, Object> getTypeConverter(Class<?> wrappedType) {
         if (String.class.isAssignableFrom(wrappedType)) {
             return getStringConverter();
-        } else if (Short.class.isAssignableFrom(wrappedType)) {
-            return getShortConverter();
-        } else if (Integer.class.isAssignableFrom(wrappedType)) {
-            return getIntegerConverter();
-        } else if (Long.class.isAssignableFrom(wrappedType)) {
-            return getLongConverter();
-        } else if (Float.class.isAssignableFrom(wrappedType)) {
-            return getFloatConverter();
-        } else if (Double.class.isAssignableFrom(wrappedType)) {
-            return getDoubleConverter();
-        } else if (BigDecimal.class.isAssignableFrom(wrappedType)) {
-            return getBigDecimalConverter();
-        } else if (ScaledBigDecimal.class.isAssignableFrom(wrappedType)) {
-            return getScaledBigDecimalConverter();
-        } else {
-            throw new CustomTypeDeserializerException("Value type not supported: " + wrappedType.getName());
         }
+        if (Short.class.isAssignableFrom(wrappedType)) {
+            return getShortConverter();
+        }
+        if (Integer.class.isAssignableFrom(wrappedType)) {
+            return getIntegerConverter();
+        }
+        if (Long.class.isAssignableFrom(wrappedType)) {
+            return getLongConverter();
+        }
+        if (Float.class.isAssignableFrom(wrappedType)) {
+            return getFloatConverter();
+        }
+        if (Double.class.isAssignableFrom(wrappedType)) {
+            return getDoubleConverter();
+        }
+        if (BigDecimal.class.isAssignableFrom(wrappedType)) {
+            return getBigDecimalConverter();
+        }
+        if (ScaledBigDecimal.class.isAssignableFrom(wrappedType)) {
+            return getScaledBigDecimalConverter();
+        }
+        throw new CustomTypeDeserializerException("Value type not supported: " + wrappedType.getName());
     }
 
     private static Function<JsonParser, Object> getScaledBigDecimalConverter() {

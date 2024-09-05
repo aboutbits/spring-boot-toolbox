@@ -53,22 +53,28 @@ public final class CustomTypePropertyEditor<T extends CustomType<?>> extends Pro
     private static Function<String, Object> getTextToTypeConverter(Class<?> wrappedType) {
         if (String.class.isAssignableFrom(wrappedType)) {
             return text -> text;
-        } else if (Short.class.isAssignableFrom(wrappedType)) {
-            return Short::parseShort;
-        } else if (Integer.class.isAssignableFrom(wrappedType)) {
-            return Integer::parseInt;
-        } else if (Long.class.isAssignableFrom(wrappedType)) {
-            return Long::parseLong;
-        } else if (Float.class.isAssignableFrom(wrappedType)) {
-            return Float::parseFloat;
-        } else if (Double.class.isAssignableFrom(wrappedType)) {
-            return Double::parseDouble;
-        } else if (BigDecimal.class.isAssignableFrom(wrappedType)) {
-            return BigDecimal::new;
-        } else if (ScaledBigDecimal.class.isAssignableFrom(wrappedType)) {
-            return ScaledBigDecimal::new;
-        } else {
-            throw new IllegalArgumentException("Unable to convert text to type: " + wrappedType.getName());
         }
+        if (Short.class.isAssignableFrom(wrappedType)) {
+            return Short::parseShort;
+        }
+        if (Integer.class.isAssignableFrom(wrappedType)) {
+            return Integer::parseInt;
+        }
+        if (Long.class.isAssignableFrom(wrappedType)) {
+            return Long::parseLong;
+        }
+        if (Float.class.isAssignableFrom(wrappedType)) {
+            return Float::parseFloat;
+        }
+        if (Double.class.isAssignableFrom(wrappedType)) {
+            return Double::parseDouble;
+        }
+        if (BigDecimal.class.isAssignableFrom(wrappedType)) {
+            return BigDecimal::new;
+        }
+        if (ScaledBigDecimal.class.isAssignableFrom(wrappedType)) {
+            return ScaledBigDecimal::new;
+        }
+        throw new IllegalArgumentException("Unable to convert text to type: " + wrappedType.getName());
     }
 }

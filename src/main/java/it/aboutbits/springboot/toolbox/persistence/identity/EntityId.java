@@ -10,5 +10,5 @@ import java.io.Serializable;
  *
  * @param <T> the type of the value being wrapped
  */
-public interface Identity<T> extends CustomType<T>, Serializable {
+public interface EntityId<T> extends CustomType<T>, Serializable {
 }
