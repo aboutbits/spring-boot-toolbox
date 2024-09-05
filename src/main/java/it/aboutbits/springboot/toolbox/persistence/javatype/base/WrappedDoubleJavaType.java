@@ -1,6 +1,6 @@
-package it.aboutbits.springboot.toolbox.persistence.javatype;
+package it.aboutbits.springboot.toolbox.persistence.javatype.base;
 
-import it.aboutbits.springboot.toolbox.persistence.WrappedValue;
+import it.aboutbits.springboot.toolbox.type.CustomType;
 import lombok.SneakyThrows;
 import org.hibernate.type.descriptor.WrapperOptions;
 import org.hibernate.type.descriptor.java.AbstractClassJavaType;
@@ -10,8 +10,8 @@ import org.hibernate.type.descriptor.jdbc.JdbcTypeIndicators;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Types;
 
-public abstract class WrappedStringJavaType<T extends WrappedValue<String>> extends AbstractClassJavaType<T> {
-    protected WrappedStringJavaType(Class<T> type) {
+public abstract class WrappedDoubleJavaType<T extends CustomType<Long>> extends AbstractClassJavaType<T> {
+    protected WrappedDoubleJavaType(Class<T> type) {
         super(type);
     }
 
@@ -19,7 +19,7 @@ public abstract class WrappedStringJavaType<T extends WrappedValue<String>> exte
     public JdbcType getRecommendedJdbcType(JdbcTypeIndicators indicators) {
         return indicators.getTypeConfiguration()
                 .getJdbcTypeRegistry()
-                .getDescriptor(Types.VARCHAR);
+                .getDescriptor(Types.DOUBLE);
     }
 
     @Override
@@ -32,7 +32,7 @@ public abstract class WrappedStringJavaType<T extends WrappedValue<String>> exte
         if (javaTypeClass.isAssignableFrom(aClass)) {
             return (X) id;
         }
-        if (String.class.isAssignableFrom(aClass)) {
+        if (Double.class.isAssignableFrom(aClass)) {
             return (X) id.value();
         }
         throw unknownUnwrap(aClass);
@@ -49,8 +49,11 @@ public abstract class WrappedStringJavaType<T extends WrappedValue<String>> exte
         if (clazz.isInstance(value)) {
             return (T) value;
         }
+        if (value instanceof Double doubleValue) {
+            return (T) clazz.getConstructors()[0].newInstance(doubleValue);
+        }
         if (value instanceof String stringValue) {
-            return (T) clazz.getConstructors()[0].newInstance(stringValue);
+            return (T) clazz.getConstructors()[0].newInstance(Double.parseDouble(stringValue));
         }
         throw unknownWrap(value.getClass());
     }

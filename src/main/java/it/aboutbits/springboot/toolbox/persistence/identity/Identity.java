@@ -1,6 +1,6 @@
 package it.aboutbits.springboot.toolbox.persistence.identity;
 
-import it.aboutbits.springboot.toolbox.persistence.WrappedValue;
+import it.aboutbits.springboot.toolbox.type.CustomType;
 
 import java.io.Serializable;
 
@@ -10,5 +10,5 @@ import java.io.Serializable;
  *
  * @param <T> the type of the value being wrapped
  */
-public interface Identity<T> extends WrappedValue<T>, Serializable {
+public interface Identity<T> extends CustomType<T>, Serializable {
 }

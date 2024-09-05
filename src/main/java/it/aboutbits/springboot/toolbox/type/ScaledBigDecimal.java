@@ -14,7 +14,7 @@ import java.math.RoundingMode;
  */
 public record ScaledBigDecimal(
         @NonNull BigDecimal value
-) implements Comparable<ScaledBigDecimal> {
+) implements CustomType<BigDecimal>, Comparable<ScaledBigDecimal> {
     private static final MathContext MATH_CONTEXT = new MathContext(15, RoundingMode.HALF_UP);
 
     public static final ScaledBigDecimal ZERO = new ScaledBigDecimal(0);

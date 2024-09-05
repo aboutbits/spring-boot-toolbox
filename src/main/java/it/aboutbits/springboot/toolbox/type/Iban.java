@@ -11,7 +11,7 @@ import java.util.Optional;
  *
  * @param value the IBAN value, which must be a valid and non-null string
  */
-public record Iban(String value) implements Comparable<Iban> {
+public record Iban(String value) implements CustomType<String>, Comparable<Iban> {
     public Iban(String value) {
         if (value == null || IbanValidator.isNotValid(value.toUpperCase())) {
             throw new IllegalArgumentException("Value is not a valid IBAN: " + value);
