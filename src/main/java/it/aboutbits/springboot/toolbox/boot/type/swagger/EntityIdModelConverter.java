@@ -6,14 +6,13 @@ import io.swagger.v3.core.converter.ModelConverterContext;
 import io.swagger.v3.oas.models.media.Schema;
 import it.aboutbits.springboot.toolbox.persistence.identity.EntityId;
 import it.aboutbits.springboot.toolbox.reflection.util.RecordReflectionUtil;
-import it.aboutbits.springboot.toolbox.type.CustomType;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.Iterator;
 
 @Component
-public class GenericSingleValueWrapperModelConverter implements ModelConverter {
+public class EntityIdModelConverter implements ModelConverter {
 
     @Override
     public Schema<?> resolve(
@@ -24,9 +23,9 @@ public class GenericSingleValueWrapperModelConverter implements ModelConverter {
 
         var type = annotatedType.getType();
 
-        if (type instanceof Class<?> clazz && CustomType.class.isAssignableFrom(clazz) && !EntityId.class.isAssignableFrom(
-                clazz)) {
+        if (type instanceof Class<?> clazz && EntityId.class.isAssignableFrom(clazz)) {
             var constructor = RecordReflectionUtil.getCanonicalConstructor(clazz);
+
             var wrappedType = constructor.getParameters()[0].getType();
 
             if (Short.class.isAssignableFrom(wrappedType)) {

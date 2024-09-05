@@ -5,7 +5,7 @@ import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.oas.models.media.Schema;
 import it.aboutbits.springboot.toolbox.persistence.identity.EntityId;
 import it.aboutbits.springboot.toolbox.reflection.util.RecordReflectionUtil;
-import lombok.NonNull;
+import it.aboutbits.springboot.toolbox.type.CustomType;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.customizers.PropertyCustomizer;
 import org.springframework.stereotype.Component;
@@ -14,24 +14,18 @@ import java.math.BigDecimal;
 
 @Slf4j
 @Component
-public class IdentityPropertyCustomizer implements PropertyCustomizer {
+public class CustomTypePropertyCustomizer implements PropertyCustomizer {
     @Override
     public Schema<?> customize(Schema property, AnnotatedType annotatedType) {
         var type = annotatedType.getType();
 
-        if (type instanceof SimpleType simpleType && EntityId.class.isAssignableFrom(simpleType.getRawClass())) {
-            String displayName = null;
+        if (type instanceof SimpleType simpleType && CustomType.class.isAssignableFrom(simpleType.getRawClass()) && !EntityId.class.isAssignableFrom(
+                simpleType.getRawClass())) {
+            var rawClass = simpleType.getRawClass();
 
-            var bindings = simpleType.getBindings();
-            var boundType = bindings.getBoundType(0);
+            var displayName = rawClass.getSimpleName();
 
-            if (boundType == null) {
-                var rawClass = simpleType.getRawClass();
-                displayName = resolveDisplayName(rawClass);
-            }
-
-            var constructor = RecordReflectionUtil.getCanonicalConstructor(simpleType.getRawClass());
-
+            var constructor = RecordReflectionUtil.getCanonicalConstructor(rawClass);
             var wrappedType = constructor.getParameters()[0].getType();
 
 
@@ -91,18 +85,9 @@ public class IdentityPropertyCustomizer implements PropertyCustomizer {
                 property.set$ref(null);
                 return property;
             }
-            log.warn("Property {} of type EntityId: Can not resolve parameter type!", property.getName());
+            log.warn("Property {} of type WrappedValue: Can not resolve parameter type!", property.getName());
         }
 
         return property;
-    }
-
-    @NonNull
-    private static String resolveDisplayName(Class<?> rawClass) {
-        var parent = rawClass.getEnclosingClass();
-        if (parent != null) {
-            return parent.getSimpleName() + "." + rawClass.getSimpleName();
-        }
-        return rawClass.getSimpleName();
     }
 }

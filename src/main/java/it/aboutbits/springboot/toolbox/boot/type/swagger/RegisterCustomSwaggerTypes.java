@@ -1,4 +1,4 @@
-package it.aboutbits.springboot.toolbox.boot.type;
+package it.aboutbits.springboot.toolbox.boot.type.swagger;
 
 import org.springframework.context.annotation.Import;
 
@@ -9,7 +9,11 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Import(CustomTypeConfigurationRegistrar.class)
-public @interface RegisterCustomTypes {
-    String[] additionalTypePackages() default "";
+@Import({
+        CustomTypeModelConverter.class,
+        CustomTypePropertyCustomizer.class,
+        EntityIdModelConverter.class,
+        EntityIdPropertyCustomizer.class
+})
+public @interface RegisterCustomSwaggerTypes {
 }
