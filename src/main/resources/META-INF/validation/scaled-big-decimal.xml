@@ -1,0 +1,46 @@
+<constraint-mappings
+        xmlns="https://jakarta.ee/xml/ns/validation/mapping"
+        version="3.0">
+    <constraint-definition annotation="jakarta.validation.constraints.Max">
+        <validated-by include-existing-validators="true">
+            <value>
+                it.aboutbits.springboot.toolbox.validation.validator.MaxScaledBigDecimalValidator
+            </value>
+        </validated-by>
+    </constraint-definition>
+    <constraint-definition annotation="jakarta.validation.constraints.Min">
+        <validated-by include-existing-validators="true">
+            <value>
+                it.aboutbits.springboot.toolbox.validation.validator.MinScaledBigDecimalValidator
+            </value>
+        </validated-by>
+    </constraint-definition>
+    <constraint-definition annotation="jakarta.validation.constraints.Negative">
+        <validated-by include-existing-validators="true">
+            <value>
+                it.aboutbits.springboot.toolbox.validation.validator.NegativeScaledBigDecimalValidator
+            </value>
+        </validated-by>
+    </constraint-definition>
+    <constraint-definition annotation="jakarta.validation.constraints.NegativeOrZero">
+        <validated-by include-existing-validators="true">
+            <value>
+                it.aboutbits.springboot.toolbox.validation.validator.NegativeOrZeroScaledBigDecimalValidator
+            </value>
+        </validated-by>
+    </constraint-definition>
+    <constraint-definition annotation="jakarta.validation.constraints.Positive">
+        <validated-by include-existing-validators="true">
+            <value>
+                it.aboutbits.springboot.toolbox.validation.validator.PositiveScaledBigDecimalValidator
+            </value>
+        </validated-by>
+    </constraint-definition>
+    <constraint-definition annotation="jakarta.validation.constraints.PositiveOrZero">
+        <validated-by include-existing-validators="true">
+            <value>
+                it.aboutbits.springboot.toolbox.validation.validator.PositiveOrZeroScaledBigDecimalValidator
+            </value>
+        </validated-by>
+    </constraint-definition>
+</constraint-mappings>
