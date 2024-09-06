@@ -1,13 +1,12 @@
 package it.aboutbits.springboot.toolbox.boot.type;
 
+import it.aboutbits.springboot.toolbox.reflection.util.ClassScannerUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import it.aboutbits.springboot.toolbox.type.jackson.CustomTypeDeserializer;
 import it.aboutbits.springboot.toolbox.type.jackson.CustomTypeSerializer;
 import it.aboutbits.springboot.toolbox.type.mvc.CustomTypePropertyEditor;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.reflections.Reflections;
-import org.reflections.util.ConfigurationBuilder;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +25,7 @@ public class CustomTypeConfiguration {
     public static final String LIBRARY_BASE_PACKAGE_NAME = "it.aboutbits.springboot.toolbox";
 
     private String[] packageNamesToScan;
-    private Reflections reflections;
+    private ClassScannerUtil.ClassScanner classScanner;
 
     public void setAdditionalTypePackages(String[] additionalTypePackages) {
         var tmp = new ArrayList<String>();
@@ -35,8 +34,7 @@ public class CustomTypeConfiguration {
 
         this.packageNamesToScan = tmp.toArray(new String[0]);
 
-        var packageToScan = new ConfigurationBuilder().forPackages(packageNamesToScan);
-        reflections = new Reflections(packageToScan);
+        classScanner = ClassScannerUtil.getScannerForPackages(packageNamesToScan);
     }
 
     @PostConstruct
@@ -64,6 +62,7 @@ public class CustomTypeConfiguration {
                 .toList()
                 .toArray(new CustomTypeDeserializer[types.size()]);
 
+        classScanner.close();
 
         return builder -> builder
                 .serializers(new CustomTypeSerializer())
@@ -72,7 +71,7 @@ public class CustomTypeConfiguration {
 
     @SuppressWarnings("rawtypes")
     private Set<Class<? extends CustomType>> findAllCustomTypeRecords() {
-        return reflections.getSubTypesOf(CustomType.class).stream()
+        return classScanner.getSubTypesOf(CustomType.class).stream()
                 .filter(Record.class::isAssignableFrom)
                 .collect(Collectors.toSet());
     }

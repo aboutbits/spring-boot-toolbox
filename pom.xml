@@ -42,14 +42,15 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
+        
         <!-- used to scan the classpath -->
+        <!-- https://mvnrepository.com/artifact/io.github.classgraph/classgraph -->
         <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.10.2</version>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
+            <version>4.8.175</version>
         </dependency>
+
 
         <!-- Validation -->
         <!-- https://mvnrepository.com/artifact/commons-validator/commons-validator -->
