@@ -19,11 +19,10 @@ public final class ClassScannerUtil {
         private final ScanResult scanResult;
 
         private ClassScanner(String... packages) {
-            var result = new ClassGraph()
+            this.scanResult = new ClassGraph()
                     .enableAllInfo()
                     .acceptPackages(packages)
                     .scan();
-            this.scanResult = result;
         }
 
         @SuppressWarnings("unchecked")
