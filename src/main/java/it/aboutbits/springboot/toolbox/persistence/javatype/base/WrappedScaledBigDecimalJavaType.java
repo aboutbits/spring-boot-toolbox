@@ -1,5 +1,6 @@
 package it.aboutbits.springboot.toolbox.persistence.javatype.base;
 
+import it.aboutbits.springboot.toolbox.reflection.util.RecordReflectionUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import lombok.SneakyThrows;
@@ -8,13 +9,17 @@ import org.hibernate.type.descriptor.java.AbstractClassJavaType;
 import org.hibernate.type.descriptor.jdbc.JdbcType;
 import org.hibernate.type.descriptor.jdbc.JdbcTypeIndicators;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
 import java.sql.Types;
 
-public abstract class WrappedScaledBigDecimalJavaType<T extends CustomType<BigDecimal>> extends AbstractClassJavaType<T> {
+public abstract class WrappedScaledBigDecimalJavaType<T extends CustomType<ScaledBigDecimal>> extends AbstractClassJavaType<T> {
+    private final transient Constructor<T> canonicalConstructor;
+
     protected WrappedScaledBigDecimalJavaType(Class<T> type) {
         super(type);
+
+        this.canonicalConstructor = RecordReflectionUtil.getCanonicalConstructor(type);
     }
 
     @Override
@@ -24,6 +29,7 @@ public abstract class WrappedScaledBigDecimalJavaType<T extends CustomType<BigDe
                 .getDescriptor(Types.DOUBLE);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <X> X unwrap(T id, Class<X> aClass, WrapperOptions wrapperOptions) {
         var javaTypeClass = getJavaTypeClass();
@@ -34,12 +40,14 @@ public abstract class WrappedScaledBigDecimalJavaType<T extends CustomType<BigDe
         if (javaTypeClass.isAssignableFrom(aClass)) {
             return (X) id;
         }
-        if (ScaledBigDecimal.class.isAssignableFrom(aClass)) {
-            return (X) id.value();
+        if (Double.class.isAssignableFrom(aClass)) {
+            return (X) Double.valueOf(id.value().value().doubleValue());
         }
+
         throw unknownUnwrap(aClass);
     }
 
+    @SuppressWarnings("unchecked")
     @SneakyThrows({InstantiationException.class, IllegalAccessException.class, InvocationTargetException.class})
     @Override
     public <X> T wrap(X value, WrapperOptions wrapperOptions) {
@@ -51,12 +59,10 @@ public abstract class WrappedScaledBigDecimalJavaType<T extends CustomType<BigDe
         if (clazz.isInstance(value)) {
             return (T) value;
         }
-        if (value instanceof ScaledBigDecimal scaledBigDecimalValue) {
-            return (T) clazz.getConstructors()[0].newInstance(scaledBigDecimalValue);
+        if (value instanceof Double doubleValue) {
+            return canonicalConstructor.newInstance(new ScaledBigDecimal(doubleValue));
         }
-        if (value instanceof String stringValue) {
-            return (T) clazz.getConstructors()[0].newInstance(new ScaledBigDecimal(stringValue));
-        }
+
         throw unknownWrap(value.getClass());
     }
 }

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.models.media.Schema;
 import it.aboutbits.springboot.toolbox.persistence.identity.EntityId;
 import it.aboutbits.springboot.toolbox.reflection.util.RecordReflectionUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
+import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -38,6 +39,9 @@ public class CustomTypeModelConverter implements ModelConverter {
             if (Long.class.isAssignableFrom(wrappedType)) {
                 return context.resolve(new AnnotatedType(Long.TYPE));
             }
+            if (BigDecimal.class.isAssignableFrom(wrappedType)) {
+                return context.resolve(new AnnotatedType(Long.TYPE));
+            }
             if (Float.class.isAssignableFrom(wrappedType)) {
                 return context.resolve(new AnnotatedType(Float.TYPE));
             }
@@ -45,6 +49,9 @@ public class CustomTypeModelConverter implements ModelConverter {
                 return context.resolve(new AnnotatedType(Double.TYPE));
             }
             if (BigDecimal.class.isAssignableFrom(wrappedType)) {
+                return context.resolve(new AnnotatedType(Double.TYPE));
+            }
+            if (ScaledBigDecimal.class.isAssignableFrom(wrappedType)) {
                 return context.resolve(new AnnotatedType(Double.TYPE));
             }
             if (String.class.isAssignableFrom(wrappedType)) {

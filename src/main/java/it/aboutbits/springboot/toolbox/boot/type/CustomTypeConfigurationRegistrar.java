@@ -21,8 +21,8 @@ public class CustomTypeConfigurationRegistrar implements ImportBeanDefinitionReg
         );
         var value = attributes.getStringArray("additionalTypePackages");
 
-        var builder = BeanDefinitionBuilder.genericBeanDefinition(CustomTypeConfiguration.class);
+        var builder = BeanDefinitionBuilder.genericBeanDefinition(CustomTypeScanner.class);
         builder.addPropertyValue("additionalTypePackages", value);
-        registry.registerBeanDefinition("CustomTypeConfiguration", builder.getBeanDefinition());
+        registry.registerBeanDefinition("CustomTypeScanner", builder.getBeanDefinition());
     }
 }

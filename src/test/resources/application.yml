@@ -1,0 +1,62 @@
+server:
+  shutdown: graceful
+
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  threads:
+    virtual:
+      enabled: true
+  mvc:
+    format:
+      date: yyyy-MM-dd
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/app?applicationName=ToolboxTestApp
+    username: root
+    password: password
+    hikari:
+      maximum-pool-size: 10
+      schema: public
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non-contextual-creation: true
+        default-schema: ${spring.datasource.hikari.schema}
+  liquibase:
+    enabled: true
+    change-log: "classpath:db/changelog/master.yml"
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    default-schema: ${spring.datasource.hikari.schema}
+  test:
+    database:
+      replace: none
+  sql:
+    init:
+      continue-on-error: true
+
+springdoc:
+  api-docs:
+    path: /docs/api
+    groups:
+      enabled: true
+    enabled: true
+  swagger-ui:
+    path: /docs/swagger
+    csrf:
+      enabled: true
+    enabled: ${springdoc.api-docs.enabled}
+    tags-sorter: alpha
+    operations-sorter: alpha
+    doc-expansion: none
+    default-model-expand-depth: 99
+    default-models-expand-depth: 99
+
+logging:
+  level:
+    it.aboutbits: ${LOG_LEVEL:INFO}
+    root: ${LOG_LEVEL:WARN}

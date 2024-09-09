@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: 2024-09-06-create-custom-type-testing-table.yml
+      relativeToChangelogFile: true
+  - include:
+      file: 2024-09-06-create-wrapper-type-testing-table.yml
+      relativeToChangelogFile: true

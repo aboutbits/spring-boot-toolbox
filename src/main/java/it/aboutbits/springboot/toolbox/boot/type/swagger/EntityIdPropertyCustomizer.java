@@ -5,12 +5,14 @@ import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.oas.models.media.Schema;
 import it.aboutbits.springboot.toolbox.persistence.identity.EntityId;
 import it.aboutbits.springboot.toolbox.reflection.util.RecordReflectionUtil;
+import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.customizers.PropertyCustomizer;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 @Slf4j
 @Component
@@ -59,6 +61,14 @@ public class EntityIdPropertyCustomizer implements PropertyCustomizer {
                 property.set$ref(null);
                 return property;
             }
+            if (BigInteger.class.isAssignableFrom(wrappedType)) {
+                property.type("integer");
+                property.format("int64");
+                property.setDescription(displayName);
+                property.setProperties(null);
+                property.set$ref(null);
+                return property;
+            }
             if (Float.class.isAssignableFrom(wrappedType)) {
                 property.type("number");
                 property.format("float");
@@ -76,6 +86,14 @@ public class EntityIdPropertyCustomizer implements PropertyCustomizer {
                 return property;
             }
             if (BigDecimal.class.isAssignableFrom(wrappedType)) {
+                property.type("number");
+                property.format("");
+                property.setDescription(displayName);
+                property.setProperties(null);
+                property.set$ref(null);
+                return property;
+            }
+            if (ScaledBigDecimal.class.isAssignableFrom(wrappedType)) {
                 property.type("number");
                 property.format("");
                 property.setDescription(displayName);

@@ -19,17 +19,16 @@ public final class ClassScannerUtil {
         private final ScanResult scanResult;
 
         private ClassScanner(String... packages) {
-            try (var result = new ClassGraph()
+            var result = new ClassGraph()
                     .enableAllInfo()
                     .acceptPackages(packages)
-                    .scan()) {
-                this.scanResult = result;
-            }
+                    .scan();
+            this.scanResult = result;
         }
 
         @SuppressWarnings("unchecked")
         public <T> Set<Class<? extends T>> getSubTypesOf(@NonNull Class<T> clazz) {
-            return scanResult.getSubclasses(clazz).loadClasses()
+            return scanResult.getClassesImplementing(clazz).loadClasses()
                     .stream()
                     .map(item -> (Class<? extends T>) item)
                     .collect(Collectors.toSet());

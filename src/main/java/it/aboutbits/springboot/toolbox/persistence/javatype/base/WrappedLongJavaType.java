@@ -1,5 +1,6 @@
 package it.aboutbits.springboot.toolbox.persistence.javatype.base;
 
+import it.aboutbits.springboot.toolbox.reflection.util.RecordReflectionUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import lombok.SneakyThrows;
 import org.hibernate.type.descriptor.WrapperOptions;
@@ -7,12 +8,17 @@ import org.hibernate.type.descriptor.java.AbstractClassJavaType;
 import org.hibernate.type.descriptor.jdbc.JdbcType;
 import org.hibernate.type.descriptor.jdbc.JdbcTypeIndicators;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Types;
 
 public abstract class WrappedLongJavaType<T extends CustomType<Long>> extends AbstractClassJavaType<T> {
+    private final transient Constructor<T> canonicalConstructor;
+
     protected WrappedLongJavaType(Class<T> type) {
         super(type);
+
+        this.canonicalConstructor = RecordReflectionUtil.getCanonicalConstructor(type);
     }
 
     @Override
@@ -22,6 +28,7 @@ public abstract class WrappedLongJavaType<T extends CustomType<Long>> extends Ab
                 .getDescriptor(Types.BIGINT);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <X> X unwrap(T id, Class<X> aClass, WrapperOptions wrapperOptions) {
         var javaTypeClass = getJavaTypeClass();
@@ -35,9 +42,11 @@ public abstract class WrappedLongJavaType<T extends CustomType<Long>> extends Ab
         if (Long.class.isAssignableFrom(aClass)) {
             return (X) id.value();
         }
+
         throw unknownUnwrap(aClass);
     }
 
+    @SuppressWarnings("unchecked")
     @SneakyThrows({InstantiationException.class, IllegalAccessException.class, InvocationTargetException.class})
     @Override
     public <X> T wrap(X value, WrapperOptions wrapperOptions) {
@@ -50,11 +59,9 @@ public abstract class WrappedLongJavaType<T extends CustomType<Long>> extends Ab
             return (T) value;
         }
         if (value instanceof Long longValue) {
-            return (T) clazz.getConstructors()[0].newInstance(longValue);
+            return canonicalConstructor.newInstance(longValue);
         }
-        if (value instanceof String stringValue) {
-            return (T) clazz.getConstructors()[0].newInstance(Long.parseLong(stringValue));
-        }
+
         throw unknownWrap(value.getClass());
     }
 }

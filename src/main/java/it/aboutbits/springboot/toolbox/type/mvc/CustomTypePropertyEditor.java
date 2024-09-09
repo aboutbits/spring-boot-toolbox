@@ -11,6 +11,7 @@ import java.beans.PropertyEditorSupport;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.function.Function;
 
 public final class CustomTypePropertyEditor<T extends CustomType<?>> extends PropertyEditorSupport {
@@ -62,6 +63,9 @@ public final class CustomTypePropertyEditor<T extends CustomType<?>> extends Pro
         }
         if (Long.class.isAssignableFrom(wrappedType)) {
             return Long::parseLong;
+        }
+        if (BigInteger.class.isAssignableFrom(wrappedType)) {
+            return BigInteger::new;
         }
         if (Float.class.isAssignableFrom(wrappedType)) {
             return Float::parseFloat;

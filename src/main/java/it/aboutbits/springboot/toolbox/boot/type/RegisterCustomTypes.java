@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Import(CustomTypeConfigurationRegistrar.class)
+@Import({CustomTypeConfigurationRegistrar.class, CustomTypeConfiguration.class})
 public @interface RegisterCustomTypes {
     String[] additionalTypePackages() default "";
 }

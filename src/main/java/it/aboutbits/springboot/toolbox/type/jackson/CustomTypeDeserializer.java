@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.function.Function;
 
 public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeserializer<T> {
@@ -59,6 +60,9 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
         }
         if (Long.class.isAssignableFrom(wrappedType)) {
             return getLongConverter();
+        }
+        if (BigInteger.class.isAssignableFrom(wrappedType)) {
+            return getBigIntegerConverter();
         }
         if (Float.class.isAssignableFrom(wrappedType)) {
             return getFloatConverter();
@@ -111,6 +115,16 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
                 return jsonParser.getFloatValue();
             } catch (IOException e) {
                 throw new CustomTypeDeserializerException("Failed to read value as Float.", e);
+            }
+        };
+    }
+
+    private static Function<JsonParser, Object> getBigIntegerConverter() {
+        return jsonParser -> {
+            try {
+                return jsonParser.getBigIntegerValue();
+            } catch (IOException e) {
+                throw new CustomTypeDeserializerException("Failed to read value as BigInteger.", e);
             }
         };
     }

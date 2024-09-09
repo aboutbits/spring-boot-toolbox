@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      author: Andreas Hufler
+      id: 2024-09-06-create-custom-type-testing-table
+      changes:
+        - createTable:
+            tableName: custom_type_test_model
+            columns:
+              - column:
+                  name: id
+                  autoIncrement: true
+                  type: bigserial
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: email
+                  type: text
+              - column:
+                  name: iban
+                  type: text
+              - column:
+                  name: account_balance
+                  type: double
+              - column:
+                  name: referenced_id
+                  type: bigint
