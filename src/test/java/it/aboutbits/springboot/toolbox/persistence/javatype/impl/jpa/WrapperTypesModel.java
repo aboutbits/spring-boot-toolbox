@@ -1,8 +1,8 @@
 package it.aboutbits.springboot.toolbox.persistence.javatype.impl.jpa;
 
-import it.aboutbits.springboot.toolbox.boot.persistence.AutoRegisteredJavaType;
-import it.aboutbits.springboot.toolbox.persistence.identity.EntityId;
-import it.aboutbits.springboot.toolbox.persistence.identity.Identified;
+import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.AutoRegisteredJavaType;
+import it.aboutbits.springboot.toolbox.type.identity.EntityId;
+import it.aboutbits.springboot.toolbox.type.identity.Identified;
 import it.aboutbits.springboot.toolbox.persistence.javatype.base.WrappedLongJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapBigDecimalJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapBigIntegerJavaType;

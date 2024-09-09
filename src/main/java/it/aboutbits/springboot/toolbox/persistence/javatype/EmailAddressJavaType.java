@@ -1,6 +1,6 @@
 package it.aboutbits.springboot.toolbox.persistence.javatype;
 
-import it.aboutbits.springboot.toolbox.boot.persistence.AutoRegisteredJavaType;
+import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.AutoRegisteredJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.base.WrappedStringJavaType;
 import it.aboutbits.springboot.toolbox.type.EmailAddress;
 

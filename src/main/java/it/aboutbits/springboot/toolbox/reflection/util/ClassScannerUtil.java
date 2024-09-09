@@ -15,7 +15,7 @@ public final class ClassScannerUtil {
         return new ClassScanner(packages);
     }
 
-    public static final class ClassScanner {
+    public static final class ClassScanner implements AutoCloseable {
         private final ScanResult scanResult;
 
         private ClassScanner(String... packages) {
@@ -34,6 +34,7 @@ public final class ClassScannerUtil {
                     .collect(Collectors.toSet());
         }
 
+        @Override
         public void close() {
             scanResult.close();
         }
