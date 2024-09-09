@@ -38,6 +38,6 @@ public class CustomTypeScanner {
     public static Set<Class<? extends CustomType>> findAllCustomTypeRecords(ClassScannerUtil.ClassScanner classScanner) {
         return classScanner.getSubTypesOf(CustomType.class).stream()
                 .filter(Record.class::isAssignableFrom)
-                .collect(Collectors.toSet()); //TODO: ttp://
+                .collect(Collectors.toSet());
     }
 }
