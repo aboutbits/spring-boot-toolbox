@@ -15,7 +15,7 @@ import lombok.NonNull;
  * @param value the email address string
  * @throws IllegalArgumentException if the provided email address is not in a valid format
  */
-public record EmailAddress(String value) implements Comparable<EmailAddress> {
+public record EmailAddress(String value) implements CustomType<String>, Comparable<EmailAddress> {
     public EmailAddress(String value) {
         if (value == null || EmailAddressValidator.isNotValid(value)) {
             throw new IllegalArgumentException("Value is not a valid email address: " + value);
