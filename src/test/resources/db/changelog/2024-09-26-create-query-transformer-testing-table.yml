@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      author: Andreas Hufler
+      id: 2024-09-26-create-query-transformer-testing-table
+      changes:
+        - createTable:
+            tableName: query_transformer_test_model
+            columns:
+              - column:
+                  name: id
+                  autoIncrement: true
+                  type: bigserial
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: text
+              - column:
+                  name: email
+                  type: text
