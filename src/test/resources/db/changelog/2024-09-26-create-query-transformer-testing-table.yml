@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      author: Andreas Hufler
+      author: Peter Moser
       id: 2024-09-26-create-query-transformer-testing-table
       changes:
         - createTable:
@@ -19,3 +19,6 @@ databaseChangeLog:
               - column:
                   name: email
                   type: text
+              - column:
+                  name: scaled_big_decimal_value
+                  type: double
