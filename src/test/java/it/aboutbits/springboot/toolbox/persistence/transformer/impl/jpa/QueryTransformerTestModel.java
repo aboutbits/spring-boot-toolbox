@@ -1,9 +1,11 @@
 package it.aboutbits.springboot.toolbox.persistence.transformer.impl.jpa;
 
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.AutoRegisteredJavaType;
+import it.aboutbits.springboot.toolbox.persistence.javatype.ScaledBigDecimalJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.base.WrappedLongJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapScaledBigDecimalJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapScaledBigDecimal;
+import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import it.aboutbits.springboot.toolbox.type.identity.EntityId;
 import it.aboutbits.springboot.toolbox.type.identity.Identified;
 import jakarta.persistence.Entity;
@@ -36,8 +38,8 @@ public class QueryTransformerTestModel implements Identified<QueryTransformerTes
     private String email;
 
     @SuppressWarnings("JpaAttributeTypeInspection")
-    @JavaType(WrapScaledBigDecimalJavaType.class)
-    private WrapScaledBigDecimal scaledBigDecimalValue;
+    @JavaType(ScaledBigDecimalJavaType.class)
+    private ScaledBigDecimal scaledBigDecimalValue;
 
     public record ID(
             Long value

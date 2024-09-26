@@ -3,6 +3,7 @@ package it.aboutbits.springboot.toolbox.persistence.transformer;
 import it.aboutbits.springboot.toolbox.persistence.transformer.impl.jpa.QueryTransformerTestModel;
 import it.aboutbits.springboot.toolbox.persistence.transformer.impl.jpa.QueryTransformerTestModelRepository;
 import it.aboutbits.springboot.toolbox.support.ApplicationTest;
+import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Nested;
@@ -50,6 +51,24 @@ public class QueryTransformerTest {
             assertThat(result).isPresent();
             assertThat(result.get().someText).isEqualTo("xxx");
             assertThat(result.get().testModel.getName()).isEqualTo("abc");
+        }
+
+        @Test
+        void givenQueryWithOneResult_customJavaType_shouldPass() {
+            var testModel = createTestModel("abc", "info@aboutbits.it", ScaledBigDecimal.valueOf(3.14));
+
+            var query = entityManager.createQuery("select q, 'xxx' from QueryTransformerTestModel q");
+
+            var result = QueryTransformer
+                    .of(entityManager, TestModelContainer.class)
+                    .withQuery(query)
+                    .asSingleResult();
+
+            assertThat(result).isPresent();
+            assertThat(result.get().someText).isEqualTo("xxx");
+            assertThat(result.get().testModel.getName()).isEqualTo(testModel.getName());
+            assertThat(result.get().testModel.getEmail()).isEqualTo(testModel.getEmail());
+            assertThat(result.get().testModel.getScaledBigDecimalValue()).isEqualByComparingTo(testModel.getScaledBigDecimalValue());
         }
 
         @Test
@@ -252,10 +271,15 @@ public class QueryTransformerTest {
     ) {
     }
 
-    private QueryTransformerTestModel createTestModel(String name) {
+    private QueryTransformerTestModel createTestModel(String name, String email, ScaledBigDecimal scaledBigDecimal) {
         var item = new QueryTransformerTestModel();
         item.setName(name);
-        item.setEmail(null);
+        item.setEmail(email);
+        item.setScaledBigDecimalValue(scaledBigDecimal);
         return repository.save(item);
+    }
+
+    private QueryTransformerTestModel createTestModel(String name) {
+        return createTestModel(name, null, ScaledBigDecimal.ZERO);
     }
 }
