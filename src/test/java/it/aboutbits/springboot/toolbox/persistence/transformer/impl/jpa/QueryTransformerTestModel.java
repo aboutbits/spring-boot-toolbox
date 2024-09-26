@@ -3,8 +3,6 @@ package it.aboutbits.springboot.toolbox.persistence.transformer.impl.jpa;
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.AutoRegisteredJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.ScaledBigDecimalJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.base.WrappedLongJavaType;
-import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapScaledBigDecimalJavaType;
-import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapScaledBigDecimal;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import it.aboutbits.springboot.toolbox.type.identity.EntityId;
 import it.aboutbits.springboot.toolbox.type.identity.Identified;
