@@ -12,11 +12,10 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
 
-@SuppressWarnings("rawtypes")
 public class TupleTransformer<T> {
     private final Class<T> outputClass;
     private Constructor<T> outputClassConstructor = null;
-    private Class[] outputClassFieldClasses = null;
+    private Class<?>[] outputClassFieldClasses = null;
 
     private final Mode mode;
 
@@ -58,18 +57,6 @@ public class TupleTransformer<T> {
                 );
             }
         }
-    }
-
-    private static <T> boolean isSimpleType(Class<T> outputClass) {
-        return String.class.isAssignableFrom(outputClass)
-                || Float.class.isAssignableFrom(outputClass)
-                || Double.class.isAssignableFrom(outputClass)
-                || Short.class.isAssignableFrom(outputClass)
-                || Integer.class.isAssignableFrom(outputClass)
-                || Long.class.isAssignableFrom(outputClass)
-                || Character.class.isAssignableFrom(outputClass)
-                || Byte.class.isAssignableFrom(outputClass)
-                || Boolean.class.isAssignableFrom(outputClass);
     }
 
     @SuppressWarnings("unchecked")
@@ -134,9 +121,9 @@ public class TupleTransformer<T> {
                 }
 
                 // Converter: Instant to OffsetDateTime
-                if (objects[i] instanceof Instant && outputClassFieldClasses[i].isAssignableFrom(OffsetDateTime.class)) {
+                if (objects[i] instanceof Instant instant && outputClassFieldClasses[i].isAssignableFrom(OffsetDateTime.class)) {
                     objects[i] = OffsetDateTime.ofInstant(
-                            (Instant) objects[i],
+                            instant,
                             ZoneId.systemDefault()
                     );
                     continue;
@@ -144,7 +131,7 @@ public class TupleTransformer<T> {
 
                 // Converter: to Records that wrap exactly one value (CustomType)
                 if (CustomType.class.isAssignableFrom(outputClassFieldClasses[i])) {
-                    objects[i] = toCustomType(objects[i], outputClassFieldClasses[i]);
+                    objects[i] = toCustomType(objects[i], (Class<? extends CustomType<?>>) outputClassFieldClasses[i]);
                     continue;
                 }
 
@@ -177,7 +164,19 @@ public class TupleTransformer<T> {
         }
     }
 
-    private <X extends CustomType<?>> X toCustomType(
+    private static <T> boolean isSimpleType(Class<T> outputClass) {
+        return String.class.isAssignableFrom(outputClass)
+                || Float.class.isAssignableFrom(outputClass)
+                || Double.class.isAssignableFrom(outputClass)
+                || Short.class.isAssignableFrom(outputClass)
+                || Integer.class.isAssignableFrom(outputClass)
+                || Long.class.isAssignableFrom(outputClass)
+                || Character.class.isAssignableFrom(outputClass)
+                || Byte.class.isAssignableFrom(outputClass)
+                || Boolean.class.isAssignableFrom(outputClass);
+    }
+
+    private static <X extends CustomType<?>> X toCustomType(
             Object actualValue,
             Class<X> targetType
     ) throws InvocationTargetException, InstantiationException, IllegalAccessException {

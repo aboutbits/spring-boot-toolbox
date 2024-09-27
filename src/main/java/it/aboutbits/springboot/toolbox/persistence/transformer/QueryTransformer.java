@@ -4,7 +4,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
-import lombok.SneakyThrows;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.transform.ResultTransformer;
 import org.springframework.data.domain.Page;
@@ -14,12 +13,11 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
-@SuppressWarnings("rawtypes")
 public final class QueryTransformer<T> {
 
     private final EntityManager entityManager;
     private final TupleTransformer<T> tupleTransformer;
-    private org.hibernate.query.Query unwrappedQuery;
+    private org.hibernate.query.Query<?> unwrappedQuery;
     private boolean isNative = false;
 
     private QueryTransformer(EntityManager entityManager, Class<T> outputClass) {
@@ -71,7 +69,7 @@ public final class QueryTransformer<T> {
     @SuppressWarnings({"deprecation", "unchecked"})
     private List<T> asList(Integer pageNumber, Integer pageSize) {
         unwrappedQuery.setResultTransformer(
-                (ResultTransformer) (objects, aliases) -> tupleTransformer.transform(objects)
+                (ResultTransformer<?>) (objects, aliases) -> tupleTransformer.transform(objects)
         );
 
         if (pageSize != null && pageNumber != null) {
@@ -80,10 +78,9 @@ public final class QueryTransformer<T> {
                     .setFirstResult(pageSize * pageNumber);
         }
 
-        return unwrappedQuery.getResultList();
+        return (List<T>) unwrappedQuery.getResultList();
     }
 
-    @SneakyThrows
     private Page<T> asPageQuery(int pageNumber, int pageSize) {
         var selectPattern = "(?i)select.*?[ \\t]*from ";
         var queryString = unwrappedQuery.getQueryString().trim().replaceAll("\\R", " ");
