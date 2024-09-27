@@ -1,7 +1,7 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.swagger;
 
-import it.aboutbits.springboot.toolbox.swagger.CustomTypeModelConverter;
-import it.aboutbits.springboot.toolbox.swagger.CustomTypePropertyCustomizer;
+import it.aboutbits.springboot.toolbox.swagger.type.CustomTypeModelConverter;
+import it.aboutbits.springboot.toolbox.swagger.type.CustomTypePropertyCustomizer;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.ElementType;
