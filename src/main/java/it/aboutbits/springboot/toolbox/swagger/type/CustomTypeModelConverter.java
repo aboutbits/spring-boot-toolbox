@@ -1,4 +1,4 @@
-package it.aboutbits.springboot.toolbox.swagger;
+package it.aboutbits.springboot.toolbox.swagger.type;
 
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;

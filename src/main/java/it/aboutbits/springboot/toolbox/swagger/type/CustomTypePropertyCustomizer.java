@@ -1,4 +1,4 @@
-package it.aboutbits.springboot.toolbox.swagger;
+package it.aboutbits.springboot.toolbox.swagger.type;
 
 import com.fasterxml.jackson.databind.type.SimpleType;
 import io.swagger.v3.core.converter.AnnotatedType;
@@ -25,13 +25,17 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
 
             var displayName = rawClass.getSimpleName();
 
+            Class<?> wrappedType;
             if (EntityId.class.isAssignableFrom(rawClass)) {
                 displayName = resolveEntityIdDisplayName(rawClass);
             }
 
-            var constructor = RecordReflectionUtil.getCanonicalConstructor(rawClass);
-            var wrappedType = constructor.getParameters()[0].getType();
-
+            if (rawClass.equals(EntityId.class)) {
+                wrappedType = simpleType.getBindings().getBoundType(0).getRawClass();
+            } else {
+                var constructor = RecordReflectionUtil.getCanonicalConstructor(rawClass);
+                wrappedType = constructor.getParameters()[0].getType();
+            }
 
             if (Short.class.isAssignableFrom(wrappedType)) {
                 property.type("integer");
