@@ -109,6 +109,29 @@ public class QueryTransformerTest {
         }
 
         @Test
+        void givenQueryWithNullableParameter_shouldPass() {
+            createTestModel("abc", "info@aboutbits.it", ScaledBigDecimal.valueOf(3.14));
+
+            // Testing https://linear.app/aboutbits/issue/AB-217/be-querytransformer-function-lowerbytea-does-not-exist
+            var query = entityManager.createQuery(
+                    // @formatter:off
+                    """
+                    select q
+                    from QueryTransformerTestModel q
+                    where :name is null or q.name ilike '%' || cast(:name as string) || '%'
+                    """
+                    // @formatter:on
+            ).setParameter("name", null);
+
+            var result = QueryTransformer
+                    .of(entityManager, QueryTransformerTestModel.class)
+                    .withQuery(query)
+                    .asSingleResult();
+
+            assertThat(result).isPresent();
+        }
+
+        @Test
         void givenQueryWithMultipleResults_shouldFail() {
             createTestModel("A");
             createTestModel("B");
