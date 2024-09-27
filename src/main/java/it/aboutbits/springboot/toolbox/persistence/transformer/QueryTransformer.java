@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
+import lombok.SneakyThrows;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.transform.ResultTransformer;
 import org.springframework.data.domain.Page;
@@ -13,28 +14,31 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
-@SuppressWarnings({"rawtypes"})
+@SuppressWarnings("rawtypes")
 public final class QueryTransformer<T> {
 
     private final EntityManager entityManager;
     private final TupleTransformer<T> tupleTransformer;
     private org.hibernate.query.Query unwrappedQuery;
+    private Query query;
     private boolean isNative = false;
 
-    private QueryTransformer(final EntityManager entityManager, final Class<T> outputClass) {
+    private QueryTransformer(EntityManager entityManager, Class<T> outputClass) {
         this.entityManager = entityManager;
         this.tupleTransformer = new TupleTransformer<>(outputClass);
+
     }
 
-    public static <T> QueryTransformer<T> of(final EntityManager entityManager, final Class<T> outputClass) {
+    public static <T> QueryTransformer<T> of(EntityManager entityManager, Class<T> outputClass) {
         return new QueryTransformer<>(entityManager, outputClass);
     }
 
-    public QueryTransformer<T> withQuery(final Query query) {
+    public QueryTransformer<T> withQuery(Query query) {
         if (query instanceof NativeQuery<?>) {
             this.isNative = true;
         }
         this.unwrappedQuery = query.unwrap(org.hibernate.query.Query.class);
+        this.query = query;
         return this;
     }
 
@@ -42,7 +46,7 @@ public final class QueryTransformer<T> {
         return asPage(pageable.getPageNumber(), pageable.getPageSize());
     }
 
-    public Page<T> asPage(final int pageNumber, final int pageSize) {
+    public Page<T> asPage(int pageNumber, int pageSize) {
         return isNative ? asPageNativeQuery(pageNumber, pageSize) : asPageQuery(pageNumber, pageSize);
     }
 
@@ -58,7 +62,7 @@ public final class QueryTransformer<T> {
         if (result.size() > 1) {
             throw new IllegalStateException("Single result query returned multiple results!");
         }
-        return Optional.of(result.get(0));
+        return Optional.of(result.getFirst());
     }
 
     public T asSingleResultOrFail() {
@@ -67,7 +71,7 @@ public final class QueryTransformer<T> {
     }
 
     @SuppressWarnings({"deprecation", "unchecked"})
-    private List<T> asList(final Integer pageNumber, final Integer pageSize) {
+    private List<T> asList(Integer pageNumber, Integer pageSize) {
         unwrappedQuery.setResultTransformer(
                 (ResultTransformer) (objects, aliases) -> tupleTransformer.transform(objects)
         );
@@ -81,14 +85,16 @@ public final class QueryTransformer<T> {
         return unwrappedQuery.getResultList();
     }
 
-    private Page<T> asPageQuery(final int pageNumber, final int pageSize) {
+    @SneakyThrows
+    private Page<T> asPageQuery(int pageNumber, int pageSize) {
         var selectPattern = "(?i)select.*?[ \\t]*from ";
         var queryString = unwrappedQuery.getQueryString().trim().replaceAll("\\R", " ");
         var countQueryString = queryString.replaceFirst(selectPattern, "select count(*) from ");
         countQueryString = countQueryString.replaceAll("(?i)\\s+order\\s+by\\s+.*$", "");
 
         if (queryString.toLowerCase().contains("select distinct")) {
-            throw new IllegalStateException("Pagination is not possible, if SELECT DISTINCT is present");
+            throw new IllegalStateException(
+                    "Pagination is not possible, if SELECT DISTINCT is present. Remove DISTINCT and use GROUP BY instead!");
         }
 
         if (countQueryString.equals(queryString)) {
@@ -109,11 +115,13 @@ public final class QueryTransformer<T> {
         return new PageImpl<>(content, Pageable.ofSize(pageSize).withPage(pageNumber), count);
     }
 
-    private Page<T> asPageNativeQuery(final int pageNumber, final int pageSize) {
+    private Page<T> asPageNativeQuery(int pageNumber, int pageSize) {
         var queryString = unwrappedQuery.getQueryString().trim().replaceAll("\\R", " ");
         var countQueryString = "select count(*) from (" + queryString + ") as count";
         var parameters = unwrappedQuery.getParameters();
-        var countQuery = isNative ? entityManager.createNativeQuery(countQueryString, Long.class) : entityManager.createQuery(countQueryString, Long.class);
+        var countQuery = isNative
+                ? entityManager.createNativeQuery(countQueryString, Long.class)
+                : entityManager.createQuery(countQueryString, Long.class);
         for (var parameter : parameters) {
             var value = unwrappedQuery.getParameterValue(parameter.getPosition());
             countQuery.setParameter(parameter.getPosition(), value);
@@ -129,7 +137,7 @@ public final class QueryTransformer<T> {
      * So, if we find a "group by" inside the query string we just count the groups and do not sum the count within
      * them.
      */
-    private static long getCount(final TypedQuery<Long> countQuery, final String queryString) {
+    private static long getCount(TypedQuery<Long> countQuery, String queryString) {
         var countQueryResults = countQuery.getResultList();
         if (countQueryResults == null || countQueryResults.isEmpty()) {
             return 0L;
@@ -141,15 +149,15 @@ public final class QueryTransformer<T> {
         }
 
         // Non-grouping query: return the first element, which is the result of count(*)
-        return countQueryResults.get(0);
+        return countQueryResults.getFirst();
     }
 
-    private static long getCount(final Query countQuery) {
+    private static long getCount(Query countQuery) {
         var countQueryResults = countQuery.getResultList();
         if (countQueryResults == null || countQueryResults.isEmpty()) {
             return 0L;
         }
         // Non-grouping query: return the first element, which is the result of count(*)
-        return (long) countQueryResults.get(0);
+        return (long) countQueryResults.getFirst();
     }
 }

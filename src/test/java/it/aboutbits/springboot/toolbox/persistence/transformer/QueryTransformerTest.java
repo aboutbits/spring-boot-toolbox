@@ -38,6 +38,43 @@ public class QueryTransformerTest {
         }
 
         @Test
+        void givenQueryWithPrimitiveResult_shouldPass() {
+            var query = entityManager.createQuery("select 'abc'");
+
+            var result = QueryTransformer
+                    .of(entityManager, String.class)
+                    .withQuery(query)
+                    .asSingleResult();
+
+            assertThat(result).isPresent();
+            assertThat(result.get()).isEqualTo("abc");
+
+            query = entityManager.createQuery("select 4.44");
+
+            var result2 = QueryTransformer
+                    .of(entityManager, Double.class)
+                    .withQuery(query)
+                    .asSingleResult();
+
+            assertThat(result2).isPresent();
+            assertThat(result2.get()).isEqualTo(4.44);
+        }
+
+        @Test
+        void givenQueryWithPrimitiveCustomTypedResult_shouldPass() {
+            var query = entityManager.createQuery("select 3.14");
+
+            var result = QueryTransformer
+                    .of(entityManager, ScaledBigDecimal.class)
+                    .withQuery(query)
+                    .asSingleResult();
+
+            assertThat(result).isPresent();
+            assertThat(result.get()).isEqualByComparingTo(ScaledBigDecimal.valueOf(3.14));
+        }
+
+
+        @Test
         void givenQueryWithOneResult_shouldPass() {
             createTestModel("abc");
 
@@ -251,11 +288,61 @@ public class QueryTransformerTest {
             assertThat(resultPage1.getTotalPages()).isEqualTo(2);
             assertThat(resultPage1.getContent()).hasSize(1);
         }
+
+        @Test
+        void givenVariousQueries_shouldPassReturningTheRightTotalCount() {
+            createTestModel("A");
+            createTestModel("B");
+            createTestModel("A");
+            createTestModel("A");
+
+            var query = entityManager.createQuery(
+                    "select q.name from QueryTransformerTestModel q group by q.name order by q.name desc"
+            );
+
+            var resultPage = QueryTransformer
+                    .of(entityManager, TestModelNameOnly.class)
+                    .withQuery(query)
+                    .asPage(0, 2);
+
+            // We have 2 groups: A, and B
+            assertThat(resultPage.getTotalElements()).isEqualTo(2);
+
+            // TEST: No grouping
+            query = entityManager.createQuery(
+                    "select q.name from QueryTransformerTestModel q"
+            );
+
+            resultPage = QueryTransformer
+                    .of(entityManager, TestModelNameOnly.class)
+                    .withQuery(query)
+                    .asPage(0, 2);
+
+            assertThat(resultPage.getTotalElements()).isEqualTo(4);
+        }
+
+        @Test
+        void givenQueryWithSelectDistinct_shouldFail() {
+            var query = entityManager.createQuery("select distinct q, 'xxx' from QueryTransformerTestModel q");
+
+            assertThrows(
+                    IllegalStateException.class,
+                    () -> QueryTransformer
+                            .of(entityManager, TestModelContainer.class)
+                            .withQuery(query)
+                            .asPage(1, 2)
+            );
+        }
     }
 
     protected record TestModelCount(
             long count,
             String familyName
+    ) {
+    }
+
+    protected record TestModelNameOnly(
+            String name
     ) {
     }
 

@@ -1,14 +1,12 @@
 package it.aboutbits.springboot.toolbox.persistence.transformer;
 
+import it.aboutbits.springboot.toolbox.reflection.util.RecordReflectionUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
-import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -16,40 +14,78 @@ import java.util.Arrays;
 
 @SuppressWarnings("rawtypes")
 public class TupleTransformer<T> {
-
     private final Class<T> outputClass;
-    private final Constructor<T> outputClassConstructor;
-    private final Class[] outputClassFieldClasses;
+    private Constructor<T> outputClassConstructor = null;
+    private Class[] outputClassFieldClasses = null;
 
-    public TupleTransformer(final Class<T> outputClass) {
+    private final Mode mode;
+
+    private enum Mode {
+        PRIMITIVE,  // Real Java primitives or their wrapped counterpart (ex., long and Long)
+        WRAPPED,  // Record with a single wrapped value (CustomType as for example Iban)
+        TUPLE  // Complex tuples with more than one value
+    }
+
+    public TupleTransformer(Class<T> outputClass) {
         this.outputClass = outputClass;
 
         // Find all fields and their types inside the result class
         // Ignore constants, because they will not be used as constructor parameters
-        outputClassFieldClasses = Arrays
-                .stream(outputClass.getDeclaredFields())
-                .filter(field -> !Modifier.isStatic(field.getModifiers()))
-                .map(Field::getType)
-                .toArray(Class[]::new);
+        if (outputClass.isPrimitive() || isSimpleType(outputClass)) {
+            mode = Mode.PRIMITIVE;
+        } else if (CustomType.class.isAssignableFrom(outputClass)) {
+            mode = Mode.WRAPPED;
+        } else {
+            mode = Mode.TUPLE;
 
-        // Find the all-args-constructor inside the result class
-        try {
-            outputClassConstructor = outputClass.getDeclaredConstructor(outputClassFieldClasses);
-            outputClassConstructor.setAccessible(true);
-        } catch (NoSuchMethodException exception) {
-            throw new TransformerRuntimeException(
-                    String.format(
-                            "Query transformation: Could not find a valid constructor in target class %s",
-                            outputClass.getName()
-                    ),
-                    exception
-            );
+            outputClassFieldClasses = Arrays
+                    .stream(outputClass.getDeclaredFields())
+                    .filter(field -> !Modifier.isStatic(field.getModifiers()))
+                    .map(Field::getType)
+                    .toArray(Class[]::new);
+
+            // Find the all-args-constructor inside the result class
+            try {
+                outputClassConstructor = outputClass.getDeclaredConstructor(outputClassFieldClasses);
+                outputClassConstructor.setAccessible(true);
+            } catch (NoSuchMethodException exception) {
+                throw new TransformerRuntimeException(
+                        String.format(
+                                "Query transformation: Could not find a valid constructor in target class %s",
+                                outputClass.getName()
+                        ),
+                        exception
+                );
+            }
         }
     }
 
+    private static <T> boolean isSimpleType(Class<T> outputClass) {
+        return String.class.isAssignableFrom(outputClass)
+                || Float.class.isAssignableFrom(outputClass)
+                || Double.class.isAssignableFrom(outputClass)
+                || Short.class.isAssignableFrom(outputClass)
+                || Integer.class.isAssignableFrom(outputClass)
+                || Long.class.isAssignableFrom(outputClass)
+                || Boolean.class.isAssignableFrom(outputClass);
+    }
+
     @SuppressWarnings("unchecked")
-    public T transform(final Object[] objects) {
+    public T transform(Object[] objects) {
         try {
+            if (Mode.PRIMITIVE.equals(mode)) {
+                if (objects.length != 1) {
+                    throw new TransformerRuntimeException("PRIMITIVE mode does not support multiple values!");
+                }
+                return (T) objects[0];
+            }
+
+            if (Mode.WRAPPED.equals(mode)) {
+                if (objects.length != 1) {
+                    throw new TransformerRuntimeException("WRAPPED mode does not support multiple values!");
+                }
+                return (T) toCustomType(objects[0], (Class<CustomType<?>>) outputClass);
+            }
 
             // If we have a single entry in the result, and that entry matches the desired result class
             // we can just give it back, no casting, nor type-checking needed. We can just unbox it and
@@ -95,18 +131,18 @@ public class TupleTransformer<T> {
                     continue;
                 }
 
-                // Converter: to WrappedValue
-                if (CustomType.class.isAssignableFrom(outputClassFieldClasses[i])) {
-                    objects[i] = toWrappedValue(objects[i], outputClassFieldClasses[i]);
-                    continue;
-                }
-
                 // Converter: Instant to OffsetDateTime
                 if (objects[i] instanceof Instant && outputClassFieldClasses[i].isAssignableFrom(OffsetDateTime.class)) {
                     objects[i] = OffsetDateTime.ofInstant(
                             (Instant) objects[i],
                             ZoneId.systemDefault()
                     );
+                    continue;
+                }
+
+                // Converter: to Records that wrap exactly one value (CustomType)
+                if (CustomType.class.isAssignableFrom(outputClassFieldClasses[i])) {
+                    objects[i] = toCustomType(objects[i], outputClassFieldClasses[i]);
                     continue;
                 }
 
@@ -122,8 +158,13 @@ public class TupleTransformer<T> {
 
             return outputClassConstructor.newInstance(objects);
 
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException
-                 | UnsupportedOperationException exception) {
+        } catch (
+                InstantiationException
+                | IllegalAccessException
+                | NoSuchMethodException
+                | InvocationTargetException
+                | UnsupportedOperationException exception
+        ) {
             throw new TransformerRuntimeException(
                     String.format(
                             "Query transformation: Given database record cannot be converted into target class %s",
@@ -134,55 +175,12 @@ public class TupleTransformer<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private <X extends CustomType<?>> X toWrappedValue(
+    private <X extends CustomType<?>> X toCustomType(
             Object actualValue,
             Class<X> targetType
-    ) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        // types with a preferred constructor
-        if (targetType.isAssignableFrom(ScaledBigDecimal.class)) {
-            var constructor = targetType.getDeclaredConstructor(Double.class);
-            var value = (Double) actualValue;
-            return constructor.newInstance(value);
-        }
+    ) throws InvocationTargetException, InstantiationException, IllegalAccessException {
+        var constructor = RecordReflectionUtil.getConstructorForType(targetType, actualValue.getClass());
 
-        // types using first suitable constructor
-        Constructor<?>[] constructors = targetType.getDeclaredConstructors();
-
-        for (Constructor<?> constructor : constructors) {
-            Class<?>[] parameterTypes = constructor.getParameterTypes();
-            if (parameterTypes.length == 1) {
-                if (Number.class.isAssignableFrom(parameterTypes[0])) {
-                    if (Long.class.equals(parameterTypes[0])) {
-                        var val = (Long) actualValue;
-                        return (X) constructor.newInstance(val);
-                    } else if (Integer.class.equals(parameterTypes[0])) {
-                        var val = (Integer) actualValue;
-                        return (X) constructor.newInstance(val);
-                    } else if (Double.class.equals(parameterTypes[0])) {
-                        var val = (Double) actualValue;
-                        return (X) constructor.newInstance(val);
-                    } else if (Float.class.equals(parameterTypes[0])) {
-                        var val = (Float) actualValue;
-                        return (X) constructor.newInstance(val);
-                    } else if (BigInteger.class.equals(parameterTypes[0])) {
-                        var val = BigInteger.valueOf((Long) actualValue);
-                        return (X) constructor.newInstance(val);
-                    } else if (BigDecimal.class.equals(parameterTypes[0])) {
-                        var val = BigDecimal.valueOf((Double) actualValue);
-                        return (X) constructor.newInstance(val);
-                    } else {
-                        throw new IllegalArgumentException("Unsupported number type");
-                    }
-                } else if (String.class.equals(parameterTypes[0])) {
-                    var val = (String) actualValue;
-                    return (X) constructor.newInstance(val);
-                } else if (Boolean.class.equals(parameterTypes[0])) {
-                    var val = (Boolean) actualValue;
-                    return (X) constructor.newInstance(val);
-                } // Add more types as needed
-            }
-        }
-        throw new IllegalArgumentException(targetType.getSimpleName() + " does not have a suitable single-value constructor");
+        return constructor.newInstance(actualValue);
     }
 }

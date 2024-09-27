@@ -1,5 +1,8 @@
 package it.aboutbits.springboot.toolbox.persistence.transformer;
 
+import it.aboutbits.springboot.toolbox.type.EmailAddress;
+import it.aboutbits.springboot.toolbox.type.Iban;
+import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import lombok.Data;
 import org.junit.jupiter.api.Test;
 
@@ -16,12 +19,32 @@ public class TupleTransformerTest {
         var tupleTransformer = new TupleTransformer<>(DataClassWithPrimitives.class);
 
         // when
-        var result = tupleTransformer.transform(new Object[] {7L, 12, true});
+        var result = tupleTransformer.transform(new Object[]{7L, 12, true});
 
         // then
         assertThat(result.longField).isEqualTo(7L);
         assertThat(result.intField).isEqualTo(12);
         assertThat(result.booleanField).isTrue();
+    }
+
+    @Test
+    void createObjectWithCustomTypedFields_shouldPass() {
+        // given
+        var tupleTransformer = new TupleTransformer<>(DataRecordWithCustomType.class);
+
+        // when
+        var result = tupleTransformer.transform(
+                new Object[]{
+                        3.14d,
+                        "IT27S0300203280975461985512",
+                        "info@aboutbits.it"
+                }
+        );
+
+        // then
+        assertThat(result.scaledBigDecimal).isEqualByComparingTo(ScaledBigDecimal.valueOf(3.14));
+        assertThat(result.emailAddress).isEqualTo(new EmailAddress("info@aboutbits.it"));
+        assertThat(result.iban).isEqualTo(new Iban("IT27S0300203280975461985512"));
     }
 
     @Test
@@ -31,7 +54,7 @@ public class TupleTransformerTest {
         var l = Long.valueOf(7);
         var i = Integer.valueOf(12);
         var b = Boolean.valueOf(true);
-        var objectsUnderTest = new Object[] {l, i, b};
+        var objectsUnderTest = new Object[]{l, i, b};
 
         // when
         var result = tupleTransformer.transform(objectsUnderTest);
@@ -49,7 +72,7 @@ public class TupleTransformerTest {
         var tupleTransformer = new TupleTransformer<>(DataRecord.class);
         var l = Long.valueOf(7);
         var b = Boolean.valueOf(true);
-        var objectsUnderTest = new Object[] {l, b, "String123", false, SomeEnum.ENUM_1};
+        var objectsUnderTest = new Object[]{l, b, "String123", false, SomeEnum.ENUM_1};
 
         // when
         var result = tupleTransformer.transform(objectsUnderTest);
@@ -69,7 +92,7 @@ public class TupleTransformerTest {
         var tupleTransformer = new TupleTransformer<>(DataRecord.class);
         var l = Long.valueOf(7);
         var b = Boolean.valueOf(true);
-        var objectsUnderTest = new Object[] {l, b, "String123", false, "ENUM_1"};
+        var objectsUnderTest = new Object[]{l, b, "String123", false, "ENUM_1"};
 
         // when
         var result = tupleTransformer.transform(objectsUnderTest);
@@ -88,7 +111,7 @@ public class TupleTransformerTest {
         // given
         var tupleTransformer = new TupleTransformer<>(DataRecordParent.class);
         var rec = new DataRecord(7L, true, "String123", false, SomeEnum.ENUM_1);
-        var objectsUnderTest = new Object[] {rec, 33};
+        var objectsUnderTest = new Object[]{rec, 33};
 
         // when
         var result = tupleTransformer.transform(objectsUnderTest);
@@ -107,7 +130,7 @@ public class TupleTransformerTest {
     void createRecord_givenMixedObjects_someNullValues_shouldPass() {
         // given
         var tupleTransformer = new TupleTransformer<>(DataRecord.class);
-        var objectsUnderTest = new Object[] {null, null, "String123", false, null};
+        var objectsUnderTest = new Object[]{null, null, "String123", false, null};
 
         // when
         var result = tupleTransformer.transform(objectsUnderTest);
@@ -130,7 +153,7 @@ public class TupleTransformerTest {
         var list = new ArrayList<>();
         list.add(rec1);
         list.add(rec2);
-        var objectsUnderTest = new Object[] {list, 33};
+        var objectsUnderTest = new Object[]{list, 33};
 
         // when
         var result = tupleTransformer.transform(objectsUnderTest);
@@ -167,19 +190,29 @@ public class TupleTransformerTest {
             String string,
             boolean booleanPrimitive,
             SomeEnum anEnum
-    ) { }
+    ) {
+    }
 
 
     protected record DataRecordParent(
             DataRecord dataRecord,
             long someOtherField
-    ) { }
+    ) {
+    }
 
+
+    protected record DataRecordWithCustomType(
+            ScaledBigDecimal scaledBigDecimal,
+            Iban iban,
+            EmailAddress emailAddress
+    ) {
+    }
 
     protected record DataRecordParentWithList(
             List<DataRecord> dataRecords,
             long someOtherField
-    ) { }
+    ) {
+    }
 
     protected enum SomeEnum {
         ENUM_1,
