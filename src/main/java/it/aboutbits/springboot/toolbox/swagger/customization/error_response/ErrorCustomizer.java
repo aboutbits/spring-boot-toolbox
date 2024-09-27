@@ -7,7 +7,7 @@ import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
-import it.aboutbits.springboot.toolbox.mvc.response.ErrorResponse;
+import it.aboutbits.springboot.toolbox.web.response.ErrorResponse;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 
 import java.util.Map;

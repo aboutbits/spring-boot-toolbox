@@ -2,8 +2,8 @@ package it.aboutbits.springboot.toolbox.autoconfiguration.web;
 
 import it.aboutbits.springboot.toolbox.jackson.CustomTypeDeserializer;
 import it.aboutbits.springboot.toolbox.jackson.CustomTypeSerializer;
-import it.aboutbits.springboot.toolbox.mvc.CustomTypePropertyEditor;
 import it.aboutbits.springboot.toolbox.type.CustomType;
+import it.aboutbits.springboot.toolbox.web.CustomTypePropertyEditor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;

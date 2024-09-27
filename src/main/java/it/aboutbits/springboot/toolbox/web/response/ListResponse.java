@@ -1,4 +1,4 @@
-package it.aboutbits.springboot.toolbox.mvc.response;
+package it.aboutbits.springboot.toolbox.web.response;
 
 import lombok.NonNull;
 

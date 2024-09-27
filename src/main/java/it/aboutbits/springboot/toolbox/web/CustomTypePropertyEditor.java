@@ -1,4 +1,4 @@
-package it.aboutbits.springboot.toolbox.mvc;
+package it.aboutbits.springboot.toolbox.web;
 
 import it.aboutbits.springboot.toolbox.reflection.util.RecordReflectionUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
