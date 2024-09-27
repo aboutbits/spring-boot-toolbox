@@ -67,6 +67,8 @@ public class TupleTransformer<T> {
                 || Short.class.isAssignableFrom(outputClass)
                 || Integer.class.isAssignableFrom(outputClass)
                 || Long.class.isAssignableFrom(outputClass)
+                || Character.class.isAssignableFrom(outputClass)
+                || Byte.class.isAssignableFrom(outputClass)
                 || Boolean.class.isAssignableFrom(outputClass);
     }
 

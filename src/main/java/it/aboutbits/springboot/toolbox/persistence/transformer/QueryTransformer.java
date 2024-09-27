@@ -20,7 +20,6 @@ public final class QueryTransformer<T> {
     private final EntityManager entityManager;
     private final TupleTransformer<T> tupleTransformer;
     private org.hibernate.query.Query unwrappedQuery;
-    private Query query;
     private boolean isNative = false;
 
     private QueryTransformer(EntityManager entityManager, Class<T> outputClass) {
@@ -38,7 +37,6 @@ public final class QueryTransformer<T> {
             this.isNative = true;
         }
         this.unwrappedQuery = query.unwrap(org.hibernate.query.Query.class);
-        this.query = query;
         return this;
     }
 
