@@ -5,3 +5,6 @@ databaseChangeLog:
   - include:
       file: 2024-09-06-create-wrapper-type-testing-table.yml
       relativeToChangelogFile: true
+  - include:
+      file: 2024-09-26-create-query-transformer-testing-table.yml
+      relativeToChangelogFile: true
