@@ -173,9 +173,7 @@
                 <version>3.5.0</version>
                 <configuration>
                     <configLocation>checkstyle.xml</configLocation>
-                    <suppressionsFileExpression>
-                        checkstyle-suppressions.xml
-                    </suppressionsFileExpression>
+                    <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
@@ -195,6 +193,11 @@
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
                         <version>10.18.1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>it.aboutbits</groupId>
+                        <artifactId>java-checkstyle-config</artifactId>
+                        <version>1.0.1</version>
                     </dependency>
                 </dependencies>
             </plugin>
