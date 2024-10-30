@@ -10,6 +10,9 @@ public class NullableCustomizer implements OpenApiCustomizer {
     @Override
     @SuppressWarnings("unchecked")
     public void customise(OpenAPI openApi) {
+        if (openApi.getComponents() == null || openApi.getComponents().getSchemas() == null) {
+            return;
+        }
         openApi.getComponents().getSchemas().values()
                 .forEach(schema -> {
                     var requiredProperties = new ArrayList<String>();
