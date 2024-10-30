@@ -10,6 +10,8 @@ public class OrderModelsCustomizer implements OpenApiCustomizer {
     public void customise(OpenAPI openApi) {
         var components = openApi.getComponents();
 
-        components.schemas(new TreeMap<>(components.getSchemas()));
+        if (components != null && components.getSchemas() != null) {
+            components.schemas(new TreeMap<>(components.getSchemas()));
+        }
     }
 }

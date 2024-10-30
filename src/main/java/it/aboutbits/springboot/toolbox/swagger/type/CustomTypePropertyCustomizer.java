@@ -20,6 +20,17 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
     public Schema<?> customize(Schema property, AnnotatedType annotatedType) {
         var type = annotatedType.getType();
 
+        if (type instanceof SimpleType simpleType) {
+            var rawClass = simpleType.getRawClass();
+
+            // We set the enum name as the description because swagger treats each usage as a new enum.
+            // This way we can preserve the information about the original enum type.
+            if (rawClass.isEnum()) {
+                var displayName = rawClass.getCanonicalName().replace(rawClass.getPackage().getName() + ".", "");
+                property.setDescription(displayName);
+            }
+        }
+
         if (type instanceof SimpleType simpleType && CustomType.class.isAssignableFrom(simpleType.getRawClass())) {
             var rawClass = simpleType.getRawClass();
 
