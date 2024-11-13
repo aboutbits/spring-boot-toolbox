@@ -15,13 +15,15 @@ public class NullableCustomizer implements OpenApiCustomizer {
         }
         openApi.getComponents().getSchemas().values()
                 .forEach(schema -> {
-                    var requiredProperties = new ArrayList<String>();
-                    ((Schema<?>) schema).getProperties().forEach((propertyName, property) -> {
-                        if (property.getNullable() == null || !property.getNullable()) {
-                            requiredProperties.add(propertyName);
-                        }
-                    });
-                    schema.setRequired(requiredProperties);
+                    if (((Schema<?>) schema).getProperties() != null) {
+                        var requiredProperties = new ArrayList<String>();
+                        ((Schema<?>) schema).getProperties().forEach((propertyName, property) -> {
+                            if (property.getNullable() == null || !property.getNullable()) {
+                                requiredProperties.add(propertyName);
+                            }
+                        });
+                        schema.setRequired(requiredProperties);
+                    }
                 });
     }
 }
