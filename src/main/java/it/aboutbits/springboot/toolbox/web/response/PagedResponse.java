@@ -4,6 +4,7 @@ import lombok.NonNull;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.function.Function;
 
 public record PagedResponse<T>(
         @NonNull
@@ -11,6 +12,34 @@ public record PagedResponse<T>(
         @NonNull
         MetaWithPagination meta
 ) {
+
+    public static <T> PagedResponse<T> of(@NonNull Page<T> page) {
+        return new PagedResponse<>(
+                page.getContent(),
+                new MetaWithPagination(
+                        new MetaWithPagination.Pagination(
+                                page.getNumber(),
+                                page.getSize(),
+                                page.getTotalElements()
+                        )
+                )
+        );
+    }
+
+    public static <I, O> PagedResponse<O> of(@NonNull Page<I> page, @NonNull Function<I, O> converter) {
+        var mapped = page.map(converter);
+
+        return new PagedResponse<>(
+                mapped.getContent(),
+                new MetaWithPagination(
+                        new MetaWithPagination.Pagination(
+                                mapped.getNumber(),
+                                mapped.getSize(),
+                                mapped.getTotalElements()
+                        )
+                )
+        );
+    }
 
     public record MetaWithPagination(
             @NonNull
