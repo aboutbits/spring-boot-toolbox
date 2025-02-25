@@ -18,8 +18,11 @@ public class NullableCustomizer implements OpenApiCustomizer {
                     if (((Schema<?>) schema).getProperties() != null) {
                         var requiredProperties = new ArrayList<String>();
                         ((Schema<?>) schema).getProperties().forEach((propertyName, property) -> {
-                            if (property.getNullable() == null || !property.getNullable()) {
+                            if (property.getTitle() == null || !property.getTitle().equals("NULLABLE")) {
                                 requiredProperties.add(propertyName);
+                            }
+                            if (property.getTitle() != null && property.getTitle().equals("NULLABLE")) {
+                                property.setTitle(null);
                             }
                         });
                         schema.setRequired(requiredProperties);
