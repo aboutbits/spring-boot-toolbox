@@ -31,7 +31,7 @@ public class NullablePropertyCustomizer implements PropertyCustomizer {
 
         if (annotatedType.getCtxAnnotations() != null && Arrays.stream(annotatedType.getCtxAnnotations())
                 .anyMatch(a -> "Nullable".equals(a.annotationType().getSimpleName()))) {
-            property.setNullable(true);
+            property.setTitle("NULLABLE");
         }
 
         return property;
