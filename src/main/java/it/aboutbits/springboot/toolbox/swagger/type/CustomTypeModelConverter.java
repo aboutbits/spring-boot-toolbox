@@ -5,8 +5,10 @@ import io.swagger.v3.core.converter.ModelConverter;
 import io.swagger.v3.core.converter.ModelConverterContext;
 import io.swagger.v3.oas.models.media.Schema;
 import it.aboutbits.springboot.toolbox.reflection.util.RecordReflectionUtil;
+import it.aboutbits.springboot.toolbox.swagger.SwaggerMetaUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
+import it.aboutbits.springboot.toolbox.type.identity.EntityId;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -23,36 +25,56 @@ public class CustomTypeModelConverter implements ModelConverter {
 
         var type = annotatedType.getType();
 
-        if (type instanceof Class<?> clazz && CustomType.class.isAssignableFrom(clazz)) {
-            var constructor = RecordReflectionUtil.getCanonicalConstructor(clazz);
-            var wrappedType = constructor.getParameters()[0].getType();
+        if (type instanceof Class<?> clazz) {
+            Schema<?> result = null;
+            if (CustomType.class.isAssignableFrom(clazz)) {
+                var constructor = RecordReflectionUtil.getCanonicalConstructor(clazz);
+                var wrappedType = constructor.getParameters()[0].getType();
+                var isIdentity = false;
 
-            if (Short.class.isAssignableFrom(wrappedType)) {
-                return context.resolve(new AnnotatedType(Short.TYPE));
-            }
-            if (Integer.class.isAssignableFrom(wrappedType)) {
-                return context.resolve(new AnnotatedType(Integer.TYPE));
-            }
-            if (Long.class.isAssignableFrom(wrappedType)) {
-                return context.resolve(new AnnotatedType(Long.TYPE));
-            }
-            if (BigInteger.class.isAssignableFrom(wrappedType)) {
-                return context.resolve(new AnnotatedType(Long.TYPE));
-            }
-            if (Float.class.isAssignableFrom(wrappedType)) {
-                return context.resolve(new AnnotatedType(Float.TYPE));
-            }
-            if (Double.class.isAssignableFrom(wrappedType)) {
-                return context.resolve(new AnnotatedType(Double.TYPE));
-            }
-            if (BigDecimal.class.isAssignableFrom(wrappedType)) {
-                return context.resolve(new AnnotatedType(Double.TYPE));
-            }
-            if (ScaledBigDecimal.class.isAssignableFrom(wrappedType)) {
-                return context.resolve(new AnnotatedType(Double.TYPE));
-            }
-            if (String.class.isAssignableFrom(wrappedType)) {
-                return context.resolve(new AnnotatedType(String.class));
+                if (EntityId.class.isAssignableFrom(clazz)) {
+                    isIdentity = true;
+                }
+
+
+                if (Short.class.isAssignableFrom(wrappedType)) {
+                    result = context.resolve(new AnnotatedType(Short.TYPE));
+                }
+                if (Integer.class.isAssignableFrom(wrappedType)) {
+                    result = context.resolve(new AnnotatedType(Integer.TYPE));
+                }
+                if (Long.class.isAssignableFrom(wrappedType)) {
+                    result = context.resolve(new AnnotatedType(Long.TYPE));
+                }
+                if (BigInteger.class.isAssignableFrom(wrappedType)) {
+                    result = context.resolve(new AnnotatedType(Long.TYPE));
+                }
+                if (Float.class.isAssignableFrom(wrappedType)) {
+                    result = context.resolve(new AnnotatedType(Float.TYPE));
+                }
+                if (Double.class.isAssignableFrom(wrappedType)) {
+                    result = context.resolve(new AnnotatedType(Double.TYPE));
+                }
+                if (BigDecimal.class.isAssignableFrom(wrappedType)) {
+                    result = context.resolve(new AnnotatedType(Double.TYPE));
+                }
+                if (ScaledBigDecimal.class.isAssignableFrom(wrappedType)) {
+                    result = context.resolve(new AnnotatedType(Double.TYPE));
+                }
+                if (String.class.isAssignableFrom(wrappedType)) {
+                    result = context.resolve(new AnnotatedType(String.class));
+                }
+
+                if (result != null) {
+                    var description = SwaggerMetaUtil.setOriginalTypeFqn(
+                            result.getDescription(),
+                            ((Class<?>) type).getName()
+                    );
+                    description = SwaggerMetaUtil.setIsIdentity(description, isIdentity);
+                    result.setDescription(description);
+
+                    return result;
+                }
             }
         }
 

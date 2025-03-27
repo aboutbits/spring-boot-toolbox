@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.type.SimpleType;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.oas.models.media.Schema;
 import it.aboutbits.springboot.toolbox.reflection.util.RecordReflectionUtil;
+import it.aboutbits.springboot.toolbox.swagger.SwaggerMetaUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import it.aboutbits.springboot.toolbox.type.identity.EntityId;
@@ -26,18 +27,20 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
             // We set the enum name as the description because swagger treats each usage as a new enum.
             // This way we can preserve the information about the original enum type.
             if (rawClass.isEnum()) {
-                var displayName = rawClass.getCanonicalName().replace(rawClass.getPackage().getName() + ".", "");
-                property.setDescription(displayName);
+                var displayName = rawClass.getName(); // .replace(rawClass.getPackage().getName() + ".", "");
+                property.setDescription(SwaggerMetaUtil.setOriginalTypeFqn(property.getDescription(), displayName));
             }
         }
 
         if (type instanceof SimpleType simpleType && CustomType.class.isAssignableFrom(simpleType.getRawClass())) {
             var rawClass = simpleType.getRawClass();
 
-            var displayName = rawClass.getSimpleName();
+            var displayName = rawClass.getName(); // .getSimpleName();
+            var isIdentity = false;
 
             Class<?> wrappedType;
             if (EntityId.class.isAssignableFrom(rawClass)) {
+                isIdentity = true;
                 displayName = resolveEntityIdDisplayName(rawClass);
             }
 
@@ -48,10 +51,14 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
                 wrappedType = constructor.getParameters()[0].getType();
             }
 
+            var description = SwaggerMetaUtil.setOriginalTypeFqn(property.getDescription(), displayName);
+            description = SwaggerMetaUtil.setIsIdentity(description, isIdentity);
+            description = SwaggerMetaUtil.setIsIdentity(description, isIdentity);
+
             if (Short.class.isAssignableFrom(wrappedType)) {
                 property.type("integer");
                 property.format("");
-                property.setDescription(displayName);
+                property.setDescription(description);
                 property.setProperties(null);
                 property.set$ref(null);
                 return property;
@@ -59,7 +66,7 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
             if (Integer.class.isAssignableFrom(wrappedType)) {
                 property.type("integer");
                 property.format("int32");
-                property.setDescription(displayName);
+                property.setDescription(description);
                 property.setProperties(null);
                 property.set$ref(null);
                 return property;
@@ -67,7 +74,7 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
             if (Long.class.isAssignableFrom(wrappedType)) {
                 property.type("integer");
                 property.format("int64");
-                property.setDescription(displayName);
+                property.setDescription(description);
                 property.setProperties(null);
                 property.set$ref(null);
                 return property;
@@ -75,7 +82,7 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
             if (BigInteger.class.isAssignableFrom(wrappedType)) {
                 property.type("integer");
                 property.format("int64");
-                property.setDescription(displayName);
+                property.setDescription(description);
                 property.setProperties(null);
                 property.set$ref(null);
                 return property;
@@ -83,7 +90,7 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
             if (Float.class.isAssignableFrom(wrappedType)) {
                 property.type("number");
                 property.format("float");
-                property.setDescription(displayName);
+                property.setDescription(description);
                 property.setProperties(null);
                 property.set$ref(null);
                 return property;
@@ -91,7 +98,7 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
             if (Double.class.isAssignableFrom(wrappedType)) {
                 property.type("number");
                 property.format("double");
-                property.setDescription(displayName);
+                property.setDescription(description);
                 property.setProperties(null);
                 property.set$ref(null);
                 return property;
@@ -99,7 +106,7 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
             if (BigDecimal.class.isAssignableFrom(wrappedType)) {
                 property.type("number");
                 property.format("");
-                property.setDescription(displayName);
+                property.setDescription(description);
                 property.setProperties(null);
                 property.set$ref(null);
                 return property;
@@ -108,7 +115,7 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
             if (ScaledBigDecimal.class.isAssignableFrom(wrappedType)) {
                 property.type("number");
                 property.format("");
-                property.setDescription(displayName);
+                property.setDescription(description);
                 property.setProperties(null);
                 property.set$ref(null);
                 return property;
@@ -116,7 +123,7 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
             if (String.class.isAssignableFrom(wrappedType)) {
                 property.type("string");
                 property.format(null);
-                property.setDescription(displayName);
+                property.setDescription(description);
                 property.setProperties(null);
                 property.set$ref(null);
                 return property;
@@ -129,10 +136,11 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
 
     @NonNull
     private static String resolveEntityIdDisplayName(Class<?> rawClass) {
-        var parent = rawClass.getEnclosingClass();
+        return rawClass.getName();
+/*        var parent = rawClass.getEnclosingClass();
         if (parent != null) {
             return parent.getSimpleName() + "." + rawClass.getSimpleName();
         }
-        return rawClass.getSimpleName();
+        return rawClass.getSimpleName();*/
     }
 }
