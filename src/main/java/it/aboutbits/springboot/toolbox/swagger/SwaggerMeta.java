@@ -9,12 +9,12 @@ import lombok.Setter;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SwaggerMeta {
-    private String originalTypeFqn;
+    private String originalTypeFqn = null;
     @JsonProperty("isIdentity")
-    private boolean isIdentity = false;
+    private Boolean isIdentity = null;
     @JsonProperty("isNestedStructure")
-    private boolean isNestedStructure = false;
+    private Boolean isNestedStructure = null;
     @JsonProperty("isMap")
-    private boolean isMap = false;
-    private String mapKeyTypeFqn;
+    private Boolean isMap = null;
+    private String mapKeyTypeFqn = null;
 }

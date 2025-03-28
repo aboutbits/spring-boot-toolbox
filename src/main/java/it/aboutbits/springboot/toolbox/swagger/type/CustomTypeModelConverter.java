@@ -30,12 +30,6 @@ public class CustomTypeModelConverter implements ModelConverter {
             if (CustomType.class.isAssignableFrom(clazz)) {
                 var constructor = RecordReflectionUtil.getCanonicalConstructor(clazz);
                 var wrappedType = constructor.getParameters()[0].getType();
-                var isIdentity = false;
-
-                if (EntityId.class.isAssignableFrom(clazz)) {
-                    isIdentity = true;
-                }
-
 
                 if (Short.class.isAssignableFrom(wrappedType)) {
                     result = context.resolve(new AnnotatedType(Short.TYPE));
@@ -66,6 +60,8 @@ public class CustomTypeModelConverter implements ModelConverter {
                 }
 
                 if (result != null) {
+                    var isIdentity = EntityId.class.isAssignableFrom(clazz);
+
                     var description = SwaggerMetaUtil.setOriginalTypeFqn(
                             result.getDescription(),
                             ((Class<?>) type).getName()

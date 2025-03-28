@@ -25,7 +25,7 @@ public final class SwaggerMetaUtil {
     @SneakyThrows(JsonProcessingException.class)
     public static String setIsMap(@Nullable String currentMeta, boolean value) {
         var meta = getSwaggerMeta(currentMeta);
-        meta.setMap(value);
+        meta.setIsMap(!value ? null : true);
 
         return OBJECT_MAPPER.writeValueAsString(meta);
     }
@@ -41,7 +41,7 @@ public final class SwaggerMetaUtil {
     @SneakyThrows(JsonProcessingException.class)
     public static String setIsIdentity(@Nullable String currentMeta, boolean value) {
         var meta = getSwaggerMeta(currentMeta);
-        meta.setIdentity(value);
+        meta.setIsIdentity(!value ? null : true);
 
         return OBJECT_MAPPER.writeValueAsString(meta);
     }
@@ -49,7 +49,7 @@ public final class SwaggerMetaUtil {
     @SneakyThrows(JsonProcessingException.class)
     public static String setIsNestedStructure(@Nullable String currentMeta, boolean value) {
         var meta = getSwaggerMeta(currentMeta);
-        meta.setNestedStructure(value);
+        meta.setIsNestedStructure(!value ? null : true);
 
         return OBJECT_MAPPER.writeValueAsString(meta);
     }
