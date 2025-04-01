@@ -44,6 +44,7 @@ class CustomTypeReflectionUtilTest {
         );
     }
 
+    @SuppressWarnings("checkstyle:RedundantModifier")
     @CustomTypeScanner.DisableCustomTypeConfiguration
     public static class ValidCustomType implements CustomType<String> {
         private final String value;
@@ -72,6 +73,7 @@ class CustomTypeReflectionUtilTest {
         // Missing the required constructor
     }
 
+    @SuppressWarnings("checkstyle:RedundantModifier")
     @CustomTypeScanner.DisableCustomTypeConfiguration
     public static class OtherInvalidCustomType implements CustomType<String> {
         private final String value;
