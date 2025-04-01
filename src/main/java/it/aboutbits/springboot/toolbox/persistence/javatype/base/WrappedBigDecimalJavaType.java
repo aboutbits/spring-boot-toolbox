@@ -14,12 +14,23 @@ import java.math.BigDecimal;
 import java.sql.Types;
 
 public abstract class WrappedBigDecimalJavaType<T extends CustomType<BigDecimal>> extends AbstractClassJavaType<T> {
-    private final transient Constructor<T> canonicalConstructor;
+    private final transient Constructor<T> constructor;
 
     protected WrappedBigDecimalJavaType(Class<T> type) {
         super(type);
 
-        this.canonicalConstructor = RecordReflectionUtil.getCanonicalConstructor(type);
+        Constructor<T> c;
+        if (type.isRecord()) {
+            c = RecordReflectionUtil.getCanonicalConstructor(type);
+        } else {
+            try {
+                c = type.getConstructor(BigDecimal.class);
+            } catch (NoSuchMethodException e) {
+                throw new IllegalStateException("No constructor found for " + type.getName(), e);
+            }
+        }
+
+        this.constructor = c;
     }
 
     @Override
@@ -60,7 +71,7 @@ public abstract class WrappedBigDecimalJavaType<T extends CustomType<BigDecimal>
             return (T) value;
         }
         if (value instanceof Double doubleValue) {
-            return canonicalConstructor.newInstance(BigDecimal.valueOf(doubleValue));
+            return constructor.newInstance(BigDecimal.valueOf(doubleValue));
         }
 
         throw unknownWrap(value.getClass());

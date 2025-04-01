@@ -10,8 +10,10 @@ import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.function.Function;
 
 public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeserializer<T> {
@@ -20,10 +22,33 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
     private final Function<JsonParser, Object> typeConverter;
 
     public CustomTypeDeserializer(Class<T> customType) {
+        Constructor<T> c;
         this.customType = customType;
 
-        this.constructor = RecordReflectionUtil.getCanonicalConstructor(customType);
+        if (customType.isRecord()) {
+            c = RecordReflectionUtil.getCanonicalConstructor(customType);
+        } else {
+            try {
+                var customTypeInterface = Arrays.stream(customType.getGenericInterfaces())
+                        .filter(i ->
+                                        i instanceof ParameterizedType
+                                                && CustomType.class.isAssignableFrom((Class<?>) ((ParameterizedType) i).getRawType())
+                        ).findFirst()
+                        .map(i -> (ParameterizedType) i)
+                        .orElseThrow();
 
+                var parameterType = (Class<?>) customTypeInterface.getActualTypeArguments()[0];
+
+                c = customType.getConstructor(parameterType);
+            } catch (Exception e) {
+                throw new CustomTypeDeserializerException(
+                        "Unable to find constructor for type: " + customType.getName(),
+                        e
+                );
+            }
+        }
+
+        this.constructor = c;
         this.typeConverter = getTypeConverter(
                 constructor.getParameterTypes()[0]
         );

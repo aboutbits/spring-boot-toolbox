@@ -40,3 +40,30 @@ databaseChangeLog:
               - column:
                   name: string_value
                   type: text
+              - column:
+                  name: big_decimal_value_class
+                  type: double
+              - column:
+                  name: big_integer_value_class
+                  type: bigint
+              - column:
+                  name: double_value_class
+                  type: double
+              - column:
+                  name: float_value_class
+                  type: double
+              - column:
+                  name: integer_value_class
+                  type: bigint
+              - column:
+                  name: long_value_class
+                  type: bigint
+              - column:
+                  name: scaled_big_decimal_value_class
+                  type: double
+              - column:
+                  name: short_value_class
+                  type: bigint
+              - column:
+                  name: string_value_class
+                  type: text

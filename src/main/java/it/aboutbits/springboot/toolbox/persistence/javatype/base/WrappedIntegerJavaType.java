@@ -13,12 +13,23 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Types;
 
 public abstract class WrappedIntegerJavaType<T extends CustomType<Integer>> extends AbstractClassJavaType<T> {
-    private final transient Constructor<T> canonicalConstructor;
+    private final transient Constructor<T> constructor;
 
     protected WrappedIntegerJavaType(Class<T> type) {
         super(type);
 
-        this.canonicalConstructor = RecordReflectionUtil.getCanonicalConstructor(type);
+        Constructor<T> c;
+        if (type.isRecord()) {
+            c = RecordReflectionUtil.getCanonicalConstructor(type);
+        } else {
+            try {
+                c = type.getConstructor(Integer.class);
+            } catch (NoSuchMethodException e) {
+                throw new IllegalStateException("No constructor found for " + type.getName(), e);
+            }
+        }
+
+        this.constructor = c;
     }
 
     @Override
@@ -59,7 +70,7 @@ public abstract class WrappedIntegerJavaType<T extends CustomType<Integer>> exte
             return (T) value;
         }
         if (value instanceof Integer integerValue) {
-            return canonicalConstructor.newInstance(integerValue);
+            return constructor.newInstance(integerValue);
         }
 
         throw unknownWrap(value.getClass());

@@ -13,12 +13,24 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Types;
 
 public abstract class WrappedLongJavaType<T extends CustomType<Long>> extends AbstractClassJavaType<T> {
-    private final transient Constructor<T> canonicalConstructor;
+    private final transient Constructor<T> constructor;
 
+    @SneakyThrows
     protected WrappedLongJavaType(Class<T> type) {
         super(type);
 
-        this.canonicalConstructor = RecordReflectionUtil.getCanonicalConstructor(type);
+        Constructor<T> c;
+        if (type.isRecord()) {
+            c = RecordReflectionUtil.getCanonicalConstructor(type);
+        } else {
+            try {
+                c = type.getConstructor(Long.class);
+            } catch (NoSuchMethodException e) {
+                throw new IllegalStateException("No constructor found for " + type.getName(), e);
+            }
+        }
+
+        this.constructor = c;
     }
 
     @Override
@@ -59,7 +71,7 @@ public abstract class WrappedLongJavaType<T extends CustomType<Long>> extends Ab
             return (T) value;
         }
         if (value instanceof Long longValue) {
-            return canonicalConstructor.newInstance(longValue);
+            return constructor.newInstance(longValue);
         }
 
         throw unknownWrap(value.getClass());
