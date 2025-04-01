@@ -44,6 +44,20 @@ class CustomTypeReflectionUtilTest {
         );
     }
 
+    @Test
+    void testGetCustomTypeConstructorWithInheritedCustomType() throws Exception {
+        // given
+        var customTypeClass = ChildClass.class;
+
+        // when
+        var constructor = CustomTypeReflectionUtil.getCustomTypeConstructor(customTypeClass);
+
+        // then
+        assertThat(constructor).isNotNull();
+        assertThat(constructor.getParameterCount()).isEqualTo(1);
+        assertThat(constructor.getParameterTypes()[0]).isEqualTo(Integer.class);
+    }
+
     @SuppressWarnings("checkstyle:RedundantModifier")
     @CustomTypeScanner.DisableCustomTypeConfiguration
     public static class ValidCustomType implements CustomType<String> {
@@ -86,6 +100,29 @@ class CustomTypeReflectionUtilTest {
         @Override
         public String value() {
             return value;
+        }
+    }
+
+    @SuppressWarnings("checkstyle:RedundantModifier")
+    @CustomTypeScanner.DisableCustomTypeConfiguration
+    public static class ParentClass implements CustomType<Integer> {
+        private final Integer value;
+
+        public ParentClass(Integer value) {
+            this.value = value;
+        }
+
+        @Override
+        public Integer value() {
+            return value;
+        }
+    }
+
+    @SuppressWarnings("checkstyle:RedundantModifier")
+    @CustomTypeScanner.DisableCustomTypeConfiguration
+    public static class ChildClass extends ParentClass {
+        public ChildClass(Integer value) {
+            super(value);
         }
     }
 }

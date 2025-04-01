@@ -8,6 +8,7 @@ import it.aboutbits.springboot.toolbox.swagger.SwaggerMetaUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import it.aboutbits.springboot.toolbox.type.identity.EntityId;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.customizers.PropertyCustomizer;
 
@@ -17,6 +18,7 @@ import java.math.BigInteger;
 @Slf4j
 public class CustomTypePropertyCustomizer implements PropertyCustomizer {
     @Override
+    @SneakyThrows(NoSuchMethodException.class)
     public Schema<?> customize(Schema property, AnnotatedType annotatedType) {
         var type = annotatedType.getType();
 

@@ -20,15 +20,25 @@ public final class CustomTypeReflectionUtil {
         }
     }
 
-    public static Class<?> getWrappedType(Class<? extends CustomType<?>> customType) {
-        var customTypeInterface = Arrays.stream(customType.getGenericInterfaces())
-                .filter(i ->
-                                i instanceof ParameterizedType
-                                        && CustomType.class.isAssignableFrom((Class<?>) ((ParameterizedType) i).getRawType())
-                ).findFirst()
-                .map(i -> (ParameterizedType) i)
-                .orElseThrow();
+    public static Class<?> getWrappedType(Class<? extends CustomType<?>> customType) throws NoSuchMethodException {
+        Class<?> currentClass = customType;
+        while (currentClass != null) {
+            // Check interfaces of the current class
+            var customTypeInterface = Arrays.stream(currentClass.getGenericInterfaces())
+                    .filter(i ->
+                                    i instanceof ParameterizedType
+                                            && CustomType.class.isAssignableFrom((Class<?>) ((ParameterizedType) i).getRawType())
+                    ).findFirst()
+                    .map(i -> (ParameterizedType) i);
 
-        return (Class<?>) customTypeInterface.getActualTypeArguments()[0];
+            if (customTypeInterface.isPresent()) {
+                return (Class<?>) customTypeInterface.get().getActualTypeArguments()[0];
+            }
+
+            // Move to the parent class
+            currentClass = currentClass.getSuperclass();
+        }
+
+        throw new NoSuchMethodException();
     }
 }
