@@ -1,6 +1,5 @@
 package it.aboutbits.springboot.toolbox.persistence.javatype.base;
 
-import it.aboutbits.springboot.toolbox.reflection.util.RecordReflectionUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import lombok.SneakyThrows;
 import org.hibernate.type.descriptor.WrapperOptions;
@@ -19,18 +18,11 @@ public abstract class WrappedBigIntegerJavaType<T extends CustomType<BigInteger>
     protected WrappedBigIntegerJavaType(Class<T> type) {
         super(type);
 
-        Constructor<T> c;
-        if (type.isRecord()) {
-            c = RecordReflectionUtil.getCanonicalConstructor(type);
-        } else {
-            try {
-                c = type.getConstructor(BigInteger.class);
-            } catch (NoSuchMethodException e) {
-                throw new IllegalStateException("No constructor found for " + type.getName(), e);
-            }
+        try {
+            this.constructor = type.getConstructor(BigInteger.class);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalStateException("No constructor found for " + type.getName(), e);
         }
-
-        this.constructor = c;
     }
 
     @Override

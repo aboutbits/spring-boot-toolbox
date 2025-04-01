@@ -4,7 +4,7 @@ import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
 import io.swagger.v3.core.converter.ModelConverterContext;
 import io.swagger.v3.oas.models.media.Schema;
-import it.aboutbits.springboot.toolbox.reflection.util.RecordReflectionUtil;
+import it.aboutbits.springboot.toolbox.reflection.util.CustomTypeReflectionUtil;
 import it.aboutbits.springboot.toolbox.swagger.SwaggerMetaUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
@@ -28,8 +28,10 @@ public class CustomTypeModelConverter implements ModelConverter {
         if (type instanceof Class<?> clazz) {
             Schema<?> result = null;
             if (CustomType.class.isAssignableFrom(clazz)) {
-                var constructor = RecordReflectionUtil.getCanonicalConstructor(clazz);
-                var wrappedType = constructor.getParameters()[0].getType();
+                @SuppressWarnings("unchecked")
+                var wrappedType = CustomTypeReflectionUtil.getWrappedType(
+                        (Class<? extends CustomType<?>>) clazz
+                );
 
                 if (Short.class.isAssignableFrom(wrappedType)) {
                     result = context.resolve(new AnnotatedType(Short.TYPE));

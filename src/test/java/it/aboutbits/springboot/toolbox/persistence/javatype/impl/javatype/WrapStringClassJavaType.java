@@ -3,7 +3,6 @@ package it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype;
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.AutoRegisteredJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.base.WrappedStringJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapStringClass;
-import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapStringRecord;
 
 public final class WrapStringClassJavaType extends WrappedStringJavaType<WrapStringClass> implements AutoRegisteredJavaType<WrapStringClass> {
     public WrapStringClassJavaType() {

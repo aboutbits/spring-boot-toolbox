@@ -3,7 +3,7 @@ package it.aboutbits.springboot.toolbox.swagger.type;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.oas.models.media.Schema;
-import it.aboutbits.springboot.toolbox.reflection.util.RecordReflectionUtil;
+import it.aboutbits.springboot.toolbox.reflection.util.CustomTypeReflectionUtil;
 import it.aboutbits.springboot.toolbox.swagger.SwaggerMetaUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
@@ -30,14 +30,11 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
                 ));
             }
 
-            if (CustomType.class.isAssignableFrom(simpleType.getRawClass())) {
-                Class<?> wrappedType;
-                if (rawClass.equals(EntityId.class)) {
-                    wrappedType = simpleType.getBindings().getBoundType(0).getRawClass();
-                } else {
-                    var constructor = RecordReflectionUtil.getCanonicalConstructor(rawClass);
-                    wrappedType = constructor.getParameters()[0].getType();
-                }
+            if (CustomType.class.isAssignableFrom(rawClass)) {
+                @SuppressWarnings("unchecked")
+                var wrappedType = CustomTypeReflectionUtil.getWrappedType(
+                        (Class<? extends CustomType<?>>) rawClass
+                );
 
                 var isIdentity = EntityId.class.isAssignableFrom(rawClass);
 

@@ -1,8 +1,6 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa;
 
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.AutoRegisteredJavaType;
-import it.aboutbits.springboot.toolbox.type.identity.EntityId;
-import it.aboutbits.springboot.toolbox.type.identity.Identified;
 import it.aboutbits.springboot.toolbox.persistence.javatype.EmailAddressJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.IbanJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.ScaledBigDecimalJavaType;
@@ -10,6 +8,8 @@ import it.aboutbits.springboot.toolbox.persistence.javatype.base.WrappedLongJava
 import it.aboutbits.springboot.toolbox.type.EmailAddress;
 import it.aboutbits.springboot.toolbox.type.Iban;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
+import it.aboutbits.springboot.toolbox.type.identity.EntityId;
+import it.aboutbits.springboot.toolbox.type.identity.Identified;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

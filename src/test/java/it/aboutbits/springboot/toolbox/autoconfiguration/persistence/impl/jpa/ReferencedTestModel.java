@@ -1,8 +1,8 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa;
 
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.AutoRegisteredJavaType;
-import it.aboutbits.springboot.toolbox.type.identity.EntityId;
 import it.aboutbits.springboot.toolbox.persistence.javatype.base.WrappedLongJavaType;
+import it.aboutbits.springboot.toolbox.type.identity.EntityId;
 
 public class ReferencedTestModel {
     // we just use this to have and ID we can actually reference

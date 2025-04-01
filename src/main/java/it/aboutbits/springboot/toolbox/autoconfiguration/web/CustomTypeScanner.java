@@ -5,6 +5,10 @@ import it.aboutbits.springboot.toolbox.type.CustomType;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +46,14 @@ public class CustomTypeScanner {
                                 !item.isInterface()
                                         && !item.isAnonymousClass()
                                         && !Modifier.isAbstract(item.getModifiers())
+                                        && !item.isAnnotationPresent(DisableCustomTypeConfiguration.class)
                 )
                 .collect(Collectors.toSet());
+    }
+
+    @Target({ElementType.TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface DisableCustomTypeConfiguration {
+
     }
 }

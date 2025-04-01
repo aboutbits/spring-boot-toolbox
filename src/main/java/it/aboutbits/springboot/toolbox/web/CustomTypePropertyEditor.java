@@ -1,7 +1,7 @@
 package it.aboutbits.springboot.toolbox.web;
 
 import it.aboutbits.springboot.toolbox.jackson.CustomTypeDeserializer;
-import it.aboutbits.springboot.toolbox.reflection.util.RecordReflectionUtil;
+import it.aboutbits.springboot.toolbox.reflection.util.CustomTypeReflectionUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import lombok.NonNull;
@@ -10,10 +10,8 @@ import org.springframework.lang.Nullable;
 import java.beans.PropertyEditorSupport;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.function.Function;
 
 public final class CustomTypePropertyEditor<T extends CustomType<?>> extends PropertyEditorSupport {
@@ -21,30 +19,15 @@ public final class CustomTypePropertyEditor<T extends CustomType<?>> extends Pro
     private final Function<String, Object> typeConverter;
 
     public CustomTypePropertyEditor(@NonNull Class<T> customType) {
-        Constructor<T> c;
-        if (customType.isRecord()) {
-            c = RecordReflectionUtil.getCanonicalConstructor(customType);
-        } else {
-            try {
-                var customTypeInterface = Arrays.stream(customType.getGenericInterfaces())
-                        .filter(i ->
-                                        i instanceof ParameterizedType
-                                                && CustomType.class.isAssignableFrom((Class<?>) ((ParameterizedType) i).getRawType())
-                        ).findFirst()
-                        .map(i -> (ParameterizedType) i)
-                        .orElseThrow();
-
-                var parameterType = (Class<?>) customTypeInterface.getActualTypeArguments()[0];
-
-                c = customType.getConstructor(parameterType);
-            } catch (Exception e) {
-                throw new CustomTypeDeserializer.CustomTypeDeserializerException(
-                        "Unable to find constructor for type: " + customType.getName(),
-                        e
-                );
-            }
+        try {
+            this.constructor = CustomTypeReflectionUtil.getCustomTypeConstructor(customType);
+        } catch (NoSuchMethodException e) {
+            throw new CustomTypeDeserializer.CustomTypeDeserializerException(
+                    "Unable to find constructor for type: " + customType.getName(),
+                    e
+            );
         }
-        this.constructor = c;
+
         this.typeConverter = getTextToTypeConverter(
                 constructor.getParameters()[0].getType()
         );
