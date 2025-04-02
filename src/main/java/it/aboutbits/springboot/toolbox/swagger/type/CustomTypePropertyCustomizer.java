@@ -42,6 +42,22 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
 
                 var description = SwaggerMetaUtil.setIsIdentity(property.getDescription(), isIdentity);
 
+                if (Boolean.class.isAssignableFrom(wrappedType)) {
+                    property.type("boolean");
+                    property.format(null);
+                    property.setDescription(description);
+                    property.setProperties(null);
+                    property.set$ref(null);
+                    return property;
+                }
+                if (Byte.class.isAssignableFrom(wrappedType)) {
+                    property.type("integer");
+                    property.format("");
+                    property.setDescription(description);
+                    property.setProperties(null);
+                    property.set$ref(null);
+                    return property;
+                }
                 if (Short.class.isAssignableFrom(wrappedType)) {
                     property.type("integer");
                     property.format("");
@@ -98,7 +114,6 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
                     property.set$ref(null);
                     return property;
                 }
-
                 if (ScaledBigDecimal.class.isAssignableFrom(wrappedType)) {
                     property.type("number");
                     property.format("");
@@ -115,6 +130,17 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
                     property.set$ref(null);
                     return property;
                 }
+                if (Character.class.isAssignableFrom(wrappedType)) {
+                    property.type("string");
+                    property.format(null);
+                    property.minLength(1);
+                    property.maxLength(1);
+                    property.setDescription(description);
+                    property.setProperties(null);
+                    property.set$ref(null);
+                    return property;
+                }
+
                 log.warn("Property {} of type WrappedValue: Can not resolve parameter type!", property.getName());
             }
         }

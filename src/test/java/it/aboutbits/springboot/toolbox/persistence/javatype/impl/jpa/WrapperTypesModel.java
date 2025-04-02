@@ -6,6 +6,12 @@ import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapBi
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapBigDecimalRecordJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapBigIntegerClassJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapBigIntegerRecordJavaType;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapBooleanClassJavaType;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapBooleanRecordJavaType;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapByteClassJavaType;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapByteRecordJavaType;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapCharacterClassJavaType;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapCharacterRecordJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapDoubleClassJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapDoubleRecordJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapFloatClassJavaType;
@@ -24,6 +30,12 @@ import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBigDec
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBigDecimalRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBigIntegerClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBigIntegerRecord;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBooleanClass;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBooleanRecord;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapByteClass;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapByteRecord;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapCharacterClass;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapCharacterRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapDoubleClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapDoubleRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapFloatClass;
@@ -92,8 +104,20 @@ public class WrapperTypesModel implements Identified<WrapperTypesModel.ID> {
     private WrapShortRecord shortValue;
 
     @SuppressWarnings("JpaAttributeTypeInspection")
+    @JavaType(WrapByteRecordJavaType.class)
+    private WrapByteRecord byteValue;
+
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @JavaType(WrapStringRecordJavaType.class)
     private WrapStringRecord stringValue;
+
+    @SuppressWarnings("JpaAttributeTypeInspection")
+    @JavaType(WrapCharacterRecordJavaType.class)
+    private WrapCharacterRecord charValue;
+
+    @SuppressWarnings("JpaAttributeTypeInspection")
+    @JavaType(WrapBooleanRecordJavaType.class)
+    private WrapBooleanRecord boolValue;
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @JavaType(WrapBigDecimalClassJavaType.class)
@@ -128,8 +152,21 @@ public class WrapperTypesModel implements Identified<WrapperTypesModel.ID> {
     private WrapShortClass shortValueClass;
 
     @SuppressWarnings("JpaAttributeTypeInspection")
+    @JavaType(WrapByteClassJavaType.class)
+    private WrapByteClass byteValueClass;
+
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @JavaType(WrapStringClassJavaType.class)
     private WrapStringClass stringValueClass;
+
+    @SuppressWarnings("JpaAttributeTypeInspection")
+    @JavaType(WrapCharacterClassJavaType.class)
+    private WrapCharacterClass charValueClass;
+
+    @SuppressWarnings("JpaAttributeTypeInspection")
+    @JavaType(WrapBooleanClassJavaType.class)
+    private WrapBooleanClass boolValueClass;
+
 
     public record ID(
             Long value

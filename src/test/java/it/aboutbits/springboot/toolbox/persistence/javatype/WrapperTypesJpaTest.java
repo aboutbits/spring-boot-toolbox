@@ -6,6 +6,12 @@ import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBigDec
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBigDecimalRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBigIntegerClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBigIntegerRecord;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBooleanClass;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBooleanRecord;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapByteClass;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapByteRecord;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapCharacterClass;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapCharacterRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapDoubleClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapDoubleRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapFloatClass;
@@ -345,6 +351,108 @@ public class WrapperTypesJpaTest {
                         .isEqualTo(savedItem);
             }
         }
+
+        @Nested
+        class WrapCharacterRecordType {
+            @Test
+            void givenNull_inAndOut_shouldSucceed() {
+                var item = new WrapperTypesModel();
+                item.setCharValue(null);
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByCharValue(null);
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+
+            @ParameterizedTest
+            @ValueSource(chars = {'t', 's', '\r', '\n'})
+            void givenValues_inAndOut_shouldSucceed(Character charValue) {
+                var item = new WrapperTypesModel();
+                item.setCharValue(new WrapCharacterRecord(charValue));
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByCharValue(savedItem.getCharValue());
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+        }
+
+        @Nested
+        class WrapByteRecordType {
+            @Test
+            void givenNull_inAndOut_shouldSucceed() {
+                var item = new WrapperTypesModel();
+                item.setByteValue(null);
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByByteValue(null);
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+
+            @ParameterizedTest
+            @ValueSource(bytes = {-1, 0, 1, -128, 127})
+            void givenValues_inAndOut_shouldSucceed(Byte byteValue) {
+                var item = new WrapperTypesModel();
+                item.setByteValue(new WrapByteRecord(byteValue));
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByByteValue(savedItem.getByteValue());
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+        }
+
+        @Nested
+        class WrapBooleanRecordType {
+            @Test
+            void givenNull_inAndOut_shouldSucceed() {
+                var item = new WrapperTypesModel();
+                item.setBoolValue(null);
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByBoolValue(null);
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+
+            @ParameterizedTest
+            @ValueSource(booleans = {true, false})
+            void givenValues_inAndOut_shouldSucceed(Boolean boolValue) {
+                var item = new WrapperTypesModel();
+                item.setBoolValue(new WrapBooleanRecord(boolValue));
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByBoolValue(savedItem.getBoolValue());
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+        }
     }
 
     @Nested
@@ -647,6 +755,108 @@ public class WrapperTypesJpaTest {
                 var savedItem = repository.save(item);
 
                 var retrievedItem = repository.findByStringValueClass(savedItem.getStringValueClass());
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+        }
+
+        @Nested
+        class WrapCharacterClassType {
+            @Test
+            void givenNull_inAndOut_shouldSucceed() {
+                var item = new WrapperTypesModel();
+                item.setCharValue(null);
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByCharValue(null);
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+
+            @ParameterizedTest
+            @ValueSource(chars = {'t', 's', '\r', '\n'})
+            void givenValues_inAndOut_shouldSucceed(Character charValue) {
+                var item = new WrapperTypesModel();
+                item.setCharValueClass(new WrapCharacterClass(charValue));
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByCharValueClass(savedItem.getCharValueClass());
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+        }
+
+        @Nested
+        class WrapByteClassType {
+            @Test
+            void givenNull_inAndOut_shouldSucceed() {
+                var item = new WrapperTypesModel();
+                item.setByteValue(null);
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByByteValue(null);
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+
+            @ParameterizedTest
+            @ValueSource(bytes = {-1, 0, 1, -128, 127})
+            void givenValues_inAndOut_shouldSucceed(Byte byteValue) {
+                var item = new WrapperTypesModel();
+                item.setByteValueClass(new WrapByteClass(byteValue));
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByByteValueClass(savedItem.getByteValueClass());
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+        }
+
+        @Nested
+        class WrapBooleanClassType {
+            @Test
+            void givenNull_inAndOut_shouldSucceed() {
+                var item = new WrapperTypesModel();
+                item.setBoolValue(null);
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByBoolValue(null);
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+
+            @ParameterizedTest
+            @ValueSource(booleans = {true, false})
+            void givenValues_inAndOut_shouldSucceed(Boolean boolValue) {
+                var item = new WrapperTypesModel();
+                item.setBoolValueClass(new WrapBooleanClass(boolValue));
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByBoolValueClass(savedItem.getBoolValueClass());
 
                 assertThat(retrievedItem).isPresent()
                         .get()

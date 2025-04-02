@@ -4,6 +4,12 @@ import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBigDec
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBigDecimalRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBigIntegerClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBigIntegerRecord;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBooleanClass;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBooleanRecord;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapByteClass;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapByteRecord;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapCharacterClass;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapCharacterRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapDoubleClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapDoubleRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapFloatClass;
@@ -41,6 +47,12 @@ public interface WrapperTypesModelRepository extends JpaRepository<WrapperTypesM
 
     Optional<WrapperTypesModel> findByStringValue(WrapStringRecord value);
 
+    Optional<WrapperTypesModel> findByBoolValue(WrapBooleanRecord value);
+
+    Optional<WrapperTypesModel> findByByteValue(WrapByteRecord value);
+
+    Optional<WrapperTypesModel> findByCharValue(WrapCharacterRecord value);
+
     Optional<WrapperTypesModel> findByBigDecimalValueClass(WrapBigDecimalClass value);
 
     Optional<WrapperTypesModel> findByBigIntegerValueClass(WrapBigIntegerClass value);
@@ -58,4 +70,10 @@ public interface WrapperTypesModelRepository extends JpaRepository<WrapperTypesM
     Optional<WrapperTypesModel> findByShortValueClass(WrapShortClass value);
 
     Optional<WrapperTypesModel> findByStringValueClass(WrapStringClass value);
+
+    Optional<WrapperTypesModel> findByBoolValueClass(WrapBooleanClass value);
+
+    Optional<WrapperTypesModel> findByByteValueClass(WrapByteClass value);
+
+    Optional<WrapperTypesModel> findByCharValueClass(WrapCharacterClass value);
 }

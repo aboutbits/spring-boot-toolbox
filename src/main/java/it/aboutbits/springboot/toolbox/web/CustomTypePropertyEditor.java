@@ -59,8 +59,22 @@ public final class CustomTypePropertyEditor<T extends CustomType<?>> extends Pro
     }
 
     private static Function<String, Object> getTextToTypeConverter(Class<?> wrappedType) {
+        if (Boolean.class.isAssignableFrom(wrappedType)) {
+            return Boolean::parseBoolean;
+        }
         if (String.class.isAssignableFrom(wrappedType)) {
             return text -> text;
+        }
+        if (Character.class.isAssignableFrom(wrappedType)) {
+            return text -> {
+                if (text == null || text.length() != 1) {
+                    throw new IllegalArgumentException("Unable to convert text to type: " + wrappedType.getName());
+                }
+                return text.charAt(0);
+            };
+        }
+        if (Byte.class.isAssignableFrom(wrappedType)) {
+            return Byte::parseByte;
         }
         if (Short.class.isAssignableFrom(wrappedType)) {
             return Short::parseShort;

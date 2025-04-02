@@ -35,6 +35,12 @@ public class CustomTypeModelConverter implements ModelConverter {
                         (Class<? extends CustomType<?>>) clazz
                 );
 
+                if (Boolean.class.isAssignableFrom(wrappedType)) {
+                    result = context.resolve(new AnnotatedType(Boolean.TYPE));
+                }
+                if (Byte.class.isAssignableFrom(wrappedType)) {
+                    result = context.resolve(new AnnotatedType(Byte.TYPE));
+                }
                 if (Short.class.isAssignableFrom(wrappedType)) {
                     result = context.resolve(new AnnotatedType(Short.TYPE));
                 }
@@ -61,6 +67,9 @@ public class CustomTypeModelConverter implements ModelConverter {
                 }
                 if (String.class.isAssignableFrom(wrappedType)) {
                     result = context.resolve(new AnnotatedType(String.class));
+                }
+                if (Character.class.isAssignableFrom(wrappedType)) {
+                    result = context.resolve(new AnnotatedType(Character.TYPE));
                 }
 
                 if (result != null) {
