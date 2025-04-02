@@ -58,7 +58,7 @@ public class WrapperTypesJpaTest {
             }
 
             @ParameterizedTest
-            @ValueSource(doubles = {-1, 0, 1, -0.001, 0.001, -100_000_000, 100_000_000})
+            @ValueSource(doubles = {-1, 0, 1, -0.001d, 0.001d, -100_000_000, 100_000_000})
             void givenValues_inAndOut_shouldSucceed(double doubleValue) {
                 var item = new WrapperTypesModel();
                 item.setBigDecimalValue(new WrapBigDecimalRecord(BigDecimal.valueOf(doubleValue)));
@@ -126,7 +126,7 @@ public class WrapperTypesJpaTest {
             }
 
             @ParameterizedTest
-            @ValueSource(doubles = {-1, 0, 1, -0.001, 0.001, -100_000_000, 100_000_000})
+            @ValueSource(doubles = {-1, 0, 1, -0.001d, 0.001d, -100_000_000, 100_000_000})
             void givenValues_inAndOut_shouldSucceed(double doubleValue) {
                 var item = new WrapperTypesModel();
                 item.setDoubleValue(new WrapDoubleRecord(doubleValue));
@@ -262,7 +262,7 @@ public class WrapperTypesJpaTest {
             }
 
             @ParameterizedTest
-            @ValueSource(doubles = {-1, 0, 1, -0.001, 0.001, -100_000_000, 100_000_000})
+            @ValueSource(doubles = {-1, 0, 1, -0.001d, 0.001d, -100_000_000, 100_000_000})
             void givenValues_inAndOut_shouldSucceed(double doubleValue) {
                 var item = new WrapperTypesModel();
                 item.setScaledBigDecimalValue(new WrapScaledBigDecimalRecord(new ScaledBigDecimal(doubleValue)));
@@ -367,7 +367,7 @@ public class WrapperTypesJpaTest {
             }
 
             @ParameterizedTest
-            @ValueSource(doubles = {-1, 0, 1, -0.001, 0.001, -100_000_000, 100_000_000})
+            @ValueSource(doubles = {-1, 0, 1, -0.001d, 0.001d, -100_000_000, 100_000_000})
             void givenValues_inAndOut_shouldSucceed(double doubleValue) {
                 var item = new WrapperTypesModel();
                 item.setBigDecimalValueClass(new WrapBigDecimalClass(BigDecimal.valueOf(doubleValue)));
@@ -435,7 +435,7 @@ public class WrapperTypesJpaTest {
             }
 
             @ParameterizedTest
-            @ValueSource(doubles = {-1, 0, 1, -0.001, 0.001, -100_000_000, 100_000_000})
+            @ValueSource(doubles = {-1, 0, 1, -0.001d, 0.001d, -100_000_000, 100_000_000})
             void givenValues_inAndOut_shouldSucceed(double doubleValue) {
                 var item = new WrapperTypesModel();
                 item.setDoubleValueClass(new WrapDoubleClass(doubleValue));
@@ -571,7 +571,7 @@ public class WrapperTypesJpaTest {
             }
 
             @ParameterizedTest
-            @ValueSource(doubles = {-1, 0, 1, -0.001, 0.001, -100_000_000, 100_000_000})
+            @ValueSource(doubles = {-1, 0, 1, -0.001d, 0.001d, -100_000_000, 100_000_000})
             void givenValues_inAndOut_shouldSucceed(double doubleValue) {
                 var item = new WrapperTypesModel();
                 item.setScaledBigDecimalValueClass(new WrapScaledBigDecimalClass(new ScaledBigDecimal(doubleValue)));
