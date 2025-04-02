@@ -4,11 +4,12 @@ import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
 import io.swagger.v3.core.converter.ModelConverterContext;
 import io.swagger.v3.oas.models.media.Schema;
-import it.aboutbits.springboot.toolbox.reflection.util.RecordReflectionUtil;
+import it.aboutbits.springboot.toolbox.reflection.util.CustomTypeReflectionUtil;
 import it.aboutbits.springboot.toolbox.swagger.SwaggerMetaUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import it.aboutbits.springboot.toolbox.type.identity.EntityId;
+import lombok.SneakyThrows;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -17,6 +18,7 @@ import java.util.Iterator;
 public class CustomTypeModelConverter implements ModelConverter {
 
     @Override
+    @SneakyThrows(NoSuchMethodException.class)
     public Schema<?> resolve(
             AnnotatedType annotatedType,
             ModelConverterContext context,
@@ -28,9 +30,17 @@ public class CustomTypeModelConverter implements ModelConverter {
         if (type instanceof Class<?> clazz) {
             Schema<?> result = null;
             if (CustomType.class.isAssignableFrom(clazz)) {
-                var constructor = RecordReflectionUtil.getCanonicalConstructor(clazz);
-                var wrappedType = constructor.getParameters()[0].getType();
+                @SuppressWarnings("unchecked")
+                var wrappedType = CustomTypeReflectionUtil.getWrappedType(
+                        (Class<? extends CustomType<?>>) clazz
+                );
 
+                if (Boolean.class.isAssignableFrom(wrappedType)) {
+                    result = context.resolve(new AnnotatedType(Boolean.TYPE));
+                }
+                if (Byte.class.isAssignableFrom(wrappedType)) {
+                    result = context.resolve(new AnnotatedType(Byte.TYPE));
+                }
                 if (Short.class.isAssignableFrom(wrappedType)) {
                     result = context.resolve(new AnnotatedType(Short.TYPE));
                 }
@@ -57,6 +67,9 @@ public class CustomTypeModelConverter implements ModelConverter {
                 }
                 if (String.class.isAssignableFrom(wrappedType)) {
                     result = context.resolve(new AnnotatedType(String.class));
+                }
+                if (Character.class.isAssignableFrom(wrappedType)) {
+                    result = context.resolve(new AnnotatedType(Character.TYPE));
                 }
 
                 if (result != null) {

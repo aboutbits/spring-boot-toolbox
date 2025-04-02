@@ -38,5 +38,50 @@ databaseChangeLog:
                   name: short_value
                   type: bigint
               - column:
+                  name: byte_value
+                  type: integer
+              - column:
                   name: string_value
                   type: text
+              - column:
+                  name: char_value
+                  type: char
+              - column:
+                  name: bool_value
+                  type: boolean
+              - column:
+                  name: big_decimal_value_class
+                  type: double
+              - column:
+                  name: big_integer_value_class
+                  type: bigint
+              - column:
+                  name: double_value_class
+                  type: double
+              - column:
+                  name: float_value_class
+                  type: double
+              - column:
+                  name: integer_value_class
+                  type: bigint
+              - column:
+                  name: long_value_class
+                  type: bigint
+              - column:
+                  name: scaled_big_decimal_value_class
+                  type: double
+              - column:
+                  name: short_value_class
+                  type: bigint
+              - column:
+                  name: byte_value_class
+                  type: integer
+              - column:
+                  name: string_value_class
+                  type: text
+              - column:
+                  name: char_value_class
+                  type: char
+              - column:
+                  name: bool_value_class
+                  type: boolean

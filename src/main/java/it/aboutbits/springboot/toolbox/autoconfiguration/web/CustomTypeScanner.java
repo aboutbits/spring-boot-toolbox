@@ -5,6 +5,11 @@ import it.aboutbits.springboot.toolbox.type.CustomType;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -31,13 +36,24 @@ public class CustomTypeScanner {
         log.info("CustomTypeConfiguration enabled. Scanning: {}", Arrays.toString(packageNamesToScan));
         var classScanner = ClassScannerUtil.getScannerForPackages(packageNamesToScan);
 
-        this.relevantTypes = findAllCustomTypeRecords(classScanner);
+        this.relevantTypes = findAllCustomTypes(classScanner);
     }
 
     @SuppressWarnings("rawtypes")
-    public static Set<Class<? extends CustomType>> findAllCustomTypeRecords(ClassScannerUtil.ClassScanner classScanner) {
+    public static Set<Class<? extends CustomType>> findAllCustomTypes(ClassScannerUtil.ClassScanner classScanner) {
         return classScanner.getSubTypesOf(CustomType.class).stream()
-                .filter(Record.class::isAssignableFrom)
+                .filter(item ->
+                                !item.isInterface()
+                                        && !item.isAnonymousClass()
+                                        && !Modifier.isAbstract(item.getModifiers())
+                                        && !item.isAnnotationPresent(DisableCustomTypeConfiguration.class)
+                )
                 .collect(Collectors.toSet());
+    }
+
+    @Target({ElementType.TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface DisableCustomTypeConfiguration {
+
     }
 }

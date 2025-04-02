@@ -3,7 +3,7 @@ package it.aboutbits.springboot.toolbox.jackson;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import it.aboutbits.springboot.toolbox.reflection.util.RecordReflectionUtil;
+import it.aboutbits.springboot.toolbox.reflection.util.CustomTypeReflectionUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 
@@ -22,7 +22,14 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
     public CustomTypeDeserializer(Class<T> customType) {
         this.customType = customType;
 
-        this.constructor = RecordReflectionUtil.getCanonicalConstructor(customType);
+        try {
+            this.constructor = CustomTypeReflectionUtil.getCustomTypeConstructor(customType);
+        } catch (NoSuchMethodException e) {
+            throw new CustomTypeDeserializerException(
+                    "Unable to find constructor for type: " + customType.getName(),
+                    e
+            );
+        }
 
         this.typeConverter = getTypeConverter(
                 constructor.getParameterTypes()[0]
@@ -49,8 +56,17 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
     }
 
     private static Function<JsonParser, Object> getTypeConverter(Class<?> wrappedType) {
+        if (Byte.class.isAssignableFrom(wrappedType)) {
+            return getByteConverter();
+        }
+        if (Boolean.class.isAssignableFrom(wrappedType)) {
+            return getBooleanConverter();
+        }
         if (String.class.isAssignableFrom(wrappedType)) {
             return getStringConverter();
+        }
+        if (Character.class.isAssignableFrom(wrappedType)) {
+            return getCharConverter();
         }
         if (Short.class.isAssignableFrom(wrappedType)) {
             return getShortConverter();
@@ -77,6 +93,26 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
             return getScaledBigDecimalConverter();
         }
         throw new CustomTypeDeserializerException("Value type not supported: " + wrappedType.getName());
+    }
+
+    private static Function<JsonParser, Object> getByteConverter() {
+        return jsonParser -> {
+            try {
+                return jsonParser.getByteValue();
+            } catch (IOException e) {
+                throw new CustomTypeDeserializerException("Failed to read value as Byte.", e);
+            }
+        };
+    }
+
+    private static Function<JsonParser, Object> getBooleanConverter() {
+        return jsonParser -> {
+            try {
+                return jsonParser.getBooleanValue();
+            } catch (IOException e) {
+                throw new CustomTypeDeserializerException("Failed to read value as Boolean.", e);
+            }
+        };
     }
 
     private static Function<JsonParser, Object> getScaledBigDecimalConverter() {
@@ -165,6 +201,20 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
                 return jsonParser.getValueAsString();
             } catch (IOException e) {
                 throw new CustomTypeDeserializerException("Failed to read value as String.", e);
+            }
+        };
+    }
+
+    private static Function<JsonParser, Object> getCharConverter() {
+        return jsonParser -> {
+            try {
+                var value = jsonParser.getValueAsString();
+                if (value == null || value.length() != 1) {
+                    throw new IOException();
+                }
+                return value.charAt(0);
+            } catch (IOException e) {
+                throw new CustomTypeDeserializerException("Failed to read value as Char.", e);
             }
         };
     }

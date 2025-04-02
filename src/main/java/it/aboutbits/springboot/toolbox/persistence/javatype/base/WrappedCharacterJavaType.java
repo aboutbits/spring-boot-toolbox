@@ -9,17 +9,16 @@ import org.hibernate.type.descriptor.jdbc.JdbcTypeIndicators;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
 import java.sql.Types;
 
-public abstract class WrappedBigDecimalJavaType<T extends CustomType<BigDecimal>> extends AbstractClassJavaType<T> {
+public abstract class WrappedCharacterJavaType<T extends CustomType<Character>> extends AbstractClassJavaType<T> {
     private final transient Constructor<T> constructor;
 
-    protected WrappedBigDecimalJavaType(Class<T> type) {
+    protected WrappedCharacterJavaType(Class<T> type) {
         super(type);
 
         try {
-            this.constructor = type.getConstructor(BigDecimal.class);
+            this.constructor = type.getConstructor(Character.class);
         } catch (NoSuchMethodException e) {
             throw new IllegalStateException("No constructor found for " + type.getName(), e);
         }
@@ -29,7 +28,7 @@ public abstract class WrappedBigDecimalJavaType<T extends CustomType<BigDecimal>
     public JdbcType getRecommendedJdbcType(JdbcTypeIndicators indicators) {
         return indicators.getTypeConfiguration()
                 .getJdbcTypeRegistry()
-                .getDescriptor(Types.DOUBLE);
+                .getDescriptor(Types.CHAR);
     }
 
     @SuppressWarnings("unchecked")
@@ -43,8 +42,11 @@ public abstract class WrappedBigDecimalJavaType<T extends CustomType<BigDecimal>
         if (javaTypeClass.isAssignableFrom(aClass)) {
             return (X) id;
         }
-        if (Double.class.isAssignableFrom(aClass)) {
-            return (X) Double.valueOf(id.value().doubleValue());
+        if (Character.class.isAssignableFrom(aClass)) {
+            return (X) id.value();
+        }
+        if (String.class.isAssignableFrom(aClass)) {
+            return (X) String.valueOf(id.value());
         }
 
         throw unknownUnwrap(aClass);
@@ -62,8 +64,11 @@ public abstract class WrappedBigDecimalJavaType<T extends CustomType<BigDecimal>
         if (clazz.isInstance(value)) {
             return (T) value;
         }
-        if (value instanceof Double doubleValue) {
-            return constructor.newInstance(BigDecimal.valueOf(doubleValue));
+        if (value instanceof Character charValue) {
+            return constructor.newInstance(charValue);
+        }
+        if (value instanceof String stringValue && stringValue.length() == 1) {
+            return constructor.newInstance(stringValue.charAt(0));
         }
 
         throw unknownWrap(value.getClass());

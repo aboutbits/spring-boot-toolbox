@@ -1,6 +1,5 @@
 package it.aboutbits.springboot.toolbox.persistence.javatype.base;
 
-import it.aboutbits.springboot.toolbox.reflection.util.RecordReflectionUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import lombok.SneakyThrows;
 import org.hibernate.type.descriptor.WrapperOptions;
@@ -13,12 +12,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Types;
 
 public abstract class WrappedFloatJavaType<T extends CustomType<Float>> extends AbstractClassJavaType<T> {
-    private final transient Constructor<T> canonicalConstructor;
+    private final transient Constructor<T> constructor;
 
     protected WrappedFloatJavaType(Class<T> type) {
         super(type);
 
-        this.canonicalConstructor = RecordReflectionUtil.getCanonicalConstructor(type);
+        try {
+            this.constructor = type.getConstructor(Float.class);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalStateException("No constructor found for " + type.getName(), e);
+        }
     }
 
     @Override
@@ -59,7 +62,7 @@ public abstract class WrappedFloatJavaType<T extends CustomType<Float>> extends 
             return (T) value;
         }
         if (value instanceof Float floatValue) {
-            return canonicalConstructor.newInstance(floatValue);
+            return constructor.newInstance(floatValue);
         }
 
         throw unknownWrap(value.getClass());

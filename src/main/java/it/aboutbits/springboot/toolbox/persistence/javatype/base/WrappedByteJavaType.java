@@ -9,17 +9,16 @@ import org.hibernate.type.descriptor.jdbc.JdbcTypeIndicators;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
 import java.sql.Types;
 
-public abstract class WrappedBigDecimalJavaType<T extends CustomType<BigDecimal>> extends AbstractClassJavaType<T> {
+public abstract class WrappedByteJavaType<T extends CustomType<Byte>> extends AbstractClassJavaType<T> {
     private final transient Constructor<T> constructor;
 
-    protected WrappedBigDecimalJavaType(Class<T> type) {
+    protected WrappedByteJavaType(Class<T> type) {
         super(type);
 
         try {
-            this.constructor = type.getConstructor(BigDecimal.class);
+            this.constructor = type.getConstructor(Byte.class);
         } catch (NoSuchMethodException e) {
             throw new IllegalStateException("No constructor found for " + type.getName(), e);
         }
@@ -29,7 +28,7 @@ public abstract class WrappedBigDecimalJavaType<T extends CustomType<BigDecimal>
     public JdbcType getRecommendedJdbcType(JdbcTypeIndicators indicators) {
         return indicators.getTypeConfiguration()
                 .getJdbcTypeRegistry()
-                .getDescriptor(Types.DOUBLE);
+                .getDescriptor(Types.TINYINT);
     }
 
     @SuppressWarnings("unchecked")
@@ -43,8 +42,8 @@ public abstract class WrappedBigDecimalJavaType<T extends CustomType<BigDecimal>
         if (javaTypeClass.isAssignableFrom(aClass)) {
             return (X) id;
         }
-        if (Double.class.isAssignableFrom(aClass)) {
-            return (X) Double.valueOf(id.value().doubleValue());
+        if (Byte.class.isAssignableFrom(aClass)) {
+            return (X) id.value();
         }
 
         throw unknownUnwrap(aClass);
@@ -62,8 +61,8 @@ public abstract class WrappedBigDecimalJavaType<T extends CustomType<BigDecimal>
         if (clazz.isInstance(value)) {
             return (T) value;
         }
-        if (value instanceof Double doubleValue) {
-            return constructor.newInstance(BigDecimal.valueOf(doubleValue));
+        if (value instanceof Byte byteValue) {
+            return constructor.newInstance(byteValue);
         }
 
         throw unknownWrap(value.getClass());

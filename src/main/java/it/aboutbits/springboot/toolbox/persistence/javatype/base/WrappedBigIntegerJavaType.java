@@ -1,6 +1,5 @@
 package it.aboutbits.springboot.toolbox.persistence.javatype.base;
 
-import it.aboutbits.springboot.toolbox.reflection.util.RecordReflectionUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import lombok.SneakyThrows;
 import org.hibernate.type.descriptor.WrapperOptions;
@@ -14,12 +13,16 @@ import java.math.BigInteger;
 import java.sql.Types;
 
 public abstract class WrappedBigIntegerJavaType<T extends CustomType<BigInteger>> extends AbstractClassJavaType<T> {
-    private final transient Constructor<T> canonicalConstructor;
+    private final transient Constructor<T> constructor;
 
     protected WrappedBigIntegerJavaType(Class<T> type) {
         super(type);
 
-        this.canonicalConstructor = RecordReflectionUtil.getCanonicalConstructor(type);
+        try {
+            this.constructor = type.getConstructor(BigInteger.class);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalStateException("No constructor found for " + type.getName(), e);
+        }
     }
 
     @Override
@@ -60,7 +63,7 @@ public abstract class WrappedBigIntegerJavaType<T extends CustomType<BigInteger>
             return (T) value;
         }
         if (value instanceof Long longValue) {
-            return canonicalConstructor.newInstance(BigInteger.valueOf(longValue));
+            return constructor.newInstance(BigInteger.valueOf(longValue));
         }
 
         throw unknownWrap(value.getClass());
