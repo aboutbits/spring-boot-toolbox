@@ -33,10 +33,17 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
             }
 
             if (CustomType.class.isAssignableFrom(rawClass)) {
-                @SuppressWarnings("unchecked")
-                var wrappedType = CustomTypeReflectionUtil.getWrappedType(
-                        (Class<? extends CustomType<?>>) rawClass
-                );
+                Class<?> wrappedType = null;
+                if (rawClass.equals(EntityId.class)) {
+                    wrappedType = simpleType.getBindings()
+                            .getTypeParameters()
+                            .getFirst()
+                            .getRawClass();
+                } else {
+                    wrappedType = CustomTypeReflectionUtil.getWrappedType(
+                            (Class<? extends CustomType<?>>) rawClass
+                    );
+                }
 
                 var isIdentity = EntityId.class.isAssignableFrom(rawClass);
 
