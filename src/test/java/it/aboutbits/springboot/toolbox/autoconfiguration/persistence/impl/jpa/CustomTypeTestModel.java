@@ -1,6 +1,7 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa;
 
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.AutoRegisteredJavaType;
+import it.aboutbits.springboot.toolbox.persistence.converter.UUIDConverter;
 import it.aboutbits.springboot.toolbox.persistence.javatype.EmailAddressJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.IbanJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.ScaledBigDecimalJavaType;
@@ -10,6 +11,7 @@ import it.aboutbits.springboot.toolbox.type.Iban;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import it.aboutbits.springboot.toolbox.type.identity.EntityId;
 import it.aboutbits.springboot.toolbox.type.identity.Identified;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,6 +20,8 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.JavaType;
+
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -40,6 +44,11 @@ public class CustomTypeTestModel implements Identified<CustomTypeTestModel.ID> {
     @SuppressWarnings("JpaAttributeTypeInspection")
     @JavaType(ScaledBigDecimalJavaType.class)
     private ScaledBigDecimal accountBalance;
+
+    private UUID uuid;
+
+    @Convert(converter = UUIDConverter.class)
+    private UUID uuidAsString;
 
     @JavaType(ReferencedTestModel.ID.JavaType.class)
     private ReferencedTestModel.ID referencedId;

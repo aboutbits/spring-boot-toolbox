@@ -14,6 +14,7 @@ import org.springdoc.core.customizers.PropertyCustomizer;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.UUID;
 
 @Slf4j
 public class CustomTypePropertyCustomizer implements PropertyCustomizer {
@@ -91,7 +92,7 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
                 }
                 if (BigInteger.class.isAssignableFrom(wrappedType)) {
                     property.type("integer");
-                    property.format("int64");
+                    property.format("");
                     property.setDescription(description);
                     property.setProperties(null);
                     property.set$ref(null);
@@ -142,6 +143,16 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
                     property.format(null);
                     property.minLength(1);
                     property.maxLength(1);
+                    property.setDescription(description);
+                    property.setProperties(null);
+                    property.set$ref(null);
+                    return property;
+                }
+                if (UUID.class.isAssignableFrom(wrappedType)) {
+                    property.type("string");
+                    property.format("uuid");
+                    property.minLength(36);
+                    property.maxLength(36);
                     property.setDescription(description);
                     property.setProperties(null);
                     property.set$ref(null);

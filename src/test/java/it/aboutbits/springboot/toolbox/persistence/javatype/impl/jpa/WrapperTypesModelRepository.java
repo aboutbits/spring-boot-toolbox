@@ -24,6 +24,8 @@ import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapShortC
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapShortRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapStringClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapStringRecord;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapUUIDClass;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapUUIDRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -53,6 +55,10 @@ public interface WrapperTypesModelRepository extends JpaRepository<WrapperTypesM
 
     Optional<WrapperTypesModel> findByCharValue(WrapCharacterRecord value);
 
+    Optional<WrapperTypesModel> findByUuidValue(WrapUUIDRecord value);
+
+    Optional<WrapperTypesModel> findByUuidValueAsString(WrapUUIDRecord value);
+
     Optional<WrapperTypesModel> findByBigDecimalValueClass(WrapBigDecimalClass value);
 
     Optional<WrapperTypesModel> findByBigIntegerValueClass(WrapBigIntegerClass value);
@@ -76,4 +82,8 @@ public interface WrapperTypesModelRepository extends JpaRepository<WrapperTypesM
     Optional<WrapperTypesModel> findByByteValueClass(WrapByteClass value);
 
     Optional<WrapperTypesModel> findByCharValueClass(WrapCharacterClass value);
+
+    Optional<WrapperTypesModel> findByUuidValueClass(WrapUUIDClass value);
+
+    Optional<WrapperTypesModel> findByUuidValueClassAsString(WrapUUIDClass value);
 }

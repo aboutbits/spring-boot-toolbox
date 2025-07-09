@@ -12,6 +12,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.UUID;
 import java.util.function.Function;
 
 public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeserializer<T> {
@@ -91,6 +92,9 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
         }
         if (ScaledBigDecimal.class.isAssignableFrom(wrappedType)) {
             return getScaledBigDecimalConverter();
+        }
+        if (UUID.class.isAssignableFrom(wrappedType)) {
+            return getUUIDConverter();
         }
         throw new CustomTypeDeserializerException("Value type not supported: " + wrappedType.getName());
     }
@@ -215,6 +219,20 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
                 return value.charAt(0);
             } catch (IOException e) {
                 throw new CustomTypeDeserializerException("Failed to read value as Char.", e);
+            }
+        };
+    }
+
+    private static Function<JsonParser, Object> getUUIDConverter() {
+        return jsonParser -> {
+            try {
+                var value = jsonParser.getValueAsString();
+                if (value == null || value.length() != 36) {
+                    throw new IOException();
+                }
+                return UUID.fromString(value);
+            } catch (IOException e) {
+                throw new CustomTypeDeserializerException("Failed to read value as UUID.", e);
             }
         };
     }

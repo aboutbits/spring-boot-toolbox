@@ -26,6 +26,8 @@ import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapSh
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapShortRecordJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapStringClassJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapStringRecordJavaType;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapUUIDClassJavaType;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapUUIDRecordJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBigDecimalClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBigDecimalRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBigIntegerClass;
@@ -50,6 +52,8 @@ import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapShortC
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapShortRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapStringClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapStringRecord;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapUUIDClass;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapUUIDRecord;
 import it.aboutbits.springboot.toolbox.type.identity.EntityId;
 import it.aboutbits.springboot.toolbox.type.identity.Identified;
 import jakarta.persistence.Entity;
@@ -60,6 +64,8 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.JavaType;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.type.descriptor.jdbc.UUIDJdbcType;
 
 @Entity
 @Getter
@@ -120,6 +126,16 @@ public class WrapperTypesModel implements Identified<WrapperTypesModel.ID> {
     private WrapBooleanRecord boolValue;
 
     @SuppressWarnings("JpaAttributeTypeInspection")
+    @JavaType(WrapUUIDRecordJavaType.class)
+    @JdbcType(UUIDJdbcType.class)
+    private WrapUUIDRecord uuidValue;
+
+    @SuppressWarnings("JpaAttributeTypeInspection")
+    @JavaType(WrapUUIDRecordJavaType.class)
+    @JdbcType(UUIDJdbcType.class)
+    private WrapUUIDRecord uuidValueAsString;
+
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @JavaType(WrapBigDecimalClassJavaType.class)
     private WrapBigDecimalClass bigDecimalValueClass;
 
@@ -167,6 +183,15 @@ public class WrapperTypesModel implements Identified<WrapperTypesModel.ID> {
     @JavaType(WrapBooleanClassJavaType.class)
     private WrapBooleanClass boolValueClass;
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
+    @JavaType(WrapUUIDClassJavaType.class)
+    @JdbcType(UUIDJdbcType.class)
+    private WrapUUIDClass uuidValueClass;
+
+    @SuppressWarnings("JpaAttributeTypeInspection")
+    @JavaType(WrapUUIDClassJavaType.class)
+    @JdbcType(UUIDJdbcType.class)
+    private WrapUUIDClass uuidValueClassAsString;
 
     public record ID(
             Long value

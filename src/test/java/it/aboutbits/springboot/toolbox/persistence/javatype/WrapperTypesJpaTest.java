@@ -26,6 +26,8 @@ import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapShortC
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapShortRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapStringClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapStringRecord;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapUUIDClass;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapUUIDRecord;
 import it.aboutbits.springboot.toolbox.support.ApplicationTest;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import org.junit.jupiter.api.Nested;
@@ -36,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -453,6 +456,71 @@ public class WrapperTypesJpaTest {
                         .isEqualTo(savedItem);
             }
         }
+
+        @Nested
+        class WrapUUIDRecordType {
+            @Test
+            void givenNull_inAndOut_shouldSucceed() {
+                var item = new WrapperTypesModel();
+                item.setUuidValueClass(null);
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByUuidValue(null);
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+
+            @ParameterizedTest
+            @ValueSource(strings = {"d414ed05-c370-445a-8430-1fd1021c9856", "0682a03d-3618-470f-a8f9-78e4a52f1a2c"})
+            void givenValues_inAndOut_shouldSucceed(String uuidStringValue) {
+                var item = new WrapperTypesModel();
+                item.setUuidValue(new WrapUUIDRecord(UUID.fromString(uuidStringValue)));
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByUuidValue(savedItem.getUuidValue());
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+
+            @Test
+            void givenNullString_inAndOut_shouldSucceed() {
+                var item = new WrapperTypesModel();
+                item.setUuidValueAsString(null);
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByUuidValueAsString(null);
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+
+            @ParameterizedTest
+            @ValueSource(strings = {"d414ed05-c370-445a-8430-1fd1021c9856", "0682a03d-3618-470f-a8f9-78e4a52f1a2c"})
+            void givenStringValues_inAndOut_shouldSucceed(String uuidStringValue) {
+                var item = new WrapperTypesModel();
+                item.setUuidValueAsString(new WrapUUIDRecord(UUID.fromString(uuidStringValue)));
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByUuidValueAsString(savedItem.getUuidValueAsString());
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+        }
     }
 
     @Nested
@@ -857,6 +925,71 @@ public class WrapperTypesJpaTest {
                 var savedItem = repository.save(item);
 
                 var retrievedItem = repository.findByBoolValueClass(savedItem.getBoolValueClass());
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+        }
+
+        @Nested
+        class WrapUUIDClassType {
+            @Test
+            void givenNull_inAndOut_shouldSucceed() {
+                var item = new WrapperTypesModel();
+                item.setUuidValueClass(null);
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByUuidValueClass(null);
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+
+            @ParameterizedTest
+            @ValueSource(strings = {"d414ed05-c370-445a-8430-1fd1021c9856", "0682a03d-3618-470f-a8f9-78e4a52f1a2c"})
+            void givenValues_inAndOut_shouldSucceed(String uuidStringValue) {
+                var item = new WrapperTypesModel();
+                item.setUuidValueClass(new WrapUUIDClass(UUID.fromString(uuidStringValue)));
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByUuidValueClass(savedItem.getUuidValueClass());
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+
+            @Test
+            void givenNullString_inAndOut_shouldSucceed() {
+                var item = new WrapperTypesModel();
+                item.setUuidValueClassAsString(null);
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByUuidValueClassAsString(null);
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+
+            @ParameterizedTest
+            @ValueSource(strings = {"d414ed05-c370-445a-8430-1fd1021c9856", "0682a03d-3618-470f-a8f9-78e4a52f1a2c"})
+            void givenStringValues_inAndOut_shouldSucceed(String uuidStringValue) {
+                var item = new WrapperTypesModel();
+                item.setUuidValueClassAsString(new WrapUUIDClass(UUID.fromString(uuidStringValue)));
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByUuidValueClassAsString(savedItem.getUuidValueClassAsString());
 
                 assertThat(retrievedItem).isPresent()
                         .get()

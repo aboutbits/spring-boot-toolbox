@@ -12,6 +12,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ApplicationTest
@@ -66,6 +68,41 @@ public class CustomTypeJpaTest {
             var savedItem = repository.save(item);
 
             var retrievedItem = repository.findByAccountBalance(savedItem.getAccountBalance());
+
+            assertThat(retrievedItem).isPresent()
+                    .get()
+                    .usingRecursiveComparison()
+                    .isEqualTo(savedItem);
+        }
+    }
+
+    @Nested
+    class UUIDType {
+        @ParameterizedTest
+        @ValueSource(strings = {"d414ed05-c370-445a-8430-1fd1021c9856", "0682a03d-3618-470f-a8f9-78e4a52f1a2c"})
+        void inAndOut_shouldSucceed(String uuidStringValue) {
+            var item = new CustomTypeTestModel();
+            item.setUuid(UUID.fromString(uuidStringValue));
+
+            var savedItem = repository.save(item);
+
+            var retrievedItem = repository.findByUuid(savedItem.getUuid());
+
+            assertThat(retrievedItem).isPresent()
+                    .get()
+                    .usingRecursiveComparison()
+                    .isEqualTo(savedItem);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"d414ed05-c370-445a-8430-1fd1021c9856", "0682a03d-3618-470f-a8f9-78e4a52f1a2c"})
+        void inAndOutString_shouldSucceed(String uuidStringValue) {
+            var item = new CustomTypeTestModel();
+            item.setUuidAsString(UUID.fromString(uuidStringValue));
+
+            var savedItem = repository.save(item);
+
+            var retrievedItem = repository.findByUuidAsString(savedItem.getUuidAsString());
 
             assertThat(retrievedItem).isPresent()
                     .get()

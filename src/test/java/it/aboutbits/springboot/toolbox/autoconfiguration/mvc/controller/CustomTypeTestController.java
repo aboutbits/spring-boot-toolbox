@@ -3,6 +3,7 @@ package it.aboutbits.springboot.toolbox.autoconfiguration.mvc.controller;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithEmailAddress;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithIban;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithScaledBigDecimal;
+import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithUUID;
 import it.aboutbits.springboot.toolbox.type.EmailAddress;
 import it.aboutbits.springboot.toolbox.type.Iban;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/test/type")
@@ -59,6 +62,21 @@ public class CustomTypeTestController {
 
     @PostMapping("/ScaledBigDecimal/as-body")
     public BodyWithScaledBigDecimal scaledBigDecimalAsBody(@RequestBody BodyWithScaledBigDecimal value) {
+        return value;
+    }
+
+    @GetMapping("/UUID/as-path-variable/{value}")
+    public UUID uuidAsPathVariable(@PathVariable UUID value) {
+        return value;
+    }
+
+    @GetMapping("/UUID/as-request-parameter")
+    public UUID uuidAsRequestParameter(@RequestParam UUID value) {
+        return value;
+    }
+
+    @PostMapping("/UUID/as-body")
+    public BodyWithUUID uuidAsBody(@RequestBody BodyWithUUID value) {
         return value;
     }
 }
