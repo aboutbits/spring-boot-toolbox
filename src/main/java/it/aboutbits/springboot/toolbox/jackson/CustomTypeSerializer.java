@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 
 import java.io.IOException;
+import java.util.UUID;
 
 public class CustomTypeSerializer extends JsonSerializer<CustomType<?>> {
     @SuppressWarnings("unchecked")
@@ -22,17 +23,11 @@ public class CustomTypeSerializer extends JsonSerializer<CustomType<?>> {
     ) throws IOException {
         var value = customType.value();
 
-        if (value instanceof String stringValue) {
-            jsonGenerator.writeString(
-                    stringValue
-            );
-            return;
+        switch (value) {
+            case String stringValue -> jsonGenerator.writeString(stringValue);
+            case UUID uuidValue -> jsonGenerator.writeString(uuidValue.toString());
+            case null -> jsonGenerator.writeNull();
+            default -> jsonGenerator.writeRawValue(String.valueOf(value));
         }
-
-        jsonGenerator.writeRawValue(
-                String.valueOf(
-                        value
-                )
-        );
     }
 }
