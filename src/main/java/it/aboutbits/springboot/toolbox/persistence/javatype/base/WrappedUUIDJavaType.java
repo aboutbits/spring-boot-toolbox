@@ -69,10 +69,15 @@ public abstract class WrappedUUIDJavaType<T extends CustomType<UUID>> extends Ab
         if (clazz.isInstance(value)) {
             return (T) value;
         }
-        if (value instanceof UUID uuidValue) {
-            return constructor.newInstance(uuidValue);
-        }
 
-        throw unknownWrap(value.getClass());
+        return switch (value) {
+            case UUID uuidValue -> constructor.newInstance(uuidValue);
+            case String uuidStringValue -> constructor.newInstance(UUID.fromString(uuidStringValue));
+            case byte[] uuidBytesValue -> constructor.newInstance(UUID.fromString(new String(
+                    uuidBytesValue,
+                    StandardCharsets.UTF_8
+            )));
+            default -> throw unknownWrap(value.getClass());
+        };
     }
 }

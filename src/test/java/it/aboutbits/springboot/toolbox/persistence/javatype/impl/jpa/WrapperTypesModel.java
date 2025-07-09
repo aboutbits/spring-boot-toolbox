@@ -65,6 +65,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.JavaType;
 import org.hibernate.annotations.JdbcType;
+import org.hibernate.type.descriptor.jdbc.CharJdbcType;
 import org.hibernate.type.descriptor.jdbc.UUIDJdbcType;
 
 @Entity
@@ -132,7 +133,7 @@ public class WrapperTypesModel implements Identified<WrapperTypesModel.ID> {
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @JavaType(WrapUUIDRecordJavaType.class)
-    @JdbcType(UUIDJdbcType.class)
+    @JdbcType(CharJdbcType.class)
     private WrapUUIDRecord uuidValueAsString;
 
     @SuppressWarnings("JpaAttributeTypeInspection")
@@ -190,7 +191,7 @@ public class WrapperTypesModel implements Identified<WrapperTypesModel.ID> {
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @JavaType(WrapUUIDClassJavaType.class)
-    @JdbcType(UUIDJdbcType.class)
+    @JdbcType(CharJdbcType.class)
     private WrapUUIDClass uuidValueClassAsString;
 
     public record ID(

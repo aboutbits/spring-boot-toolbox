@@ -54,7 +54,7 @@ databaseChangeLog:
                   type: uuid
               - column:
                   name: uuid_value_as_string
-                  type: uuid
+                  type: char(36)
               - column:
                   name: big_decimal_value_class
                   type: double
@@ -96,4 +96,4 @@ databaseChangeLog:
                   type: uuid
               - column:
                   name: uuid_value_class_as_string
-                  type: uuid
+                  type: char(36)
