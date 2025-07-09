@@ -6,6 +6,7 @@ import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public interface CustomTypeTestModelRepository extends JpaRepository<CustomTypeTestModel, CustomTypeTestModel.ID> {
     Optional<CustomTypeTestModel> findByEmail(EmailAddress emailAddress);
@@ -13,6 +14,9 @@ public interface CustomTypeTestModelRepository extends JpaRepository<CustomTypeT
     Optional<CustomTypeTestModel> findByIban(Iban iban);
 
     Optional<CustomTypeTestModel> findByAccountBalance(ScaledBigDecimal accountBalance);
+
+    Optional<CustomTypeTestModel> findByUuid(UUID uuid);
+    Optional<CustomTypeTestModel> findByUuidAsString(UUID uuidAsString);
 
     Optional<CustomTypeTestModel> findByReferencedId(ReferencedTestModel.ID otherId);
 }

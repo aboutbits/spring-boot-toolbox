@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -72,7 +73,9 @@ public class TupleTransformerTest {
         var tupleTransformer = new TupleTransformer<>(DataRecord.class);
         var l = Long.valueOf(7);
         var b = Boolean.valueOf(true);
-        var objectsUnderTest = new Object[]{l, b, "String123", false, SomeEnum.ENUM_1};
+        var objectsUnderTest = new Object[]{
+                l, b, "String123", false, SomeEnum.ENUM_1, UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88")
+        };
 
         // when
         var result = tupleTransformer.transform(objectsUnderTest);
@@ -83,6 +86,7 @@ public class TupleTransformerTest {
         assertThat(result.string).isEqualTo("String123");
         assertThat(result.booleanPrimitive).isFalse();
         assertThat(result.anEnum).isEqualTo(SomeEnum.ENUM_1);
+        assertThat(result.uuid).isEqualTo(UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88"));
     }
 
 
@@ -92,7 +96,9 @@ public class TupleTransformerTest {
         var tupleTransformer = new TupleTransformer<>(DataRecord.class);
         var l = Long.valueOf(7);
         var b = Boolean.valueOf(true);
-        var objectsUnderTest = new Object[]{l, b, "String123", false, "ENUM_1"};
+        var objectsUnderTest = new Object[]{
+                l, b, "String123", false, "ENUM_1", UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88")
+        };
 
         // when
         var result = tupleTransformer.transform(objectsUnderTest);
@@ -103,6 +109,7 @@ public class TupleTransformerTest {
         assertThat(result.string).isEqualTo("String123");
         assertThat(result.booleanPrimitive).isFalse();
         assertThat(result.anEnum).isEqualTo(SomeEnum.ENUM_1);
+        assertThat(result.uuid).isEqualTo(UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88"));
     }
 
 
@@ -110,7 +117,14 @@ public class TupleTransformerTest {
     void createRecordInsideAClass_givenMixedObjects_shouldPass() {
         // given
         var tupleTransformer = new TupleTransformer<>(DataRecordParent.class);
-        var rec = new DataRecord(7L, true, "String123", false, SomeEnum.ENUM_1);
+        var rec = new DataRecord(
+                7L,
+                true,
+                "String123",
+                false,
+                SomeEnum.ENUM_1,
+                UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88")
+        );
         var objectsUnderTest = new Object[]{rec, 33};
 
         // when
@@ -122,6 +136,7 @@ public class TupleTransformerTest {
         assertThat(result.dataRecord.string).isEqualTo("String123");
         assertThat(result.dataRecord.booleanPrimitive).isFalse();
         assertThat(result.dataRecord.anEnum).isEqualTo(SomeEnum.ENUM_1);
+        assertThat(result.dataRecord.uuid).isEqualTo(UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88"));
         assertThat(result.someOtherField).isEqualTo(33);
     }
 
@@ -130,7 +145,9 @@ public class TupleTransformerTest {
     void createRecord_givenMixedObjects_someNullValues_shouldPass() {
         // given
         var tupleTransformer = new TupleTransformer<>(DataRecord.class);
-        var objectsUnderTest = new Object[]{null, null, "String123", false, null};
+        var objectsUnderTest = new Object[]{
+                null, null, "String123", false, null, UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88")
+        };
 
         // when
         var result = tupleTransformer.transform(objectsUnderTest);
@@ -141,6 +158,7 @@ public class TupleTransformerTest {
         assertThat(result.string).isEqualTo("String123");
         assertThat(result.booleanPrimitive).isFalse();
         assertThat(result.anEnum).isNull();
+        assertThat(result.uuid).isEqualTo(UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88"));
     }
 
 
@@ -148,8 +166,22 @@ public class TupleTransformerTest {
     void createRecordInsideAClass_givenMixedObjectsAsList_shouldPass() {
         // given
         var tupleTransformer = new TupleTransformer<>(DataRecordParentWithList.class);
-        var rec1 = new DataRecord(7L, true, "String111", false, SomeEnum.ENUM_1);
-        var rec2 = new DataRecord(0L, null, "String222", false, SomeEnum.ENUM_2);
+        var rec1 = new DataRecord(
+                7L,
+                true,
+                "String111",
+                false,
+                SomeEnum.ENUM_1,
+                UUID.fromString("c3221989-b494-4227-b7e1-2f84fdc048f7")
+        );
+        var rec2 = new DataRecord(
+                0L,
+                null,
+                "String222",
+                false,
+                SomeEnum.ENUM_2,
+                UUID.fromString("25f6e0c2-4628-43a1-a703-e80926496fd1")
+        );
         var list = new ArrayList<>();
         list.add(rec1);
         list.add(rec2);
@@ -159,19 +191,21 @@ public class TupleTransformerTest {
         var result = tupleTransformer.transform(objectsUnderTest);
 
         // then
-        var firstRecord = result.dataRecords.get(0);
+        var firstRecord = result.dataRecords.getFirst();
         assertThat(firstRecord.longField).isEqualTo(7L);
         assertThat(firstRecord.booleanBoxed).isTrue();
         assertThat(firstRecord.string).isEqualTo("String111");
         assertThat(firstRecord.booleanPrimitive).isFalse();
         assertThat(firstRecord.anEnum).isEqualTo(SomeEnum.ENUM_1);
+        assertThat(firstRecord.uuid).isEqualTo(UUID.fromString("c3221989-b494-4227-b7e1-2f84fdc048f7"));
 
         var secondRecord = result.dataRecords.get(1);
-        assertThat(secondRecord.longField).isEqualTo(0L);
+        assertThat(secondRecord.longField).isZero();
         assertThat(secondRecord.booleanBoxed).isNull();
         assertThat(secondRecord.string).isEqualTo("String222");
         assertThat(secondRecord.booleanPrimitive).isFalse();
         assertThat(secondRecord.anEnum).isEqualTo(SomeEnum.ENUM_2);
+        assertThat(secondRecord.uuid).isEqualTo(UUID.fromString("25f6e0c2-4628-43a1-a703-e80926496fd1"));
 
         assertThat(result.someOtherField).isEqualTo(33);
     }
@@ -189,7 +223,8 @@ public class TupleTransformerTest {
             Boolean booleanBoxed,
             String string,
             boolean booleanPrimitive,
-            SomeEnum anEnum
+            SomeEnum anEnum,
+            UUID uuid
     ) {
     }
 

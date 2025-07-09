@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithEmailAddress;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithIban;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithScaledBigDecimal;
+import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithUUID;
 import it.aboutbits.springboot.toolbox.support.HttpTest;
 import it.aboutbits.springboot.toolbox.type.EmailAddress;
 import it.aboutbits.springboot.toolbox.type.Iban;
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -161,6 +164,54 @@ public class CustomTypeBindingsForControllerTest {
             );
 
             var actual = objectMapper.readValue(resultAsString, BodyWithScaledBigDecimal.class);
+
+            assertThat(actual).isEqualTo(value);
+        }
+    }
+
+    @Nested
+    class UUIDType {
+        @ParameterizedTest
+        @ValueSource(strings = {"d414ed05-c370-445a-8430-1fd1021c9856", "0682a03d-3618-470f-a8f9-78e4a52f1a2c"})
+        void UUIDAsPathVariable(String uuidStringValue) throws Exception {
+            var value = UUID.fromString(uuidStringValue);
+
+            var resultAsString = performGetAndReturnResult(
+                    String.format("/test/type/UUID/as-path-variable/%s", value)
+            );
+
+            var actual = objectMapper.readValue(resultAsString, UUID.class);
+
+            assertThat(actual).isEqualTo(value);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"d414ed05-c370-445a-8430-1fd1021c9856", "0682a03d-3618-470f-a8f9-78e4a52f1a2c"})
+        void UUIDAsRequestParameter(String uuidStringValue) throws Exception {
+            var value = UUID.fromString(uuidStringValue);
+
+            var resultAsString = performGetAndReturnResult(
+                    String.format("/test/type/UUID/as-request-parameter?value=%s", value)
+            );
+
+            var actual = objectMapper.readValue(resultAsString, UUID.class);
+
+            assertThat(actual).isEqualTo(value);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"d414ed05-c370-445a-8430-1fd1021c9856", "0682a03d-3618-470f-a8f9-78e4a52f1a2c"})
+        void UUIDAsBody(String uuidStringValue) throws Exception {
+            var value = new BodyWithUUID(
+                    UUID.fromString(uuidStringValue)
+            );
+
+            var resultAsString = performPostAndReturnResult(
+                    "/test/type/UUID/as-body",
+                    value
+            );
+
+            var actual = objectMapper.readValue(resultAsString, BodyWithUUID.class);
 
             assertThat(actual).isEqualTo(value);
         }

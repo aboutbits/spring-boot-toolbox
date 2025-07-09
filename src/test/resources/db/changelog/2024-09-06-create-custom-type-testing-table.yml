@@ -25,3 +25,9 @@ databaseChangeLog:
               - column:
                   name: referenced_id
                   type: bigint
+              - column:
+                  name: uuid
+                  type: uuid
+              - column:
+                  name: uuid_as_string
+                  type: char(36)

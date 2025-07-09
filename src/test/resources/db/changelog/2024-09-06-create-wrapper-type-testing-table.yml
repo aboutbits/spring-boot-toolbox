@@ -50,6 +50,12 @@ databaseChangeLog:
                   name: bool_value
                   type: boolean
               - column:
+                  name: uuid_value
+                  type: uuid
+              - column:
+                  name: uuid_value_as_string
+                  type: char(36)
+              - column:
                   name: big_decimal_value_class
                   type: double
               - column:
@@ -85,3 +91,9 @@ databaseChangeLog:
               - column:
                   name: bool_value_class
                   type: boolean
+              - column:
+                  name: uuid_value_class
+                  type: uuid
+              - column:
+                  name: uuid_value_class_as_string
+                  type: char(36)

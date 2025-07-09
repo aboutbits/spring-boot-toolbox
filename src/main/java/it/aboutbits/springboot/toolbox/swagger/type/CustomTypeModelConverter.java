@@ -14,6 +14,7 @@ import lombok.SneakyThrows;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Iterator;
+import java.util.UUID;
 
 public class CustomTypeModelConverter implements ModelConverter {
 
@@ -70,6 +71,9 @@ public class CustomTypeModelConverter implements ModelConverter {
                 }
                 if (Character.class.isAssignableFrom(wrappedType)) {
                     result = context.resolve(new AnnotatedType(Character.TYPE));
+                }
+                if (UUID.class.isAssignableFrom(wrappedType)) {
+                    result = context.resolve(new AnnotatedType(UUID.class));
                 }
 
                 if (result != null) {

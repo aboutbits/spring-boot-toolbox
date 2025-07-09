@@ -12,6 +12,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.UUID;
 import java.util.function.Function;
 
 public final class CustomTypePropertyEditor<T extends CustomType<?>> extends PropertyEditorSupport {
@@ -99,6 +100,9 @@ public final class CustomTypePropertyEditor<T extends CustomType<?>> extends Pro
         }
         if (ScaledBigDecimal.class.isAssignableFrom(wrappedType)) {
             return ScaledBigDecimal::new;
+        }
+        if (UUID.class.isAssignableFrom(wrappedType)) {
+            return UUID::fromString;
         }
         throw new IllegalArgumentException("Unable to convert text to type: " + wrappedType.getName());
     }
