@@ -207,6 +207,7 @@ public record ScaledBigDecimal(
     }
 
     @Override
+    @NonNull
     public String toString() {
         return this.value().toString();
     }
@@ -232,5 +233,49 @@ public record ScaledBigDecimal(
     @Override
     public int compareTo(@NonNull ScaledBigDecimal o) {
         return this.value().compareTo(o.value());
+    }
+
+    /**
+     * @deprecated Allow drop-in-replacement of ScaledBigDecimal in the original project.
+     * This is temporary. We need to avoid changing any rounding logic at the moment.
+     */
+    @Deprecated
+    @NonNull
+    public BigDecimal toCurrency() {
+        return this.value().setScale(2, RoundingMode.HALF_UP);
+    }
+
+    /**
+     * @deprecated Allow drop-in-replacement of ScaledBigDecimal in the original project.
+     * This is temporary. We need to avoid changing any rounding logic at the moment.
+     */
+    @Deprecated
+    @NonNull
+    public ScaledBigDecimal roundToCurrency() {
+        return new ScaledBigDecimal(this.value().setScale(2, RoundingMode.HALF_UP));
+    }
+
+    public int intValue() {
+        return this.value().intValue();
+    }
+
+    public long longValue() {
+        return this.value().longValue();
+    }
+
+    public float floatValue() {
+        return this.value().floatValue();
+    }
+
+    public double doubleValue() {
+        return this.value().doubleValue();
+    }
+
+    public byte byteValue() {
+        return (byte) intValue();
+    }
+
+    public short shortValue() {
+        return (short) intValue();
     }
 }
