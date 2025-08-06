@@ -1,4 +1,4 @@
-package it.aboutbits.springboot.toolbox.swagger.type;
+package it.aboutbits.springboot.toolbox.swagger.customization.custom_type;
 
 import com.fasterxml.jackson.databind.type.SimpleType;
 import io.swagger.v3.core.converter.AnnotatedType;

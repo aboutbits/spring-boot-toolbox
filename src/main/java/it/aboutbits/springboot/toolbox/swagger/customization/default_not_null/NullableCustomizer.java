@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class NullableCustomizer implements OpenApiCustomizer {
+    public static final String NULLABLE_MARKER = "NULLABLE";
+
     @Override
     @SuppressWarnings("unchecked")
     public void customise(OpenAPI openApi) {
@@ -36,12 +38,40 @@ public class NullableCustomizer implements OpenApiCustomizer {
 
     private static void processProperties(Map<String, Schema> properties, ArrayList<String> requiredProperties) {
         properties.forEach((propertyName, property) -> {
-            if (property.getTitle() == null || !property.getTitle().equals("NULLABLE")) {
+            var isNullable = isNullable(property);
+
+            if (!isNullable) {
                 requiredProperties.add(propertyName);
+            } else {
+                requiredProperties.remove(propertyName);
             }
-            if (property.getTitle() != null && property.getTitle().equals("NULLABLE")) {
+            if (property.getTitle() != null && property.getTitle().equals(NULLABLE_MARKER)) {
                 property.setTitle(null);
             }
+            if (property.get$ref() != null) {
+                property.set$ref(property.get$ref().replace(NULLABLE_MARKER, ""));
+            }
+            if (property.getItems() != null && property.getItems().get$ref() != null) {
+                property.getItems().set$ref(property.getItems().get$ref().replace(NULLABLE_MARKER, ""));
+            }
         });
+    }
+
+    private static boolean isNullable(Schema<?> property) {
+        if (property.getTitle() != null && property.getTitle().equals(NULLABLE_MARKER)) {
+            return true;
+        }
+
+        if (property.get$ref() != null && property.get$ref().endsWith(NULLABLE_MARKER)) {
+            return true;
+        }
+
+        if (property.getItems() != null && property.getItems().get$ref() != null && property.getItems()
+                .get$ref()
+                .endsWith("?nullable=true")) {
+            return true;
+        }
+
+        return false;
     }
 }
