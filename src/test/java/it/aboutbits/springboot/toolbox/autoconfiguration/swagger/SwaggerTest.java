@@ -1,6 +1,6 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.swagger;
 
-import it.aboutbits.springboot.toolbox.support.HttpTest;
+import it.aboutbits.springboot.toolbox._support.HttpTest;
 import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

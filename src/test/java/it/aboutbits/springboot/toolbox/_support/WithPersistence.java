@@ -1,6 +1,6 @@
-package it.aboutbits.springboot.toolbox.support;
+package it.aboutbits.springboot.toolbox._support;
 
-import it.aboutbits.springboot.toolbox.support.persistence.WithPostgres;
+import it.aboutbits.springboot.toolbox._support.persistence.WithPostgres;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

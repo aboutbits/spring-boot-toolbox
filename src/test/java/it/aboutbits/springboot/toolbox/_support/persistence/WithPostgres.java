@@ -1,4 +1,4 @@
-package it.aboutbits.springboot.toolbox.support.persistence;
+package it.aboutbits.springboot.toolbox._support.persistence;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.ResourceAccessMode;

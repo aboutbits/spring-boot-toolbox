@@ -1,10 +1,10 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.persistence;
 
+import it.aboutbits.springboot.toolbox._support.ApplicationTest;
+import it.aboutbits.springboot.toolbox._support.WithPersistence;
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.CustomTypeTestModel;
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.CustomTypeTestModelRepository;
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.ReferencedTestModel;
-import it.aboutbits.springboot.toolbox.support.ApplicationTest;
-import it.aboutbits.springboot.toolbox.support.WithPersistence;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
