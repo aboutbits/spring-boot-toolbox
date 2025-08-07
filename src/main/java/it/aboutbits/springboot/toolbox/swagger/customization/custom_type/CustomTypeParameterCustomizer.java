@@ -64,7 +64,7 @@ public class CustomTypeParameterCustomizer implements ParameterCustomizer {
 
         if (optionalClass.isEmpty()) {
             log.error("Can not resolve type for schema reference: {}", schemaRef);
-            return parameter; // throw new RuntimeException();
+            return parameter;
         }
 
 
