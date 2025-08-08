@@ -8,7 +8,7 @@ import it.aboutbits.springboot.toolbox.type.identity.EntityId;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 
-import java.util.Optional;
+import static it.aboutbits.springboot.toolbox.swagger.customization.custom_type.SchemaUtil.getClassFromSchemaReference;
 
 @Slf4j
 public class CustomTypeOpenApiCustomizerForCodeGenerator implements OpenApiCustomizer {
@@ -17,14 +17,6 @@ public class CustomTypeOpenApiCustomizerForCodeGenerator implements OpenApiCusto
         openApi.getComponents().getSchemas().forEach(this::updateSchema);
     }
 
-    public Optional<Class<?>> getClassFromSchemaReference(String schemaRef) {
-        try {
-            var className = schemaRef.replace("#/components/schemas/", "");
-            return Optional.of(Class.forName(className));
-        } catch (ClassNotFoundException e) {
-            return Optional.empty();
-        }
-    }
 
     private void updateSchema(String fqn, Schema<?> schema) {
         var type = getClassFromSchemaReference(fqn);

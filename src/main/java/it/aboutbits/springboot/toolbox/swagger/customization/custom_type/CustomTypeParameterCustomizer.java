@@ -15,23 +15,12 @@ import org.springframework.core.MethodParameter;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Optional;
 import java.util.UUID;
+
+import static it.aboutbits.springboot.toolbox.swagger.customization.custom_type.SchemaUtil.getClassFromSchemaReference;
 
 @Slf4j
 public class CustomTypeParameterCustomizer implements ParameterCustomizer {
-
-    public Optional<Class<?>> getClassFromSchemaReference(String schemaRef) {
-        try {
-            var className = schemaRef.replace("#/components/schemas/", "");
-            return Optional.of(Class.forName(className));
-        } catch (ClassNotFoundException e) {
-            // Log the error if needed
-            return Optional.empty();
-        }
-    }
-
-
     @SuppressWarnings("checkstyle:MethodLength")
     @Override
     @SneakyThrows(NoSuchMethodException.class)

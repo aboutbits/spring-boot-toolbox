@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.customizers.ParameterCustomizer;
 import org.springframework.core.MethodParameter;
 
-import java.util.Optional;
+import static it.aboutbits.springboot.toolbox.swagger.customization.custom_type.SchemaUtil.getClassFromSchemaReference;
 
 @Slf4j
 public class CustomTypeParameterCustomizerForCodeGenerator implements ParameterCustomizer {
@@ -57,14 +57,5 @@ public class CustomTypeParameterCustomizerForCodeGenerator implements ParameterC
         }
 
         return parameter;
-    }
-
-    public Optional<Class<?>> getClassFromSchemaReference(String schemaRef) {
-        try {
-            var className = schemaRef.replace("#/components/schemas/", "");
-            return Optional.of(Class.forName(className));
-        } catch (ClassNotFoundException e) {
-            return Optional.empty();
-        }
     }
 }
