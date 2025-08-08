@@ -1,8 +1,8 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.persistence;
 
+import it.aboutbits.springboot.toolbox._support.ApplicationTest;
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.CustomTypeTestModel;
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.CustomTypeTestModelRepository;
-import it.aboutbits.springboot.toolbox.support.ApplicationTest;
 import it.aboutbits.springboot.toolbox.type.EmailAddress;
 import it.aboutbits.springboot.toolbox.type.Iban;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;

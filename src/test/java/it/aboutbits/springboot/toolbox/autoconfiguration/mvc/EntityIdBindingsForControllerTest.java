@@ -1,9 +1,9 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.mvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.aboutbits.springboot.toolbox._support.HttpTest;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithEntityId;
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.CustomTypeTestModel;
-import it.aboutbits.springboot.toolbox.support.HttpTest;
 import lombok.NonNull;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

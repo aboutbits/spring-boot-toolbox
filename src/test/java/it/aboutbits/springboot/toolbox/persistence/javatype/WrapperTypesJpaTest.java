@@ -1,5 +1,6 @@
 package it.aboutbits.springboot.toolbox.persistence.javatype;
 
+import it.aboutbits.springboot.toolbox._support.ApplicationTest;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.jpa.WrapperTypesModel;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.jpa.WrapperTypesModelRepository;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBigDecimalClass;
@@ -28,7 +29,6 @@ import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapString
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapStringRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapUUIDClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapUUIDRecord;
-import it.aboutbits.springboot.toolbox.support.ApplicationTest;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

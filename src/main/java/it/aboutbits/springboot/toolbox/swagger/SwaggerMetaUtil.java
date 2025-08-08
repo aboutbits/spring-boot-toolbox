@@ -47,6 +47,14 @@ public final class SwaggerMetaUtil {
     }
 
     @SneakyThrows(JsonProcessingException.class)
+    public static String setIsCustomType(@Nullable String currentMeta, boolean value) {
+        var meta = getSwaggerMeta(currentMeta);
+        meta.setIsCustomType(!value ? null : true);
+
+        return OBJECT_MAPPER.writeValueAsString(meta);
+    }
+
+    @SneakyThrows(JsonProcessingException.class)
     public static String setIsNestedStructure(@Nullable String currentMeta, boolean value) {
         var meta = getSwaggerMeta(currentMeta);
         meta.setIsNestedStructure(!value ? null : true);

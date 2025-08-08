@@ -1,6 +1,6 @@
-package it.aboutbits.springboot.toolbox.support;
+package it.aboutbits.springboot.toolbox._support;
 
-import it.aboutbits.springboot.toolbox.support.persistence.WithPostgres;
+import it.aboutbits.springboot.toolbox._support.persistence.WithPostgres;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.lang.annotation.ElementType;

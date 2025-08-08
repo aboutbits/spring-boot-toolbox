@@ -12,6 +12,8 @@ public class SwaggerMeta {
     private String originalTypeFqn = null;
     @JsonProperty("isIdentity")
     private Boolean isIdentity = null;
+    @JsonProperty("isCustomType")
+    private Boolean isCustomType = null;
     @JsonProperty("isNestedStructure")
     private Boolean isNestedStructure = null;
     @JsonProperty("isMap")

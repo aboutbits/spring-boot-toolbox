@@ -1,4 +1,4 @@
-package it.aboutbits.springboot.toolbox.support;
+package it.aboutbits.springboot.toolbox._support;
 
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 

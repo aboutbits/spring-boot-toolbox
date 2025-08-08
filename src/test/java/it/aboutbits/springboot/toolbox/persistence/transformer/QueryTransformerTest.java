@@ -1,8 +1,8 @@
 package it.aboutbits.springboot.toolbox.persistence.transformer;
 
+import it.aboutbits.springboot.toolbox._support.ApplicationTest;
 import it.aboutbits.springboot.toolbox.persistence.transformer.impl.jpa.QueryTransformerTestModel;
 import it.aboutbits.springboot.toolbox.persistence.transformer.impl.jpa.QueryTransformerTestModelRepository;
-import it.aboutbits.springboot.toolbox.support.ApplicationTest;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
@@ -170,10 +170,12 @@ public class QueryTransformerTest {
         void givenQueryWithOneResult_shouldFail() {
             var query = entityManager.createQuery("select q, 'xxx' from QueryTransformerTestModel q");
 
-            assertThrows(EntityNotFoundException.class, () -> QueryTransformer
-                    .of(entityManager, TestModelContainer.class)
-                    .withQuery(query)
-                    .asSingleResultOrFail());
+            assertThrows(
+                    EntityNotFoundException.class, () -> QueryTransformer
+                            .of(entityManager, TestModelContainer.class)
+                            .withQuery(query)
+                            .asSingleResultOrFail()
+            );
         }
     }
 

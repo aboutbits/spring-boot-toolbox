@@ -1,11 +1,11 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.mvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.aboutbits.springboot.toolbox._support.HttpTest;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithEmailAddress;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithIban;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithScaledBigDecimal;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithUUID;
-import it.aboutbits.springboot.toolbox.support.HttpTest;
 import it.aboutbits.springboot.toolbox.type.EmailAddress;
 import it.aboutbits.springboot.toolbox.type.Iban;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;

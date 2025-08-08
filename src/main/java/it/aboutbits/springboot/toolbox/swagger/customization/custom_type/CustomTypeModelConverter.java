@@ -1,4 +1,4 @@
-package it.aboutbits.springboot.toolbox.swagger.type;
+package it.aboutbits.springboot.toolbox.swagger.customization.custom_type;
 
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
