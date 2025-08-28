@@ -97,3 +97,9 @@ databaseChangeLog:
               - column:
                   name: uuid_value_class_as_string
                   type: char(36)
+              - column:
+                  name: enum_value
+                  type: text
+              - column:
+                  name: enum_value_class
+                  type: text
