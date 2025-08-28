@@ -3,6 +3,7 @@ package it.aboutbits.springboot.toolbox.persistence.javatype;
 import it.aboutbits.springboot.toolbox._support.ApplicationTest;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.jpa.WrapperTypesModel;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.jpa.WrapperTypesModelRepository;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.SampleEnum;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBigDecimalClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBigDecimalRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapBigIntegerClass;
@@ -15,6 +16,8 @@ import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapCharac
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapCharacterRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapDoubleClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapDoubleRecord;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapEnumClass;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapEnumRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapFloatClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapFloatRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapIntegerClass;
@@ -33,6 +36,7 @@ import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -521,6 +525,40 @@ public class WrapperTypesJpaTest {
                         .isEqualTo(savedItem);
             }
         }
+
+        @Nested
+        class WrapEnumRecordType {
+            @Test
+            void givenNull_inAndOut_shouldSucceed() {
+                var item = new WrapperTypesModel();
+                item.setEnumValue(null);
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByEnumValue(null);
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+
+            @ParameterizedTest
+            @EnumSource(SampleEnum.class)
+            void givenValues_inAndOut_shouldSucceed(SampleEnum enumValue) {
+                var item = new WrapperTypesModel();
+                item.setEnumValue(new WrapEnumRecord(enumValue));
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByEnumValue(savedItem.getEnumValue());
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+        }
     }
 
     @Nested
@@ -990,6 +1028,40 @@ public class WrapperTypesJpaTest {
                 var savedItem = repository.save(item);
 
                 var retrievedItem = repository.findByUuidValueClassAsString(savedItem.getUuidValueClassAsString());
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+        }
+
+        @Nested
+        class WrapEnumClassType {
+            @Test
+            void givenNull_inAndOut_shouldSucceed() {
+                var item = new WrapperTypesModel();
+                item.setEnumValueClass(null);
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByEnumValueClass(null);
+
+                assertThat(retrievedItem).isPresent()
+                        .get()
+                        .usingRecursiveComparison()
+                        .isEqualTo(savedItem);
+            }
+
+            @ParameterizedTest
+            @EnumSource(SampleEnum.class)
+            void givenValues_inAndOut_shouldSucceed(SampleEnum enumValue) {
+                var item = new WrapperTypesModel();
+                item.setEnumValueClass(new WrapEnumClass(enumValue));
+
+                var savedItem = repository.save(item);
+
+                var retrievedItem = repository.findByEnumValueClass(savedItem.getEnumValueClass());
 
                 assertThat(retrievedItem).isPresent()
                         .get()

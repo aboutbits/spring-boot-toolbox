@@ -104,6 +104,25 @@ public final class CustomTypePropertyEditor<T extends CustomType<?>> extends Pro
         if (UUID.class.isAssignableFrom(wrappedType)) {
             return UUID::fromString;
         }
+        if (Enum.class.isAssignableFrom(wrappedType)) {
+            return toEnumConverter(wrappedType);
+        }
         throw new IllegalArgumentException("Unable to convert text to type: " + wrappedType.getName());
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Function<String, Object> toEnumConverter(Class<?> wrappedType) {
+        var enumClass = (Class<? extends Enum<?>>) wrappedType.asSubclass(Enum.class);
+
+        return text -> {
+            if (text == null) {
+                return null;
+            }
+            try {
+                return Enum.valueOf((Class<? extends Enum>) enumClass, text);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Unable to convert text to enum: " + enumClass.getName(), e);
+            }
+        };
     }
 }

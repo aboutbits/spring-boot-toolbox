@@ -14,6 +14,8 @@ import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapCh
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapCharacterRecordJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapDoubleClassJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapDoubleRecordJavaType;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapEnumClassJavaType;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapEnumRecordJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapFloatClassJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapFloatRecordJavaType;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.javatype.WrapIntegerClassJavaType;
@@ -40,6 +42,8 @@ import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapCharac
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapCharacterRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapDoubleClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapDoubleRecord;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapEnumClass;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapEnumRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapFloatClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapFloatRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapIntegerClass;
@@ -137,6 +141,10 @@ public class WrapperTypesModel implements Identified<WrapperTypesModel.ID> {
     private WrapUUIDRecord uuidValueAsString;
 
     @SuppressWarnings("JpaAttributeTypeInspection")
+    @JavaType(WrapEnumRecordJavaType.class)
+    private WrapEnumRecord enumValue;
+
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @JavaType(WrapBigDecimalClassJavaType.class)
     private WrapBigDecimalClass bigDecimalValueClass;
 
@@ -193,6 +201,10 @@ public class WrapperTypesModel implements Identified<WrapperTypesModel.ID> {
     @JavaType(WrapUUIDClassJavaType.class)
     @JdbcType(CharJdbcType.class)
     private WrapUUIDClass uuidValueClassAsString;
+
+    @SuppressWarnings("JpaAttributeTypeInspection")
+    @JavaType(WrapEnumClassJavaType.class)
+    private WrapEnumClass enumValueClass;
 
     public record ID(
             Long value

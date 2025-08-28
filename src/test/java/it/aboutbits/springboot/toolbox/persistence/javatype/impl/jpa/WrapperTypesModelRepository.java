@@ -12,6 +12,8 @@ import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapCharac
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapCharacterRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapDoubleClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapDoubleRecord;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapEnumClass;
+import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapEnumRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapFloatClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapFloatRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapIntegerClass;
@@ -86,4 +88,8 @@ public interface WrapperTypesModelRepository extends JpaRepository<WrapperTypesM
     Optional<WrapperTypesModel> findByUuidValueClass(WrapUUIDClass value);
 
     Optional<WrapperTypesModel> findByUuidValueClassAsString(WrapUUIDClass value);
+
+    Optional<WrapperTypesModel> findByEnumValue(WrapEnumRecord value);
+
+    Optional<WrapperTypesModel> findByEnumValueClass(WrapEnumClass value);
 }

@@ -96,6 +96,9 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
         if (UUID.class.isAssignableFrom(wrappedType)) {
             return getUUIDConverter();
         }
+        if (Enum.class.isAssignableFrom(wrappedType) || wrappedType.isEnum()) {
+            return getEnumConverter(wrappedType);
+        }
         throw new CustomTypeDeserializerException("Value type not supported: " + wrappedType.getName());
     }
 
@@ -233,6 +236,27 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
                 return UUID.fromString(value);
             } catch (IOException e) {
                 throw new CustomTypeDeserializerException("Failed to read value as UUID.", e);
+            }
+        };
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Function<JsonParser, Object> getEnumConverter(Class<?> wrappedType) {
+        var enumClass = (Class<? extends Enum<?>>) wrappedType.asSubclass(Enum.class);
+        return jsonParser -> {
+            try {
+                String value = jsonParser.getValueAsString();
+                if (value == null) {
+                    return null;
+                }
+                return Enum.valueOf((Class<? extends Enum>) enumClass, value);
+            } catch (IllegalArgumentException e) {
+                throw new CustomTypeDeserializerException(
+                        "Failed to read value as Enum: " + enumClass.getName(),
+                        e
+                );
+            } catch (IOException e) {
+                throw new CustomTypeDeserializerException("Failed to read value as Enum.", e);
             }
         };
     }

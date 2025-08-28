@@ -26,6 +26,7 @@ public class CustomTypeSerializer extends JsonSerializer<CustomType<?>> {
         switch (value) {
             case String stringValue -> jsonGenerator.writeString(stringValue);
             case UUID uuidValue -> jsonGenerator.writeString(uuidValue.toString());
+            case Enum<?> enumValue -> jsonGenerator.writeString(enumValue.name());
             case null -> jsonGenerator.writeNull();
             default -> jsonGenerator.writeRawValue(String.valueOf(value));
         }
