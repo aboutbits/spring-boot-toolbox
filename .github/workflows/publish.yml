@@ -43,7 +43,7 @@ jobs:
             github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: '${{ github.event.inputs.version }}',
-              name: 'Release ${{ github.event.inputs.version }}',
+              tag_name: 'v${{ github.event.inputs.version }}',
+              name: 'v${{ github.event.inputs.version }}',
               prerelease: '${{ github.event.inputs.version }}'.includes('RC')
             })
