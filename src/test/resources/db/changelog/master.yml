@@ -8,3 +8,6 @@ databaseChangeLog:
   - include:
       file: 2024-09-26-create-query-transformer-testing-table.yml
       relativeToChangelogFile: true
+  - include:
+      file: 2025-08-29-create-custom-type-enum-testing-table.yml
+      relativeToChangelogFile: true
