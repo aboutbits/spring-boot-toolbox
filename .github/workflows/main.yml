@@ -12,7 +12,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
-      - uses: aboutbits/github-actions-java/setup@v3
+      - uses: aboutbits/github-actions-java/setup-with-maven@v4
         with:
           java-version: 21
       - name: Test
