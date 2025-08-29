@@ -1,6 +1,8 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.mvc.controller;
 
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithEntityId;
+import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithEnumEntityId;
+import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.CustomTypeEnumTestModel;
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.CustomTypeTestModel;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +27,21 @@ public class EntityIdTestController {
 
     @PostMapping("/CustomTypeTestModel.ID/as-body")
     public BodyWithEntityId customTypeTestModelIdAsBody(@RequestBody BodyWithEntityId value) {
+        return value;
+    }
+
+    @GetMapping("/CustomTypeEnumTestModel.ID/as-path-variable/{value}")
+    public CustomTypeEnumTestModel.ID customTypeEnumTestModelIdAsPathVariable(@PathVariable CustomTypeEnumTestModel.ID value) {
+        return value;
+    }
+
+    @GetMapping("/CustomTypeEnumTestModel.ID/as-request-parameter")
+    public CustomTypeEnumTestModel.ID customTypeEnumTestModelIdAsRequestParameter(@RequestParam CustomTypeEnumTestModel.ID value) {
+        return value;
+    }
+
+    @PostMapping("/CustomTypeEnumTestModel.ID/as-body")
+    public BodyWithEnumEntityId customTypeEnumTestModelIdAsBody(@RequestBody BodyWithEnumEntityId value) {
         return value;
     }
 }

@@ -3,6 +3,8 @@ package it.aboutbits.springboot.toolbox.autoconfiguration.mvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.aboutbits.springboot.toolbox._support.HttpTest;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithEntityId;
+import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithEnumEntityId;
+import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.CustomTypeEnumTestModel;
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.CustomTypeTestModel;
 import lombok.NonNull;
 import org.junit.jupiter.api.Nested;
@@ -62,6 +64,51 @@ public class EntityIdBindingsForControllerTest {
             );
 
             var actual = objectMapper.readValue(resultAsString, BodyWithEntityId.class);
+
+            assertThat(actual).isEqualTo(value);
+        }
+    }
+
+    @Nested
+    class EnumEntityId {
+        @Test
+        void emailAddressAsPathVariable() throws Exception {
+            var value = new CustomTypeEnumTestModel.ID(CustomTypeEnumTestModel.CustomTypeEnum.ENUM_FIRST);
+
+            var resultAsString = performGetAndReturnResult(
+                    String.format("/test/entity-id/CustomTypeEnumTestModel.ID/as-path-variable/%s", value)
+            );
+
+            var actual = objectMapper.readValue(resultAsString, CustomTypeEnumTestModel.ID.class);
+
+            assertThat(actual).isEqualTo(value);
+        }
+
+        @Test
+        void emailAddressAsRequestParameter() throws Exception {
+            var value = new CustomTypeEnumTestModel.ID(CustomTypeEnumTestModel.CustomTypeEnum.ENUM_OTHER);
+
+            var resultAsString = performGetAndReturnResult(
+                    String.format("/test/entity-id/CustomTypeEnumTestModel.ID/as-request-parameter?value=%s", value)
+            );
+
+            var actual = objectMapper.readValue(resultAsString, CustomTypeEnumTestModel.ID.class);
+
+            assertThat(actual).isEqualTo(value);
+        }
+
+        @Test
+        void emailAddressAsBody() throws Exception {
+            var value = new BodyWithEnumEntityId(
+                    new CustomTypeEnumTestModel.ID(CustomTypeEnumTestModel.CustomTypeEnum.ENUM_LAST)
+            );
+
+            var resultAsString = performPostAndReturnResult(
+                    "/test/entity-id/CustomTypeEnumTestModel.ID/as-body",
+                    value
+            );
+
+            var actual = objectMapper.readValue(resultAsString, BodyWithEnumEntityId.class);
 
             assertThat(actual).isEqualTo(value);
         }

@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      author: Thomas Sapelza
+      id: 2025-08-29-create-custom-type-enum-testing-table
+      changes:
+        - createTable:
+            tableName: custom_type_enum_test_model
+            columns:
+              - column:
+                  name: id
+                  type: text
+                  constraints:
+                    nullable: false
+                    primaryKey: true
