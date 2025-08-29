@@ -23,15 +23,15 @@ jobs:
       - uses: aboutbits/github-actions-java/setup-with-maven@v4
         with:
           java-version: 21
+      - uses: aboutbits/github-actions-java/set-version-with-maven@v4
+        with:
+          version: "${{ github.event.inputs.version }}"
       - name: Publish package
         env:
           GITHUB_USER_NAME: ${{ github.actor }}
           GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: mvn -s $GITHUB_WORKSPACE/.github/workflows/maven-settings.xml --batch-mode deploy
         shell: bash
-      - uses: aboutbits/github-actions-java/set-version-with-maven@v4
-        with:
-          version: "${{ github.event.inputs.version }}"
       - uses: aboutbits/github-actions-base/git-commit-and-push-all@v2
         with:
           message: '${{ github.event.inputs.version }}'
