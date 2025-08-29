@@ -4,10 +4,8 @@ import com.fasterxml.jackson.databind.type.SimpleType;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.oas.models.media.Schema;
 import it.aboutbits.springboot.toolbox.swagger.SwaggerMetaUtil;
-import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.customizers.PropertyCustomizer;
 
-@Slf4j
 public class CustomTypePropertyCustomizerForCodeGenerator implements PropertyCustomizer {
     @Override
     public Schema<?> customize(Schema property, AnnotatedType annotatedType) {

@@ -4,7 +4,6 @@ import it.aboutbits.springboot.toolbox.jackson.CustomTypeDeserializer;
 import it.aboutbits.springboot.toolbox.jackson.CustomTypeSerializer;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import it.aboutbits.springboot.toolbox.web.CustomTypePropertyEditor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.InitBinder;
 
 import java.util.Set;
 
-@Slf4j
 @Configuration
 public class CustomTypeConfiguration {
     @ControllerAdvice
