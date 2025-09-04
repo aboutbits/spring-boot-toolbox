@@ -8,8 +8,10 @@ import org.springframework.data.util.Streamable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -366,6 +368,114 @@ class CollectUtilTest {
 
             // then
             assertTrue(result.isEmpty());
+        }
+    }
+
+    @Nested
+    class CollectToMap {
+        @Test
+        @DisplayName("Should convert Collection to Map using key and value mappers")
+        void shouldConvertCollectionToMapUsingMappers() {
+            // given
+            var items = Arrays.asList("a", "bb", "ccc");
+
+            // when
+            var result = CollectUtil.collectToMap(items, String::length, Function.identity());
+
+            // then
+            assertThat(result)
+                    .containsEntry(1, "a")
+                    .containsEntry(2, "bb")
+                    .containsEntry(3, "ccc")
+                    .hasSize(3);
+        }
+
+        @Test
+        @DisplayName("Should throw on duplicate keys according to Collectors.toMap default behavior")
+        void shouldThrowOnDuplicateKeys() {
+            // given
+            var items = Arrays.asList("a", "b"); // both have length of 1
+
+            // when / then
+            assertThatIllegalStateException().isThrownBy(
+                    () ->
+                            CollectUtil.collectToMap(
+                                    items,
+                                    String::length,
+                                    Function.identity()
+                            )
+            );
+        }
+
+        @Test
+        @DisplayName("Should convert Streamable to Map using key and value mappers")
+        void shouldConvertStreamableToMapUsingMappers() {
+            // given
+            var items = Streamable.of("x", "yy");
+
+            // when
+            var result = CollectUtil.collectToMap(items, String::length, Function.identity());
+
+            // then
+            assertThat(result)
+                    .containsEntry(1, "x")
+                    .containsEntry(2, "yy")
+                    .hasSize(2);
+        }
+
+        @Test
+        @DisplayName("Should convert Stream to Map using key and value mappers")
+        void shouldConvertStreamToMapUsingMappers() {
+            // given
+            var items = Stream.of("m", "nn");
+
+            // when
+            var result = CollectUtil.collectToMap(items, String::length, Function.identity());
+
+            // then
+            assertThat(result)
+                    .containsEntry(1, "m")
+                    .containsEntry(2, "nn")
+                    .hasSize(2);
+        }
+
+        @Test
+        @DisplayName("Should return empty map for empty collection")
+        void shouldReturnEmptyMapForEmptyCollection() {
+            // given
+            var items = Collections.<String>emptyList();
+
+            // when
+            var result = CollectUtil.collectToMap(items, String::length, Function.identity());
+
+            // then
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        @DisplayName("Should return empty map for empty streamable")
+        void shouldReturnEmptyMapForEmptyStreamable() {
+            // given
+            var items = Streamable.<String>empty();
+
+            // when
+            var result = CollectUtil.collectToMap(items, String::length, Function.identity());
+
+            // then
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        @DisplayName("Should return empty map for empty stream")
+        void shouldReturnEmptyMapForEmptyStream() {
+            // given
+            var items = Stream.<String>empty();
+
+            // when
+            var result = CollectUtil.collectToMap(items, String::length, Function.identity());
+
+            // then
+            assertThat(result).isEmpty();
         }
     }
 }

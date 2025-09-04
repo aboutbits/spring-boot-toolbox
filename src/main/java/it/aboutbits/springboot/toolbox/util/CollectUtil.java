@@ -5,6 +5,7 @@ import org.springframework.data.util.Streamable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -79,5 +80,35 @@ public final class CollectUtil {
         return items
                 .map(mapper)
                 .filter(Objects::nonNull);
+    }
+
+    public static <T, K, R> Map<K, R> collectToMap(
+            @NonNull Collection<T> items,
+            @NonNull Function<T, K> keyMapper,
+            @NonNull Function<T, R> valueMapper
+    ) {
+        return items.stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(keyMapper, valueMapper));
+    }
+
+    public static <T, K, R> Map<K, R> collectToMap(
+            @NonNull Streamable<T> items,
+            @NonNull Function<T, K> keyMapper,
+            @NonNull Function<T, R> valueMapper
+    ) {
+        return items.stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(keyMapper, valueMapper));
+    }
+
+    public static <T, K, R> Map<K, R> collectToMap(
+            @NonNull Stream<T> items,
+            @NonNull Function<T, K> keyMapper,
+            @NonNull Function<T, R> valueMapper
+    ) {
+        return items
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(keyMapper, valueMapper));
     }
 }
