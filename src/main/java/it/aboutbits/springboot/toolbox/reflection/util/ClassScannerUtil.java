@@ -1,9 +1,11 @@
 package it.aboutbits.springboot.toolbox.reflection.util;
 
 import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
 import lombok.NonNull;
 
+import java.lang.annotation.Annotation;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,6 +33,13 @@ public final class ClassScannerUtil {
                     .stream()
                     .map(item -> (Class<? extends T>) item)
                     .collect(Collectors.toSet());
+        }
+
+        public Set<Class<?>> getClassesAnnotatedWith(@NonNull Class<? extends Annotation> clazz) {
+            var result = scanResult.getClassesWithAnnotation(clazz);
+            return result.stream().map(
+                    ClassInfo::loadClass
+            ).collect(Collectors.toSet());
         }
 
         @Override
