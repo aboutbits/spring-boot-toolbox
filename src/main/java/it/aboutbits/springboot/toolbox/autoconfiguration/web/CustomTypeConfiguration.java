@@ -2,8 +2,11 @@ package it.aboutbits.springboot.toolbox.autoconfiguration.web;
 
 import it.aboutbits.springboot.toolbox.jackson.CustomTypeDeserializer;
 import it.aboutbits.springboot.toolbox.jackson.CustomTypeSerializer;
+import it.aboutbits.springboot.toolbox.jackson.EntityIdDeserializer;
 import it.aboutbits.springboot.toolbox.type.CustomType;
+import it.aboutbits.springboot.toolbox.type.identity.EntityId;
 import it.aboutbits.springboot.toolbox.web.CustomTypePropertyEditor;
+import it.aboutbits.springboot.toolbox.web.EntityIdPropertyEditor;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +32,7 @@ public class CustomTypeConfiguration {
             for (var clazz : types) {
                 binder.registerCustomEditor(clazz, new CustomTypePropertyEditor<>(clazz));
             }
+            binder.registerCustomEditor(EntityId.class, new EntityIdPropertyEditor());
         }
     }
 
@@ -41,8 +45,11 @@ public class CustomTypeConfiguration {
                 .toList()
                 .toArray(new CustomTypeDeserializer[types.size()]);
 
+
         return builder -> builder
                 .serializers(new CustomTypeSerializer())
-                .deserializers(deserializers);
+                .deserializers(deserializers)
+                .deserializerByType(EntityId.class, new EntityIdDeserializer());
     }
+
 }
