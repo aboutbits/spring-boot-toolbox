@@ -19,12 +19,18 @@ public final class ClassScannerUtil {
 
     public static final class ClassScanner implements AutoCloseable {
         private final ScanResult scanResult;
+        private final String[] packages;
 
         private ClassScanner(String... packages) {
+            this.packages = packages;
             this.scanResult = new ClassGraph()
                     .enableAllInfo()
                     .acceptPackages(packages)
                     .scan();
+        }
+
+        public String[] getScannedPackages() {
+            return packages;
         }
 
         @SuppressWarnings("unchecked")
