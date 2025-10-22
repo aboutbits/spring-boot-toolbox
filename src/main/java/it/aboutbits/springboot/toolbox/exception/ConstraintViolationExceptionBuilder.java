@@ -6,6 +6,7 @@ import jakarta.validation.Path;
 import jakarta.validation.metadata.ConstraintDescriptor;
 import lombok.NonNull;
 import org.hibernate.validator.internal.engine.path.PathImpl;
+import org.springframework.lang.Nullable;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +22,14 @@ public final class ConstraintViolationExceptionBuilder {
         return new ConstraintViolationExceptionBuilder();
     }
 
-    public ConstraintViolationExceptionBuilder causedBy(@NonNull String propertyPath, String message) {
+    public ConstraintViolationExceptionBuilder causedBy(
+            @NonNull String propertyPath,
+            @NonNull ExceptionMessageDefinition message
+    ) {
+        return causedBy(propertyPath, message.code());
+    }
+
+    public ConstraintViolationExceptionBuilder causedBy(@NonNull String propertyPath, @Nullable String message) {
         var constraintViolation = new CustomConstraintViolation(message, PathImpl.createPathFromString(propertyPath));
         constraintViolations.add(constraintViolation);
         return this;
