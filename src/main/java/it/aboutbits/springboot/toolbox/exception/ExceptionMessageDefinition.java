@@ -1,11 +1,11 @@
 package it.aboutbits.springboot.toolbox.exception;
 
 /**
- * Use this to create a class or enum that defines the exception messages.<br />
- * This way the messages can be referenced by a constant rather than using plain strings.
+ * Use this to create a class or enum that defines the exception messages.
+ * This way, the messages can be referenced by a constant rather than using plain strings.
  * <p>
- * eg.:
- * <pre>{@code
+ * Example:
+ * {@snippet :
  * @Getter
  * @Accessors(fluent = true)
  * @RequiredArgsConstructor
@@ -14,7 +14,7 @@ package it.aboutbits.springboot.toolbox.exception;
  *
  *     private final String code;
  * }
- * }</pre>
+ * }
  */
 public interface ExceptionMessageDefinition {
     String code();
