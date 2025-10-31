@@ -3,12 +3,11 @@ package it.aboutbits.springboot.toolbox.swagger.sort_parameter;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.StringSchema;
-import lombok.RequiredArgsConstructor;
+import it.aboutbits.springboot.toolbox.parameter.SortParameter;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 
-@RequiredArgsConstructor
 public class SortParameterCustomizer implements OpenApiCustomizer {
-    private final Class<?> sortParameterSortFieldClass;
+    private final String nameToMatch = "." + SortParameter.class.getSimpleName();
 
     @Override
     public void customise(OpenAPI openApi) {
@@ -29,7 +28,7 @@ public class SortParameterCustomizer implements OpenApiCustomizer {
                             continue;
                         }
 
-                        if (parameter.getSchema().get$ref().endsWith(".SortParameter")) {
+                        if (parameter.getSchema().get$ref().endsWith(nameToMatch)) {
                             parameter.required(false);
                             parameter.description(
                                     """
@@ -85,7 +84,7 @@ public class SortParameterCustomizer implements OpenApiCustomizer {
                             );
                             var itemSchema = new StringSchema()._default("property:asc:last");
                             itemSchema.setDescription(
-                                    "{\"originalTypeFqn\": \"%s\"}".formatted(sortParameterSortFieldClass.getName())
+                                    "{\"originalTypeFqn\": \"%s\"}".formatted(SortParameter.class.getName())
                             );
 
                             parameter.setSchema(new ArraySchema().items(
