@@ -75,7 +75,7 @@ public record SortParameter<T extends Enum<?> & SortParameter.Definition>(List<S
         return buildSort(stringMapping, true);
     }
 
-    // SonarLint: Replace this usage of 'Stream.collect(Collectors. toList())' with 'Stream.toList()' and ensure that the list is unmodified.
+    // SonarLint: Replace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()' and ensure that the list is unmodified.
     @SuppressWarnings("java:S6204")
     private Sort buildSort(@NonNull Map<String, String> mapping, boolean withDefault) {
         if (sortFields == null || sortFields.isEmpty()) {
