@@ -1,9 +1,12 @@
 package it.aboutbits.springboot.toolbox.parameter;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.experimental.Accessors;
 import org.springframework.data.domain.Sort;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,9 +18,24 @@ import java.util.stream.Stream;
  * based on enum constants and associated sort properties. Sorting criteria can be defined
  * with various configurations, including direction and null-handling behavior.
  */
-public record SortParameter<T extends Enum<?> & SortParameter.Definition>(List<SortField> sortFields) {
+@EqualsAndHashCode
+public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
     private static final String DEFAULT_SORT_PROPERTY = "id";
     private static final Sort.Direction DEFAULT_SORT_DIRETION = Sort.Direction.ASC;
+
+    @Accessors(fluent = true)
+    @Getter
+    private final List<SortField> sortFields = new ArrayList<>();
+
+    public SortParameter(List<SortField> sortFields) {
+        if (sortFields == null) {
+            return;
+        }
+        this.sortFields.addAll(sortFields);
+    }
+
+    private SortParameter() {
+    }
 
     /**
      * Creates a {@link SortParameter} that represents an unsorted state.
@@ -26,7 +44,7 @@ public record SortParameter<T extends Enum<?> & SortParameter.Definition>(List<S
      * @return an instance of {@link SortParameter} configured with no sorting fields.
      */
     public static <T extends Enum<?> & Definition> SortParameter<T> unsorted() {
-        return new SortParameter<>(Collections.emptyList());
+        return new SortParameter<>();
     }
 
     /**
@@ -192,7 +210,7 @@ public record SortParameter<T extends Enum<?> & SortParameter.Definition>(List<S
      * or the provided fallback if it does not.
      */
     public SortParameter<T> or(@NonNull SortParameter<T> fallback) {
-        return sortFields == null || sortFields.isEmpty() ? fallback : this;
+        return sortFields.isEmpty() ? fallback : this;
     }
 
     /**
@@ -235,23 +253,22 @@ public record SortParameter<T extends Enum<?> & SortParameter.Definition>(List<S
         return buildSort(stringMapping, true);
     }
 
-    // SonarLint: Replace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()' and ensure that the list is unmodified.
-    @SuppressWarnings("java:S6204")
     private Sort buildSort(@NonNull Map<String, String> mapping, boolean withDefault) {
-        if (sortFields == null || sortFields.isEmpty()) {
+        if (sortFields.isEmpty()) {
             return withDefault ? getMappedDefaultSort(mapping) : Sort.unsorted();
         }
 
         var additionalSort = Sort.by(
-                sortFields.stream()
-                        .filter(sortField -> mapping.containsKey(sortField.property()))
-                        .map(sortField -> new Sort.Order(
-                                sortField.direction(),
-                                mapping.get(sortField.property()),
-                                sortField.nullHandling()
-                        ))
-                        // We do not use .toList() here as we potentially want to modify the sort list later in the StoreImpl
-                        .collect(Collectors.toList())
+                new ArrayList<>(
+                        sortFields.stream()
+                                .filter(sortField -> mapping.containsKey(sortField.property()))
+                                .map(sortField -> new Sort.Order(
+                                        sortField.direction(),
+                                        mapping.get(sortField.property()),
+                                        sortField.nullHandling()
+                                ))
+                                .toList()
+                )
         );
 
         if (withDefault) {
