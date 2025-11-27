@@ -44,6 +44,182 @@ class SortParameterTest {
     }
 
     @Nested
+    class By {
+        @Test
+        void byMultipleDefinitions_shouldCreateSortParameter() {
+            // when
+            var item = SortParameter.by(ESort.Property1, ESort.property3, ESort.Property2);
+
+            // then
+            assertThat(item.sortFields()).hasSize(3);
+            assertThat(item.sortFields().get(0).property()).isEqualTo("Property1");
+            assertThat(item.sortFields().get(0).direction()).isEqualTo(Sort.Direction.ASC);
+            assertThat(item.sortFields().get(0).nullHandling()).isEqualTo(Sort.NullHandling.NATIVE);
+            assertThat(item.sortFields().get(1).property()).isEqualTo("property3");
+            assertThat(item.sortFields().get(1).direction()).isEqualTo(Sort.Direction.ASC);
+            assertThat(item.sortFields().get(1).nullHandling()).isEqualTo(Sort.NullHandling.NATIVE);
+            assertThat(item.sortFields().get(2).property()).isEqualTo("Property2");
+            assertThat(item.sortFields().get(2).direction()).isEqualTo(Sort.Direction.ASC);
+            assertThat(item.sortFields().get(2).nullHandling()).isEqualTo(Sort.NullHandling.NATIVE);
+        }
+
+        @Test
+        void bySingleDefinition_shouldCreateSortParameter() {
+            // when
+            var item = SortParameter.by(ESort.Property1);
+
+            // then
+            assertThat(item.sortFields()).hasSize(1);
+            assertThat(item.sortFields().get(0).property()).isEqualTo("Property1");
+            assertThat(item.sortFields().get(0).direction()).isEqualTo(Sort.Direction.ASC);
+            assertThat(item.sortFields().get(0).nullHandling()).isEqualTo(Sort.NullHandling.NATIVE);
+        }
+
+        @Test
+        void byDefinitionAndDirection_shouldCreateSortParameter() {
+            // when
+            var item = SortParameter.by(ESort.Property1, Sort.Direction.DESC);
+
+            // then
+            assertThat(item.sortFields()).hasSize(1);
+            assertThat(item.sortFields().get(0).property()).isEqualTo("Property1");
+            assertThat(item.sortFields().get(0).direction()).isEqualTo(Sort.Direction.DESC);
+            assertThat(item.sortFields().get(0).nullHandling()).isEqualTo(Sort.NullHandling.NATIVE);
+        }
+
+        @Test
+        void byDefinitionDirectionAndNullHandling_shouldCreateSortParameter() {
+            // when
+            var item = SortParameter.by(ESort.Property1, Sort.Direction.DESC, Sort.NullHandling.NULLS_FIRST);
+
+            // then
+            assertThat(item.sortFields()).hasSize(1);
+            assertThat(item.sortFields().get(0).property()).isEqualTo("Property1");
+            assertThat(item.sortFields().get(0).direction()).isEqualTo(Sort.Direction.DESC);
+            assertThat(item.sortFields().get(0).nullHandling()).isEqualTo(Sort.NullHandling.NULLS_FIRST);
+        }
+    }
+
+    @Nested
+    class And {
+        @Test
+        void andMultipleDefinitions_shouldAddSortFields() {
+            // given
+            var item = SortParameter.by(ESort.Property1);
+
+            // when
+            item.and(ESort.property3, ESort.Property2);
+
+            // then
+            assertThat(item.sortFields()).hasSize(3);
+            assertThat(item.sortFields().get(0).property()).isEqualTo("Property1");
+            assertThat(item.sortFields().get(1).property()).isEqualTo("property3");
+            assertThat(item.sortFields().get(1).direction()).isEqualTo(Sort.Direction.ASC);
+            assertThat(item.sortFields().get(1).nullHandling()).isEqualTo(Sort.NullHandling.NATIVE);
+            assertThat(item.sortFields().get(2).property()).isEqualTo("Property2");
+            assertThat(item.sortFields().get(2).direction()).isEqualTo(Sort.Direction.ASC);
+            assertThat(item.sortFields().get(2).nullHandling()).isEqualTo(Sort.NullHandling.NATIVE);
+        }
+
+        @Test
+        void andDefinitionAndDirection_shouldAddSortField() {
+            // given
+            var item = SortParameter.by(ESort.Property1);
+
+            // when
+            item.and(ESort.property3, Sort.Direction.DESC);
+
+            // then
+            assertThat(item.sortFields()).hasSize(2);
+            assertThat(item.sortFields().get(0).property()).isEqualTo("Property1");
+            assertThat(item.sortFields().get(1).property()).isEqualTo("property3");
+            assertThat(item.sortFields().get(1).direction()).isEqualTo(Sort.Direction.DESC);
+            assertThat(item.sortFields().get(1).nullHandling()).isEqualTo(Sort.NullHandling.NATIVE);
+        }
+
+        @Test
+        void andDefinitionDirectionAndNullHandling_shouldAddSortField() {
+            // given
+            var item = SortParameter.by(ESort.Property1);
+
+            // when
+            item.and(ESort.property3, Sort.Direction.DESC, Sort.NullHandling.NULLS_LAST);
+
+            // then
+            assertThat(item.sortFields()).hasSize(2);
+            assertThat(item.sortFields().get(0).property()).isEqualTo("Property1");
+            assertThat(item.sortFields().get(1).property()).isEqualTo("property3");
+            assertThat(item.sortFields().get(1).direction()).isEqualTo(Sort.Direction.DESC);
+            assertThat(item.sortFields().get(1).nullHandling()).isEqualTo(Sort.NullHandling.NULLS_LAST);
+        }
+
+        @Test
+        void andChaining_shouldAddMultipleSortFields() {
+            // given
+            var item = SortParameter.by(ESort.Property1)
+                    .and(ESort.property3, Sort.Direction.DESC)
+                    .and(ESort.Property2, Sort.Direction.ASC, Sort.NullHandling.NULLS_FIRST);
+
+            // then
+            assertThat(item.sortFields()).hasSize(3);
+            assertThat(item.sortFields().get(0).property()).isEqualTo("Property1");
+            assertThat(item.sortFields().get(1).property()).isEqualTo("property3");
+            assertThat(item.sortFields().get(1).direction()).isEqualTo(Sort.Direction.DESC);
+            assertThat(item.sortFields().get(2).property()).isEqualTo("Property2");
+            assertThat(item.sortFields().get(2).direction()).isEqualTo(Sort.Direction.ASC);
+            assertThat(item.sortFields().get(2).nullHandling()).isEqualTo(Sort.NullHandling.NULLS_FIRST);
+        }
+    }
+
+    @Nested
+    class Or {
+        @Test
+        void orWithEmptySortFields_shouldReturnFallback() {
+            // given
+            var item = SortParameter.<ESort>unsorted();
+            var fallback = SortParameter.by(ESort.Property1);
+
+            // when
+            var result = item.or(fallback);
+
+            // then
+            assertThat(result).isEqualTo(fallback);
+            assertThat(result.sortFields()).hasSize(1);
+            assertThat(result.sortFields().get(0).property()).isEqualTo("Property1");
+        }
+
+        @Test
+        void orWithNullSortFields_shouldReturnFallback() {
+            // given
+            var item = new SortParameter<ESort>(null);
+            var fallback = SortParameter.by(ESort.Property1);
+
+            // when
+            var result = item.or(fallback);
+
+            // then
+            assertThat(result).isEqualTo(fallback);
+            assertThat(result.sortFields()).hasSize(1);
+            assertThat(result.sortFields().get(0).property()).isEqualTo("Property1");
+        }
+
+        @Test
+        void orWithNonEmptySortFields_shouldReturnThis() {
+            // given
+            var item = SortParameter.by(ESort.property3);
+            var fallback = SortParameter.by(ESort.Property1);
+
+            // when
+            var result = item.or(fallback);
+
+            // then
+            assertThat(result).isEqualTo(item);
+            assertThat(result.sortFields()).hasSize(1);
+            assertThat(result.sortFields().get(0).property()).isEqualTo("property3");
+        }
+    }
+
+    @Nested
     class BuildSortWithoutDefault {
         @Test
         void nullFieldList_shouldReturnUnsorted() {
