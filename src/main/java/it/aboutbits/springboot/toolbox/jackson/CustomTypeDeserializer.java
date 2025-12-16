@@ -1,13 +1,16 @@
 package it.aboutbits.springboot.toolbox.jackson;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import it.aboutbits.springboot.toolbox.reflection.util.CustomTypeReflectionUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.TokenStreamLocation;
+import tools.jackson.core.exc.InputCoercionException;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 
-import java.io.IOException;
+import java.io.Closeable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -15,7 +18,7 @@ import java.math.BigInteger;
 import java.util.UUID;
 import java.util.function.Function;
 
-public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeserializer<T> {
+public class CustomTypeDeserializer<T extends CustomType<?>> extends ValueDeserializer<T> {
     private final Class<T> customType;
     private final Constructor<T> constructor;
     private final Function<JsonParser, Object> typeConverter;
@@ -43,7 +46,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
     }
 
     @Override
-    public T deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+    public T deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) {
         var value = typeConverter.apply(jsonParser);
 
         try {
@@ -52,7 +55,46 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
                 IllegalAccessException
                 | InvocationTargetException
                 | InstantiationException e) {
-            throw new IOException(e);
+            throw new Ex(e);
+        }
+    }
+
+    public static class Ex extends JacksonException {
+
+        protected Ex(String msg) {
+            super(msg);
+        }
+
+        protected Ex(Throwable rootCause) {
+            super(rootCause);
+        }
+
+        protected Ex(String msg, Throwable rootCause) {
+            super(msg, rootCause);
+        }
+
+        protected Ex(String msg, TokenStreamLocation loc, Throwable rootCause) {
+            super(msg, loc, rootCause);
+        }
+
+        protected Ex(Closeable processor, Throwable rootCause) {
+            super(processor, rootCause);
+        }
+
+        protected Ex(Closeable processor, String msg, TokenStreamLocation loc, Throwable rootCause) {
+            super(processor, msg, loc, rootCause);
+        }
+
+        protected Ex(Closeable processor, String msg) {
+            super(processor, msg);
+        }
+
+        protected Ex(Closeable processor, String msg, Throwable problem) {
+            super(processor, msg, problem);
+        }
+
+        protected Ex(Closeable processor, String msg, TokenStreamLocation loc) {
+            super(processor, msg, loc);
         }
     }
 
@@ -106,7 +148,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
         return jsonParser -> {
             try {
                 return jsonParser.getByteValue();
-            } catch (IOException e) {
+            } catch (InputCoercionException e) {
                 throw new CustomTypeDeserializerException("Failed to read value as Byte.", e);
             }
         };
@@ -116,7 +158,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
         return jsonParser -> {
             try {
                 return jsonParser.getBooleanValue();
-            } catch (IOException e) {
+            } catch (InputCoercionException e) {
                 throw new CustomTypeDeserializerException("Failed to read value as Boolean.", e);
             }
         };
@@ -126,7 +168,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
         return jsonParser -> {
             try {
                 return new ScaledBigDecimal(jsonParser.getDecimalValue());
-            } catch (IOException e) {
+            } catch (InputCoercionException e) {
                 throw new CustomTypeDeserializerException("Failed to read value as ScaledBigDecimal.", e);
             }
         };
@@ -136,7 +178,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
         return jsonParser -> {
             try {
                 return jsonParser.getDecimalValue();
-            } catch (IOException e) {
+            } catch (InputCoercionException e) {
                 throw new CustomTypeDeserializerException("Failed to read value as BigDecimal.", e);
             }
         };
@@ -146,7 +188,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
         return jsonParser -> {
             try {
                 return jsonParser.getDoubleValue();
-            } catch (IOException e) {
+            } catch (InputCoercionException e) {
                 throw new CustomTypeDeserializerException("Failed to read value as Double.", e);
             }
         };
@@ -156,7 +198,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
         return jsonParser -> {
             try {
                 return jsonParser.getFloatValue();
-            } catch (IOException e) {
+            } catch (InputCoercionException e) {
                 throw new CustomTypeDeserializerException("Failed to read value as Float.", e);
             }
         };
@@ -166,7 +208,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
         return jsonParser -> {
             try {
                 return jsonParser.getBigIntegerValue();
-            } catch (IOException e) {
+            } catch (InputCoercionException e) {
                 throw new CustomTypeDeserializerException("Failed to read value as BigInteger.", e);
             }
         };
@@ -176,7 +218,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
         return jsonParser -> {
             try {
                 return jsonParser.getLongValue();
-            } catch (IOException e) {
+            } catch (InputCoercionException e) {
                 throw new CustomTypeDeserializerException("Failed to read value as Long.", e);
             }
         };
@@ -186,7 +228,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
         return jsonParser -> {
             try {
                 return jsonParser.getIntValue();
-            } catch (IOException e) {
+            } catch (InputCoercionException e) {
                 throw new CustomTypeDeserializerException("Failed to read value as Integer.", e);
             }
         };
@@ -196,7 +238,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
         return jsonParser -> {
             try {
                 return jsonParser.getShortValue();
-            } catch (IOException e) {
+            } catch (InputCoercionException e) {
                 throw new CustomTypeDeserializerException("Failed to read value as Short.", e);
             }
         };
@@ -206,7 +248,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
         return jsonParser -> {
             try {
                 return jsonParser.getValueAsString();
-            } catch (IOException e) {
+            } catch (InputCoercionException e) {
                 throw new CustomTypeDeserializerException("Failed to read value as String.", e);
             }
         };
@@ -217,10 +259,15 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
             try {
                 var value = jsonParser.getValueAsString();
                 if (value == null || value.length() != 1) {
-                    throw new IOException();
+                    throw new InputCoercionException(
+                            jsonParser,
+                            "Not a Char.",
+                            jsonParser.currentToken(),
+                            String.class
+                    );
                 }
                 return value.charAt(0);
-            } catch (IOException e) {
+            } catch (InputCoercionException e) {
                 throw new CustomTypeDeserializerException("Failed to read value as Char.", e);
             }
         };
@@ -231,10 +278,15 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
             try {
                 var value = jsonParser.getValueAsString();
                 if (value == null || value.length() != 36) {
-                    throw new IOException();
+                    throw new InputCoercionException(
+                            jsonParser,
+                            "Not a UUID.",
+                            jsonParser.currentToken(),
+                            String.class
+                    );
                 }
                 return UUID.fromString(value);
-            } catch (IOException e) {
+            } catch (InputCoercionException e) {
                 throw new CustomTypeDeserializerException("Failed to read value as UUID.", e);
             }
         };
@@ -255,7 +307,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
                         "Failed to read value as Enum: " + enumClass.getName(),
                         e
                 );
-            } catch (IOException e) {
+            } catch (InputCoercionException e) {
                 throw new CustomTypeDeserializerException("Failed to read value as Enum.", e);
             }
         };

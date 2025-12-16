@@ -1,6 +1,5 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.mvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.aboutbits.springboot.toolbox._support.HttpTest;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithEmailAddress;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithIban;
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.UUID;
 
@@ -29,7 +29,7 @@ public class CustomTypeBindingsForControllerTest {
     protected MockMvc mockMvc;
 
     @Autowired
-    protected ObjectMapper objectMapper;
+    protected JsonMapper jsonMapper;
 
     @Nested
     class EmailAddressType {
@@ -41,7 +41,7 @@ public class CustomTypeBindingsForControllerTest {
                     String.format("/test/type/EmailAddress/as-path-variable/%s", value)
             );
 
-            var actual = objectMapper.readValue(resultAsString, EmailAddress.class);
+            var actual = jsonMapper.readValue(resultAsString, EmailAddress.class);
 
             assertThat(actual).isEqualTo(value);
         }
@@ -54,7 +54,7 @@ public class CustomTypeBindingsForControllerTest {
                     String.format("/test/type/EmailAddress/as-request-parameter?value=%s", value)
             );
 
-            var actual = objectMapper.readValue(resultAsString, EmailAddress.class);
+            var actual = jsonMapper.readValue(resultAsString, EmailAddress.class);
 
             assertThat(actual).isEqualTo(value);
         }
@@ -70,7 +70,7 @@ public class CustomTypeBindingsForControllerTest {
                     value
             );
 
-            var actual = objectMapper.readValue(resultAsString, BodyWithEmailAddress.class);
+            var actual = jsonMapper.readValue(resultAsString, BodyWithEmailAddress.class);
 
             assertThat(actual).isEqualTo(value);
         }
@@ -86,7 +86,7 @@ public class CustomTypeBindingsForControllerTest {
                     String.format("/test/type/Iban/as-path-variable/%s", value)
             );
 
-            var actual = objectMapper.readValue(resultAsString, Iban.class);
+            var actual = jsonMapper.readValue(resultAsString, Iban.class);
 
             assertThat(actual).isEqualTo(value);
         }
@@ -99,7 +99,7 @@ public class CustomTypeBindingsForControllerTest {
                     String.format("/test/type/Iban/as-request-parameter?value=%s", value)
             );
 
-            var actual = objectMapper.readValue(resultAsString, Iban.class);
+            var actual = jsonMapper.readValue(resultAsString, Iban.class);
 
             assertThat(actual).isEqualTo(value);
         }
@@ -115,7 +115,7 @@ public class CustomTypeBindingsForControllerTest {
                     value
             );
 
-            var actual = objectMapper.readValue(resultAsString, BodyWithIban.class);
+            var actual = jsonMapper.readValue(resultAsString, BodyWithIban.class);
 
             assertThat(actual).isEqualTo(value);
         }
@@ -132,7 +132,7 @@ public class CustomTypeBindingsForControllerTest {
                     String.format("/test/type/ScaledBigDecimal/as-path-variable/%s", value)
             );
 
-            var actual = objectMapper.readValue(resultAsString, ScaledBigDecimal.class);
+            var actual = jsonMapper.readValue(resultAsString, ScaledBigDecimal.class);
 
             assertThat(actual).isEqualTo(value);
         }
@@ -146,7 +146,7 @@ public class CustomTypeBindingsForControllerTest {
                     String.format("/test/type/ScaledBigDecimal/as-request-parameter?value=%s", value)
             );
 
-            var actual = objectMapper.readValue(resultAsString, ScaledBigDecimal.class);
+            var actual = jsonMapper.readValue(resultAsString, ScaledBigDecimal.class);
 
             assertThat(actual).isEqualTo(value);
         }
@@ -163,7 +163,7 @@ public class CustomTypeBindingsForControllerTest {
                     value
             );
 
-            var actual = objectMapper.readValue(resultAsString, BodyWithScaledBigDecimal.class);
+            var actual = jsonMapper.readValue(resultAsString, BodyWithScaledBigDecimal.class);
 
             assertThat(actual).isEqualTo(value);
         }
@@ -180,7 +180,7 @@ public class CustomTypeBindingsForControllerTest {
                     String.format("/test/type/UUID/as-path-variable/%s", value)
             );
 
-            var actual = objectMapper.readValue(resultAsString, UUID.class);
+            var actual = jsonMapper.readValue(resultAsString, UUID.class);
 
             assertThat(actual).isEqualTo(value);
         }
@@ -194,7 +194,7 @@ public class CustomTypeBindingsForControllerTest {
                     String.format("/test/type/UUID/as-request-parameter?value=%s", value)
             );
 
-            var actual = objectMapper.readValue(resultAsString, UUID.class);
+            var actual = jsonMapper.readValue(resultAsString, UUID.class);
 
             assertThat(actual).isEqualTo(value);
         }
@@ -211,7 +211,7 @@ public class CustomTypeBindingsForControllerTest {
                     value
             );
 
-            var actual = objectMapper.readValue(resultAsString, BodyWithUUID.class);
+            var actual = jsonMapper.readValue(resultAsString, BodyWithUUID.class);
 
             assertThat(actual).isEqualTo(value);
         }
@@ -229,7 +229,7 @@ public class CustomTypeBindingsForControllerTest {
 
     private @NonNull String performPostAndReturnResult(@NonNull String url, @NonNull Object body) throws Exception {
         var requestBuilder = MockMvcRequestBuilders.post(url)
-                .content(objectMapper.writeValueAsString(body))
+                .content(jsonMapper.writeValueAsString(body))
                 .contentType(MediaType.APPLICATION_JSON);
 
         return mockMvc.perform(requestBuilder)
