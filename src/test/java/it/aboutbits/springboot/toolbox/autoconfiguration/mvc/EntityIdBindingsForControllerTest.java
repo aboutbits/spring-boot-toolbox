@@ -1,6 +1,5 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.mvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.aboutbits.springboot.toolbox._support.HttpTest;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithEntityId;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithEnumEntityId;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import tools.jackson.databind.json.JsonMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,7 +22,7 @@ public class EntityIdBindingsForControllerTest {
     protected MockMvc mockMvc;
 
     @Autowired
-    protected ObjectMapper objectMapper;
+    protected JsonMapper jsonMapper;
 
     @Nested
     class EntityId {
@@ -34,7 +34,7 @@ public class EntityIdBindingsForControllerTest {
                     String.format("/test/entity-id/CustomTypeTestModel.ID/as-path-variable/%s", value)
             );
 
-            var actual = objectMapper.readValue(resultAsString, CustomTypeTestModel.ID.class);
+            var actual = jsonMapper.readValue(resultAsString, CustomTypeTestModel.ID.class);
 
             assertThat(actual).isEqualTo(value);
         }
@@ -47,7 +47,7 @@ public class EntityIdBindingsForControllerTest {
                     String.format("/test/entity-id/CustomTypeTestModel.ID/as-request-parameter?value=%s", value)
             );
 
-            var actual = objectMapper.readValue(resultAsString, CustomTypeTestModel.ID.class);
+            var actual = jsonMapper.readValue(resultAsString, CustomTypeTestModel.ID.class);
 
             assertThat(actual).isEqualTo(value);
         }
@@ -63,7 +63,7 @@ public class EntityIdBindingsForControllerTest {
                     value
             );
 
-            var actual = objectMapper.readValue(resultAsString, BodyWithEntityId.class);
+            var actual = jsonMapper.readValue(resultAsString, BodyWithEntityId.class);
 
             assertThat(actual).isEqualTo(value);
         }
@@ -79,7 +79,7 @@ public class EntityIdBindingsForControllerTest {
                     String.format("/test/entity-id/CustomTypeEnumTestModel.ID/as-path-variable/%s", value)
             );
 
-            var actual = objectMapper.readValue(resultAsString, CustomTypeEnumTestModel.ID.class);
+            var actual = jsonMapper.readValue(resultAsString, CustomTypeEnumTestModel.ID.class);
 
             assertThat(actual).isEqualTo(value);
         }
@@ -92,7 +92,7 @@ public class EntityIdBindingsForControllerTest {
                     String.format("/test/entity-id/CustomTypeEnumTestModel.ID/as-request-parameter?value=%s", value)
             );
 
-            var actual = objectMapper.readValue(resultAsString, CustomTypeEnumTestModel.ID.class);
+            var actual = jsonMapper.readValue(resultAsString, CustomTypeEnumTestModel.ID.class);
 
             assertThat(actual).isEqualTo(value);
         }
@@ -108,7 +108,7 @@ public class EntityIdBindingsForControllerTest {
                     value
             );
 
-            var actual = objectMapper.readValue(resultAsString, BodyWithEnumEntityId.class);
+            var actual = jsonMapper.readValue(resultAsString, BodyWithEnumEntityId.class);
 
             assertThat(actual).isEqualTo(value);
         }
@@ -126,7 +126,7 @@ public class EntityIdBindingsForControllerTest {
 
     private @NonNull String performPostAndReturnResult(@NonNull String url, @NonNull Object body) throws Exception {
         var requestBuilder = MockMvcRequestBuilders.post(url)
-                .content(objectMapper.writeValueAsString(body))
+                .content(jsonMapper.writeValueAsString(body))
                 .contentType(MediaType.APPLICATION_JSON);
 
         return mockMvc.perform(requestBuilder)

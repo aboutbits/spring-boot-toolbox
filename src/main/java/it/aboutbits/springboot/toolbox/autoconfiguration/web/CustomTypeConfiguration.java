@@ -7,12 +7,13 @@ import it.aboutbits.springboot.toolbox.type.CustomType;
 import it.aboutbits.springboot.toolbox.type.identity.EntityId;
 import it.aboutbits.springboot.toolbox.web.CustomTypePropertyEditor;
 import it.aboutbits.springboot.toolbox.web.EntityIdPropertyEditor;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.InitBinder;
+import tools.jackson.databind.module.SimpleModule;
 
 import java.util.Set;
 
@@ -37,19 +38,23 @@ public class CustomTypeConfiguration {
     }
 
     @Bean
-    public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer(CustomTypeScanner configuration) {
-        var types = configuration.getRelevantTypes();
+    public JsonMapperBuilderCustomizer jsonCustomizer(CustomTypeScanner configuration) {
+        var module = new SimpleModule();
 
-        var deserializers = types.stream()
-                .map(CustomTypeDeserializer::new)
-                .toList()
-                .toArray(new CustomTypeDeserializer[types.size()]);
+        // serializers
+        module.addSerializer(new CustomTypeSerializer());
 
+        // dynamic deserializers
+        configuration.getRelevantTypes()
+                .forEach(type ->
+                                 module.addDeserializer(type, new CustomTypeDeserializer(type))
+                );
+
+        // type-based deserializer
+        module.addDeserializer(EntityId.class, new EntityIdDeserializer());
 
         return builder -> builder
-                .serializers(new CustomTypeSerializer())
-                .deserializers(deserializers)
-                .deserializerByType(EntityId.class, new EntityIdDeserializer());
+                .addModule(module);
     }
 
 }

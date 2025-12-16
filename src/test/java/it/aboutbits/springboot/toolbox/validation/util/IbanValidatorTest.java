@@ -11,7 +11,15 @@ class IbanValidatorTest {
     @Nested
     class IsValid {
         @ParameterizedTest
-        @ValueSource(strings = {"NL08INGB3330533676", "HR3425000097537651489", "IT37G0300203280237914848919", "AT705400073311799347", "DE60500105175378199617"})
+        @ValueSource(
+                strings = {
+                        "NL08INGB3330533676",
+                        "HR3425000097537651489",
+                        "IT37G0300203280237914848919",
+                        "AT705400073311799347",
+                        "DE60500105175378199617"
+                }
+        )
         void validValues_shouldSucceed(String value) {
             assertThat(
                     IbanValidator.isValid(value)
@@ -19,7 +27,18 @@ class IbanValidatorTest {
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {"IT60X0542811101000000123450", "some-wrong-stuff", "", " ", "         ", "\t", "\r", "\n"})
+        @ValueSource(
+                strings = {
+                        "IT60X0542811101000000123450",
+                        "some-wrong-stuff",
+                        "",
+                        " ",
+                        "         ",
+                        "\t",
+                        "\r",
+                        "\n"
+                }
+        )
         void invalidValues_shouldFail(String value) {
             assertThat(
                     IbanValidator.isValid(value)
@@ -37,7 +56,15 @@ class IbanValidatorTest {
     @Nested
     class IsNotValid {
         @ParameterizedTest
-        @ValueSource(strings = {"NL08INGB3330533676", "HR3425000097537651489", "IT37G0300203280237914848919", "AT705400073311799347", "DE60500105175378199617"})
+        @ValueSource(
+                strings = {
+                        "NL08INGB3330533676",
+                        "HR3425000097537651489",
+                        "IT37G0300203280237914848919",
+                        "AT705400073311799347",
+                        "DE60500105175378199617"
+                }
+        )
         void validValues_shouldSucceed(String value) {
             assertThat(
                     IbanValidator.isNotValid(value)
@@ -45,7 +72,18 @@ class IbanValidatorTest {
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {"IT60X0542811101000000123450", "some-wrong-stuff", "", " ", "         ", "\t", "\r", "\n"})
+        @ValueSource(
+                strings = {
+                        "IT60X0542811101000000123450",
+                        "some-wrong-stuff",
+                        "",
+                        " ",
+                        "         ",
+                        "\t",
+                        "\r",
+                        "\n"
+                }
+        )
         void invalidValues_shouldFail(String value) {
             assertThat(
                     IbanValidator.isNotValid(value)

@@ -19,7 +19,21 @@ class EmailAddressValidatorTest {
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {"", " ", "         ", "\t", "\r", "\n", "sepp", "x@ y", "@aboutbits.it", "hans mueller@aboutbits.it", "peter@pansky@aboutbits.it"})
+        @ValueSource(
+                strings = {
+                        "",
+                        " ",
+                        "         ",
+                        "\t",
+                        "\r",
+                        "\n",
+                        "sepp",
+                        "x@ y",
+                        "@aboutbits.it",
+                        "hans mueller@aboutbits.it",
+                        "peter@pansky@aboutbits.it"
+                }
+        )
         void invalidValues_shouldFail(String value) {
             assertThat(
                     EmailAddressValidator.isValid(value)
@@ -45,7 +59,21 @@ class EmailAddressValidatorTest {
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {"", " ", "         ", "\t", "\r", "\n", "sepp", "x@ y", "@aboutbits.it", "hans mueller@aboutbits.it", "peter@pansky@aboutbits.it"})
+        @ValueSource(
+                strings = {
+                        "",
+                        " ",
+                        "         ",
+                        "\t",
+                        "\r",
+                        "\n",
+                        "sepp",
+                        "x@ y",
+                        "@aboutbits.it",
+                        "hans mueller@aboutbits.it",
+                        "peter@pansky@aboutbits.it"
+                }
+        )
         void invalidValues_shouldFail(String value) {
             assertThat(
                     EmailAddressValidator.isNotValid(value)

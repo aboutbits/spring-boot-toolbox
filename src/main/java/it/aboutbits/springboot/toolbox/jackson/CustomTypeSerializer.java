@@ -1,14 +1,14 @@
 package it.aboutbits.springboot.toolbox.jackson;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import it.aboutbits.springboot.toolbox.type.CustomType;
 
-import java.io.IOException;
+import it.aboutbits.springboot.toolbox.type.CustomType;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
+
 import java.util.UUID;
 
-public class CustomTypeSerializer extends JsonSerializer<CustomType<?>> {
+public class CustomTypeSerializer extends ValueSerializer<CustomType<?>> {
     @SuppressWarnings("unchecked")
     @Override
     public Class<CustomType<?>> handledType() {
@@ -19,8 +19,8 @@ public class CustomTypeSerializer extends JsonSerializer<CustomType<?>> {
     public void serialize(
             CustomType<?> customType,
             JsonGenerator jsonGenerator,
-            SerializerProvider serializerProvider
-    ) throws IOException {
+            SerializationContext ctx
+    ) {
         var value = customType.value();
 
         switch (value) {

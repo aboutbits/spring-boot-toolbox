@@ -6,15 +6,15 @@ package it.aboutbits.springboot.toolbox.exception;
  * <p>
  * Example:
  * {@snippet :
+ *
  * @Getter
  * @Accessors(fluent = true)
- * @RequiredArgsConstructor
- * enum MyExceptionMessages implements ExceptionMessageDefinition {
- *     SHARED_ERROR_GENERAL("shared.error.general");
- *
- *     private final String code;
+ * @RequiredArgsConstructor enum MyExceptionMessages implements ExceptionMessageDefinition {
+ * SHARED_ERROR_GENERAL("shared.error.general");
+ * <p>
+ * private final String code;
  * }
- * }
+ *}
  */
 public interface ExceptionMessageDefinition {
     String code();

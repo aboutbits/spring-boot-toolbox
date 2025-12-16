@@ -16,6 +16,7 @@ public interface CustomTypeTestModelRepository extends JpaRepository<CustomTypeT
     Optional<CustomTypeTestModel> findByAccountBalance(ScaledBigDecimal accountBalance);
 
     Optional<CustomTypeTestModel> findByUuid(UUID uuid);
+
     Optional<CustomTypeTestModel> findByUuidAsString(UUID uuidAsString);
 
     Optional<CustomTypeTestModel> findByReferencedId(ReferencedTestModel.ID otherId);
