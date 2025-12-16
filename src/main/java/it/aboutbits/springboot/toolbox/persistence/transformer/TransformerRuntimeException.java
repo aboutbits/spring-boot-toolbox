@@ -16,7 +16,12 @@ public class TransformerRuntimeException extends RuntimeException {
         super(cause);
     }
 
-    public TransformerRuntimeException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+    public TransformerRuntimeException(
+            final String message,
+            final Throwable cause,
+            final boolean enableSuppression,
+            final boolean writableStackTrace
+    ) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }
