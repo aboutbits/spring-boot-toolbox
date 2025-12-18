@@ -5,7 +5,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.TypedQuery;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
-import org.hibernate.transform.ResultTransformer;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
@@ -67,14 +66,13 @@ public final class QueryTransformer<T> {
                 .orElseThrow(EntityNotFoundException::new);
     }
 
-    @SuppressWarnings({"deprecation", "unchecked"})
     private List<T> asList(@Nullable Integer pageNumber, @Nullable Integer pageSize) {
         if (unwrappedQuery == null) {
             throw new IllegalStateException("Query not set!");
         }
 
-        unwrappedQuery.setResultTransformer(
-                (ResultTransformer<?>) (objects, aliases) -> tupleTransformer.transform(objects)
+        unwrappedQuery.setTupleTransformer(
+                tupleTransformer
         );
 
         if (pageSize != null && pageNumber != null) {
@@ -83,6 +81,7 @@ public final class QueryTransformer<T> {
                     .setFirstResult(pageSize * pageNumber);
         }
 
+        // noinspection unchecked
         return (List<T>) unwrappedQuery.getResultList();
     }
 

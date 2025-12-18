@@ -1,12 +1,14 @@
 package it.aboutbits.springboot.toolbox.util;
 
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.util.Streamable;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -25,7 +27,7 @@ class CollectUtilTest {
         void shouldConvertCollectionToSetUsingMapper() {
             // given
             var numbers = Arrays.asList(1, 2, 3, 4, 5);
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var result = CollectUtil.collectToSet(numbers, mapper);
@@ -39,7 +41,7 @@ class CollectUtilTest {
         void shouldConvertCollectionToSetUsingMapperAndFilterNullValues() {
             // given
             var numbers = Arrays.asList("a", "b", "c", "d");
-            var mapper = (Function<String, String>) Object::toString;
+            var mapper = (Function<String, @Nullable String>) Object::toString;
 
             // when
             var result = CollectUtil.collectToSet(numbers, mapper);
@@ -53,7 +55,7 @@ class CollectUtilTest {
         void shouldHandleEmptyCollectionWhenConvertingToSet() {
             // given
             var emptyList = Collections.<Integer>emptyList();
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var result = CollectUtil.collectToSet(emptyList, mapper);
@@ -67,7 +69,7 @@ class CollectUtilTest {
         void shouldRemoveDuplicatesWhenConvertingCollectionToSet() {
             // given
             var numbersWithDuplicates = Arrays.asList(1, 2, 2, 3, 3, 3);
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var result = CollectUtil.collectToSet(numbersWithDuplicates, mapper);
@@ -82,7 +84,7 @@ class CollectUtilTest {
         void shouldConvertStreamableToSetUsingMapper() {
             // given
             var numbers = Streamable.of(1, 2, 3, 4, 5);
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var result = CollectUtil.collectToSet(numbers, mapper);
@@ -96,7 +98,7 @@ class CollectUtilTest {
         void shouldConvertStreamableToSetUsingMapperAndFilterNullValues() {
             // given
             var numbers = Streamable.of("a", "b", "c", "d");
-            var mapper = (Function<String, String>) Object::toString;
+            var mapper = (Function<String, @Nullable String>) Object::toString;
 
             // when
             var result = CollectUtil.collectToSet(numbers, mapper);
@@ -110,7 +112,7 @@ class CollectUtilTest {
         void shouldHandleEmptyStreamableWhenConvertingToSet() {
             // given
             var emptyStreamable = Streamable.<Integer>empty();
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var result = CollectUtil.collectToSet(emptyStreamable, mapper);
@@ -124,7 +126,7 @@ class CollectUtilTest {
         void shouldConvertStreamToSetUsingMapper() {
             // given
             var numbers = java.util.stream.Stream.of(1, 2, 3, 4, 5);
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var result = CollectUtil.collectToSet(numbers, mapper);
@@ -138,7 +140,7 @@ class CollectUtilTest {
         void shouldHandleEmptyStreamWhenConvertingToSet() {
             // given
             var emptyStream = java.util.stream.Stream.<Integer>empty();
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var result = CollectUtil.collectToSet(emptyStream, mapper);
@@ -152,7 +154,7 @@ class CollectUtilTest {
         void shouldRemoveDuplicatesWhenConvertingStreamToSet() {
             // given
             var numbersWithDuplicates = java.util.stream.Stream.of(1, 2, 2, 3, 3, 3);
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var result = CollectUtil.collectToSet(numbersWithDuplicates, mapper);
@@ -170,7 +172,7 @@ class CollectUtilTest {
         void shouldConvertCollectionToListUsingMapper() {
             // given
             var numbers = Arrays.asList(1, 2, 3, 4, 5);
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var result = CollectUtil.collectToList(numbers, mapper);
@@ -184,7 +186,7 @@ class CollectUtilTest {
         void shouldHandleEmptyCollectionWhenConvertingToList() {
             // given
             var emptyList = Collections.<Integer>emptyList();
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var result = CollectUtil.collectToList(emptyList, mapper);
@@ -198,7 +200,7 @@ class CollectUtilTest {
         void shouldPreserveDuplicatesWhenConvertingCollectionToList() {
             // given
             var numbersWithDuplicates = Arrays.asList(1, 2, 2, 3, 3, 3);
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var result = CollectUtil.collectToList(numbersWithDuplicates, mapper);
@@ -213,7 +215,7 @@ class CollectUtilTest {
         void shouldConvertStreamableToListUsingMapper() {
             // given
             var numbers = Streamable.of(1, 2, 3, 4, 5);
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var result = CollectUtil.collectToList(numbers, mapper);
@@ -227,7 +229,7 @@ class CollectUtilTest {
         void shouldHandleEmptyStreamableWhenConvertingToList() {
             // given
             var emptyStreamable = Streamable.<Integer>empty();
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var result = CollectUtil.collectToList(emptyStreamable, mapper);
@@ -241,7 +243,7 @@ class CollectUtilTest {
         void shouldConvertStreamToListUsingMapper() {
             // given
             var numbers = java.util.stream.Stream.of(1, 2, 3, 4, 5);
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var result = CollectUtil.collectToList(numbers, mapper);
@@ -255,7 +257,7 @@ class CollectUtilTest {
         void shouldHandleEmptyStreamWhenConvertingToList() {
             // given
             var emptyStream = java.util.stream.Stream.<Integer>empty();
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var result = CollectUtil.collectToList(emptyStream, mapper);
@@ -269,7 +271,7 @@ class CollectUtilTest {
         void shouldPreserveDuplicatesWhenConvertingStreamToList() {
             // given
             var numbersWithDuplicates = java.util.stream.Stream.of(1, 2, 2, 3, 3, 3);
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var result = CollectUtil.collectToList(numbersWithDuplicates, mapper);
@@ -287,7 +289,7 @@ class CollectUtilTest {
         void shouldConvertCollectionToStreamUsingMapper() {
             // given
             var numbers = Arrays.asList(1, 2, 3, 4, 5);
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var resultStream = CollectUtil.collectToStream(numbers, mapper);
@@ -302,7 +304,7 @@ class CollectUtilTest {
         void shouldHandleEmptyCollectionWhenConvertingToStream() {
             // given
             var emptyList = Collections.<Integer>emptyList();
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var resultStream = CollectUtil.collectToStream(emptyList, mapper);
@@ -317,7 +319,7 @@ class CollectUtilTest {
         void shouldConvertStreamableToStreamUsingMapper() {
             // given
             var numbers = Streamable.of(1, 2, 3, 4, 5);
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var resultStream = CollectUtil.collectToStream(numbers, mapper);
@@ -332,7 +334,7 @@ class CollectUtilTest {
         void shouldHandleEmptyStreamableWhenConvertingToStream() {
             // given
             var emptyStreamable = Streamable.<Integer>empty();
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var resultStream = CollectUtil.collectToStream(emptyStreamable, mapper);
@@ -347,7 +349,7 @@ class CollectUtilTest {
         void shouldConvertStreamToStreamUsingMapper() {
             // given
             var numbers = java.util.stream.Stream.of(1, 2, 3, 4, 5);
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var resultStream = CollectUtil.collectToStream(numbers, mapper);
@@ -362,7 +364,7 @@ class CollectUtilTest {
         void shouldHandleEmptyStreamWhenConvertingToStream() {
             // given
             var emptyStream = java.util.stream.Stream.<Integer>empty();
-            var mapper = (Function<Integer, String>) Object::toString;
+            var mapper = (Function<Integer, @Nullable String>) Object::toString;
 
             // when
             var resultStream = CollectUtil.collectToStream(emptyStream, mapper);
@@ -379,7 +381,7 @@ class CollectUtilTest {
         @DisplayName("Should convert Collection to Map using key and value mappers")
         void shouldConvertCollectionToMapUsingMappers() {
             // given
-            var items = Arrays.asList("a", "bb", "ccc");
+            var items = (Collection<@Nullable String>) Arrays.asList("a", "bb", "ccc");
 
             // when
             var result = CollectUtil.collectToMap(items, String::length, Function.identity());
@@ -396,7 +398,7 @@ class CollectUtilTest {
         @DisplayName("Should throw on duplicate keys according to Collectors.toMap default behavior")
         void shouldThrowOnDuplicateKeys() {
             // given
-            var items = Arrays.asList("a", "b"); // both have length of 1
+            var items = (Collection<@Nullable String>) Arrays.asList("a", "b"); // both have length of 1
 
             // when / then
             assertThatIllegalStateException().isThrownBy(
@@ -429,7 +431,7 @@ class CollectUtilTest {
         @DisplayName("Should convert Stream to Map using key and value mappers")
         void shouldConvertStreamToMapUsingMappers() {
             // given
-            var items = Stream.of("m", "nn");
+            var items = Stream.<@Nullable String>of("m", "nn");
 
             // when
             var result = CollectUtil.collectToMap(items, String::length, Function.identity());
@@ -445,7 +447,7 @@ class CollectUtilTest {
         @DisplayName("Should return empty map for empty collection")
         void shouldReturnEmptyMapForEmptyCollection() {
             // given
-            var items = Collections.<String>emptyList();
+            var items = Collections.<@Nullable String>emptyList();
 
             // when
             var result = CollectUtil.collectToMap(items, String::length, Function.identity());
@@ -471,7 +473,7 @@ class CollectUtilTest {
         @DisplayName("Should return empty map for empty stream")
         void shouldReturnEmptyMapForEmptyStream() {
             // given
-            var items = Stream.<String>empty();
+            var items = Stream.<@Nullable String>empty();
 
             // when
             var result = CollectUtil.collectToMap(items, String::length, Function.identity());
