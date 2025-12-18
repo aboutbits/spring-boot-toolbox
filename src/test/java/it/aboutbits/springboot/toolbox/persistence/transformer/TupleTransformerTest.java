@@ -6,6 +6,7 @@ import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import lombok.Data;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -144,7 +145,7 @@ class TupleTransformerTest {
     void createRecord_givenMixedObjects_someNullValues_shouldPass() {
         // given
         var tupleTransformer = new TupleTransformer<>(DataRecord.class);
-        var objectsUnderTest = new Object[]{
+        var objectsUnderTest = new @Nullable Object[]{
                 null, null, "String123", false, null, UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88")
         };
 

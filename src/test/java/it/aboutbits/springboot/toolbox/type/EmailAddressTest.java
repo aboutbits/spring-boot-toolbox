@@ -48,6 +48,7 @@ class EmailAddressTest {
 
         @Test
         void null_shouldFail() {
+            //noinspection DataFlowIssue
             assertThatIllegalArgumentException().isThrownBy(
                     () -> new EmailAddress(null)
             );

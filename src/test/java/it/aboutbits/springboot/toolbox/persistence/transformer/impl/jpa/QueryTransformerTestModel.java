@@ -17,6 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.JavaType;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.NullUnmarked;
 
 @Entity
@@ -27,7 +29,7 @@ import org.jspecify.annotations.NullUnmarked;
 @NoArgsConstructor
 @AllArgsConstructor
 @NullUnmarked
-public class QueryTransformerTestModel implements Identified<QueryTransformerTestModel.ID> {
+public class QueryTransformerTestModel implements Identified<QueryTransformerTestModel.@NonNull ID> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JavaType(ID.JavaType.class)
@@ -41,6 +43,7 @@ public class QueryTransformerTestModel implements Identified<QueryTransformerTes
     @JavaType(ScaledBigDecimalJavaType.class)
     private ScaledBigDecimal scaledBigDecimalValue;
 
+    @NullMarked
     public record ID(
             Long value
     ) implements EntityId<Long> {

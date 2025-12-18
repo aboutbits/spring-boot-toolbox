@@ -53,6 +53,7 @@ class IbanTest {
 
         @Test
         void null_shouldFail() {
+            //noinspection DataFlowIssue
             assertThatIllegalArgumentException().isThrownBy(
                     () -> new Iban(null)
             );

@@ -48,8 +48,8 @@ public class CustomTypeConfiguration {
 
         // dynamic deserializers
         configuration.getRelevantTypes()
-                .forEach(type ->
-                                 module.addDeserializer(type, new CustomTypeDeserializer(type))
+                .forEach(
+                        type -> module.addDeserializer(type, new CustomTypeDeserializer(type))
                 );
 
         // type-based deserializer

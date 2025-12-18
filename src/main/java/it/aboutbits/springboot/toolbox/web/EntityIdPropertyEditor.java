@@ -19,7 +19,7 @@ public final class EntityIdPropertyEditor extends PropertyEditorSupport {
 
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
-        EntityId<?> value = null;
+        EntityId<?> value;
         try {
             var theValue = Long.parseLong(text);
             value = new EntityId<Long>() {

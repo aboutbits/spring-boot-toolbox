@@ -1,6 +1,7 @@
 package it.aboutbits.springboot.toolbox.util;
 
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.util.Streamable;
 
 import java.util.Collection;
@@ -23,68 +24,77 @@ public final class CollectUtil {
     private CollectUtil() {
     }
 
-    public static <T, R> Set<R> collectToSet(Collection<T> items, Function<T, R> mapper) {
+    public static <T, R> Set<R> collectToSet(Collection<T> items, Function<T, @Nullable R> mapper) {
         return items.stream()
                 .map(mapper)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public static <T, R> Set<R> collectToSet(Streamable<T> items, Function<T, R> mapper) {
+    public static <T, R> Set<R> collectToSet(Streamable<T> items, Function<T, @Nullable R> mapper) {
         return items.stream()
                 .map(mapper)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public static <T, R> Set<R> collectToSet(Stream<T> items, Function<T, R> mapper) {
+    public static <T, R> Set<R> collectToSet(Stream<T> items, Function<T, @Nullable R> mapper) {
         return items
                 .map(mapper)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public static <T, R> List<R> collectToList(Collection<T> items, Function<T, R> mapper) {
+    @SuppressWarnings("java:S6204")
+    public static <T, R> List<R> collectToList(Collection<T> items, Function<T, @Nullable R> mapper) {
+        //noinspection SimplifyStreamApiCallChains
         return items.stream()
                 .map(mapper)
                 .filter(Objects::nonNull)
-                .toList();
+                .collect(Collectors.toUnmodifiableList());
     }
 
-    public static <T, R> List<R> collectToList(Streamable<T> items, Function<T, R> mapper) {
+    @SuppressWarnings("java:S6204")
+    public static <T, R> List<R> collectToList(Streamable<T> items, Function<T, @Nullable R> mapper) {
+        //noinspection SimplifyStreamApiCallChains
         return items.stream()
                 .map(mapper)
                 .filter(Objects::nonNull)
-                .toList();
+                .collect(Collectors.toUnmodifiableList());
     }
 
-    public static <T, R> List<R> collectToList(Stream<T> items, Function<T, R> mapper) {
+    @SuppressWarnings("java:S6204")
+    public static <T, R> List<R> collectToList(Stream<T> items, Function<T, @Nullable R> mapper) {
+        //noinspection SimplifyStreamApiCallChains
         return items
                 .map(mapper)
                 .filter(Objects::nonNull)
-                .toList();
+                .collect(Collectors.toUnmodifiableList());
     }
 
-    public static <T, R> Stream<R> collectToStream(Collection<T> items, Function<T, R> mapper) {
+    public static <T, R> Stream<R> collectToStream(Collection<T> items, Function<T, @Nullable R> mapper) {
+        //noinspection NullableProblems
         return items.stream()
                 .map(mapper)
                 .filter(Objects::nonNull);
     }
 
-    public static <T, R> Stream<R> collectToStream(Streamable<T> items, Function<T, R> mapper) {
+    public static <T, R> Stream<R> collectToStream(Streamable<T> items, Function<T, @Nullable R> mapper) {
+        //noinspection NullableProblems
         return items.stream()
                 .map(mapper)
                 .filter(Objects::nonNull);
     }
 
-    public static <T, R> Stream<R> collectToStream(Stream<T> items, Function<T, R> mapper) {
+    public static <T, R> Stream<R> collectToStream(Stream<T> items, Function<T, @Nullable R> mapper) {
+        //noinspection NullableProblems
         return items
                 .map(mapper)
                 .filter(Objects::nonNull);
     }
 
     public static <T, K, R> Map<K, R> collectToMap(
-            Collection<T> items,
+            Collection<@Nullable T> items,
             Function<T, K> keyMapper,
             Function<T, R> valueMapper
     ) {
@@ -99,12 +109,11 @@ public final class CollectUtil {
             Function<T, R> valueMapper
     ) {
         return items.stream()
-                .filter(Objects::nonNull)
                 .collect(Collectors.toMap(keyMapper, valueMapper));
     }
 
     public static <T, K, R> Map<K, R> collectToMap(
-            Stream<T> items,
+            Stream<@Nullable T> items,
             Function<T, K> keyMapper,
             Function<T, R> valueMapper
     ) {

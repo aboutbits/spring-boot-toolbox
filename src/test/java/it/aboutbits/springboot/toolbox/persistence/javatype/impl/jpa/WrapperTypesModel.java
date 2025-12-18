@@ -71,6 +71,8 @@ import org.hibernate.annotations.JavaType;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.type.descriptor.jdbc.CharJdbcType;
 import org.hibernate.type.descriptor.jdbc.UUIDJdbcType;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.NullUnmarked;
 
 @Entity
@@ -78,7 +80,7 @@ import org.jspecify.annotations.NullUnmarked;
 @Setter
 @Table(name = "wrapper_type_test_model")
 @NullUnmarked
-public class WrapperTypesModel implements Identified<WrapperTypesModel.ID> {
+public class WrapperTypesModel implements Identified<WrapperTypesModel.@NonNull ID> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JavaType(ID.JavaType.class)
@@ -208,6 +210,7 @@ public class WrapperTypesModel implements Identified<WrapperTypesModel.ID> {
     @JavaType(WrapEnumClassJavaType.class)
     private WrapEnumClass enumValueClass;
 
+    @NullMarked
     public record ID(
             Long value
     ) implements EntityId<Long> {

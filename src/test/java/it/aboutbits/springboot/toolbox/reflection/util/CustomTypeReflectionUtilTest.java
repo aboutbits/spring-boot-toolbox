@@ -3,6 +3,7 @@ package it.aboutbits.springboot.toolbox.reflection.util;
 import it.aboutbits.springboot.toolbox.autoconfiguration.web.CustomTypeScanner;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -83,7 +84,7 @@ class CustomTypeReflectionUtilTest {
     public static class InvalidCustomType implements CustomType<String> {
         @SuppressWarnings("NullAway")
         @Override
-        public String value() {
+        public @Nullable String value() {
             return null;
         }
 

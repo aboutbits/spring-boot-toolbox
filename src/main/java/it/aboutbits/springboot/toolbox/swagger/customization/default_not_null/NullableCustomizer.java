@@ -70,7 +70,7 @@ public class NullableCustomizer implements OpenApiCustomizer {
 
         if (property.getItems() != null && property.getItems().get$ref() != null && property.getItems()
                 .get$ref()
-                .endsWith("?nullable=true")) {
+                .endsWith(NULLABLE_MARKER)) {
             return true;
         }
 

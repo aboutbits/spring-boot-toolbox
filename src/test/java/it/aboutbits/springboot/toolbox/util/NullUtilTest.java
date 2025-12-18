@@ -27,6 +27,7 @@ class NullUtilTest {
         String value = null;
 
         // then
+        //noinspection DataFlowIssue,ConstantValue
         assertThatIllegalStateException()
                 .isThrownBy(() -> /* when */ NullUtil.nonNullOrFail(value))
                 .withMessage("Required non-null value, but got null.");
@@ -52,6 +53,7 @@ class NullUtilTest {
         var message = "Custom error message";
 
         // then
+        //noinspection DataFlowIssue,ConstantValue
         assertThatIllegalStateException()
                 .isThrownBy(() -> /* when */ NullUtil.nonNullOrFail(value, message))
                 .withMessage(message);

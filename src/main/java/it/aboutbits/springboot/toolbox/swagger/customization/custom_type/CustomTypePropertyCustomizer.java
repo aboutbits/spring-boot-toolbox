@@ -36,7 +36,7 @@ public class CustomTypePropertyCustomizer implements PropertyCustomizer {
             }
 
             if (CustomType.class.isAssignableFrom(rawClass)) {
-                Class<?> wrappedType = null;
+                Class<?> wrappedType;
                 if (rawClass.equals(EntityId.class)) {
                     wrappedType = simpleType.getBindings()
                             .getTypeParameters()
