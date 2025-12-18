@@ -6,10 +6,12 @@ import org.hibernate.boot.model.TypeContributions;
 import org.hibernate.boot.model.TypeContributor;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.type.descriptor.java.JavaType;
+import org.jspecify.annotations.NullMarked;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 
+@NullMarked
 public abstract class AbstractCustomTypeContributor implements TypeContributor {
     @SuppressWarnings("rawtypes")
     private final Set<Class<? extends AutoRegisteredJavaType>> relevantTypes;

@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.JavaType;
+import org.jspecify.annotations.NullUnmarked;
 
 @Entity
 @Getter
@@ -25,6 +26,7 @@ import org.hibernate.annotations.JavaType;
 @Table(name = "query_transformer_test_model")
 @NoArgsConstructor
 @AllArgsConstructor
+@NullUnmarked
 public class QueryTransformerTestModel implements Identified<QueryTransformerTestModel.ID> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

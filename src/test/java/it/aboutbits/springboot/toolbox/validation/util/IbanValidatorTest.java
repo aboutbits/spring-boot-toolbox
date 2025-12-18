@@ -1,5 +1,6 @@
 package it.aboutbits.springboot.toolbox.validation.util;
 
+import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -7,6 +8,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@NullMarked
 class IbanValidatorTest {
     @Nested
     class IsValid {

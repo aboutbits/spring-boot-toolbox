@@ -1,6 +1,7 @@
 package it.aboutbits.springboot.toolbox.web;
 
 import it.aboutbits.springboot.toolbox.parameter.SortParameter;
+import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@NullMarked
 class SortParameterResolverTest {
     @Mock
     private MethodParameter methodParameter;
@@ -40,6 +42,7 @@ class SortParameterResolverTest {
     @InjectMocks
     private SortParameterResolver sut;
 
+    @SuppressWarnings("NullAway.Init")
     @BeforeEach
     void setUp() {
         when(methodParameter.getParameterName()).thenReturn("sort");

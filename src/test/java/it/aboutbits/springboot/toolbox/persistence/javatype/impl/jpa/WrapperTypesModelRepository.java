@@ -28,68 +28,71 @@ import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapString
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapStringRecord;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapUUIDClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapUUIDRecord;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+@NullMarked
 public interface WrapperTypesModelRepository extends JpaRepository<WrapperTypesModel, WrapperTypesModel.ID> {
-    Optional<WrapperTypesModel> findByBigDecimalValue(WrapBigDecimalRecord value);
+    Optional<WrapperTypesModel> findByBigDecimalValue(@Nullable WrapBigDecimalRecord value);
 
-    Optional<WrapperTypesModel> findByBigIntegerValue(WrapBigIntegerRecord value);
+    Optional<WrapperTypesModel> findByBigIntegerValue(@Nullable WrapBigIntegerRecord value);
 
-    Optional<WrapperTypesModel> findByDoubleValue(WrapDoubleRecord value);
+    Optional<WrapperTypesModel> findByDoubleValue(@Nullable WrapDoubleRecord value);
 
-    Optional<WrapperTypesModel> findByFloatValue(WrapFloatRecord value);
+    Optional<WrapperTypesModel> findByFloatValue(@Nullable WrapFloatRecord value);
 
-    Optional<WrapperTypesModel> findByIntegerValue(WrapIntegerRecord value);
+    Optional<WrapperTypesModel> findByIntegerValue(@Nullable WrapIntegerRecord value);
 
-    Optional<WrapperTypesModel> findByLongValue(WrapLongRecord value);
+    Optional<WrapperTypesModel> findByLongValue(@Nullable WrapLongRecord value);
 
-    Optional<WrapperTypesModel> findByScaledBigDecimalValue(WrapScaledBigDecimalRecord value);
+    Optional<WrapperTypesModel> findByScaledBigDecimalValue(@Nullable WrapScaledBigDecimalRecord value);
 
-    Optional<WrapperTypesModel> findByShortValue(WrapShortRecord value);
+    Optional<WrapperTypesModel> findByShortValue(@Nullable WrapShortRecord value);
 
-    Optional<WrapperTypesModel> findByStringValue(WrapStringRecord value);
+    Optional<WrapperTypesModel> findByStringValue(@Nullable WrapStringRecord value);
 
-    Optional<WrapperTypesModel> findByBoolValue(WrapBooleanRecord value);
+    Optional<WrapperTypesModel> findByBoolValue(@Nullable WrapBooleanRecord value);
 
-    Optional<WrapperTypesModel> findByByteValue(WrapByteRecord value);
+    Optional<WrapperTypesModel> findByByteValue(@Nullable WrapByteRecord value);
 
-    Optional<WrapperTypesModel> findByCharValue(WrapCharacterRecord value);
+    Optional<WrapperTypesModel> findByCharValue(@Nullable WrapCharacterRecord value);
 
-    Optional<WrapperTypesModel> findByUuidValue(WrapUUIDRecord value);
+    Optional<WrapperTypesModel> findByUuidValue(@Nullable WrapUUIDRecord value);
 
-    Optional<WrapperTypesModel> findByUuidValueAsString(WrapUUIDRecord value);
+    Optional<WrapperTypesModel> findByUuidValueAsString(@Nullable WrapUUIDRecord value);
 
-    Optional<WrapperTypesModel> findByBigDecimalValueClass(WrapBigDecimalClass value);
+    Optional<WrapperTypesModel> findByBigDecimalValueClass(@Nullable WrapBigDecimalClass value);
 
-    Optional<WrapperTypesModel> findByBigIntegerValueClass(WrapBigIntegerClass value);
+    Optional<WrapperTypesModel> findByBigIntegerValueClass(@Nullable WrapBigIntegerClass value);
 
-    Optional<WrapperTypesModel> findByDoubleValueClass(WrapDoubleClass value);
+    Optional<WrapperTypesModel> findByDoubleValueClass(@Nullable WrapDoubleClass value);
 
-    Optional<WrapperTypesModel> findByFloatValueClass(WrapFloatClass value);
+    Optional<WrapperTypesModel> findByFloatValueClass(@Nullable WrapFloatClass value);
 
-    Optional<WrapperTypesModel> findByIntegerValueClass(WrapIntegerClass value);
+    Optional<WrapperTypesModel> findByIntegerValueClass(@Nullable WrapIntegerClass value);
 
-    Optional<WrapperTypesModel> findByLongValueClass(WrapLongClass value);
+    Optional<WrapperTypesModel> findByLongValueClass(@Nullable WrapLongClass value);
 
-    Optional<WrapperTypesModel> findByScaledBigDecimalValueClass(WrapScaledBigDecimalClass value);
+    Optional<WrapperTypesModel> findByScaledBigDecimalValueClass(@Nullable WrapScaledBigDecimalClass value);
 
-    Optional<WrapperTypesModel> findByShortValueClass(WrapShortClass value);
+    Optional<WrapperTypesModel> findByShortValueClass(@Nullable WrapShortClass value);
 
-    Optional<WrapperTypesModel> findByStringValueClass(WrapStringClass value);
+    Optional<WrapperTypesModel> findByStringValueClass(@Nullable WrapStringClass value);
 
-    Optional<WrapperTypesModel> findByBoolValueClass(WrapBooleanClass value);
+    Optional<WrapperTypesModel> findByBoolValueClass(@Nullable WrapBooleanClass value);
 
-    Optional<WrapperTypesModel> findByByteValueClass(WrapByteClass value);
+    Optional<WrapperTypesModel> findByByteValueClass(@Nullable WrapByteClass value);
 
-    Optional<WrapperTypesModel> findByCharValueClass(WrapCharacterClass value);
+    Optional<WrapperTypesModel> findByCharValueClass(@Nullable WrapCharacterClass value);
 
-    Optional<WrapperTypesModel> findByUuidValueClass(WrapUUIDClass value);
+    Optional<WrapperTypesModel> findByUuidValueClass(@Nullable WrapUUIDClass value);
 
-    Optional<WrapperTypesModel> findByUuidValueClassAsString(WrapUUIDClass value);
+    Optional<WrapperTypesModel> findByUuidValueClassAsString(@Nullable WrapUUIDClass value);
 
-    Optional<WrapperTypesModel> findByEnumValue(WrapEnumRecord value);
+    Optional<WrapperTypesModel> findByEnumValue(@Nullable WrapEnumRecord value);
 
-    Optional<WrapperTypesModel> findByEnumValueClass(WrapEnumClass value);
+    Optional<WrapperTypesModel> findByEnumValueClass(@Nullable WrapEnumClass value);
 }

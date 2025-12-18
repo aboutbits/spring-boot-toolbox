@@ -3,6 +3,7 @@ package it.aboutbits.springboot.toolbox.swagger.customization.default_not_null;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.oas.models.media.Schema;
+import org.jspecify.annotations.NullMarked;
 import org.springdoc.core.customizers.PropertyCustomizer;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,7 @@ import static it.aboutbits.springboot.toolbox.swagger.customization.default_not_
  * This customizer adds a nullability maker. Later we process this to manipulate the required fields of a schema.
  */
 @Component
+@NullMarked
 public class NullablePropertyCustomizer implements PropertyCustomizer {
     static {
         /*

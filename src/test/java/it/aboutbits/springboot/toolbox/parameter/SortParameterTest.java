@@ -1,6 +1,7 @@
 package it.aboutbits.springboot.toolbox.parameter;
 
 import it.aboutbits.springboot.toolbox.persistence.SortMappings;
+import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Sort;
@@ -11,6 +12,7 @@ import java.util.List;
 import static it.aboutbits.springboot.toolbox.persistence.SortMappings.map;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@NullMarked
 class SortParameterTest {
     @SuppressWarnings("java:S115")
     private enum ESort implements SortParameter.Definition {

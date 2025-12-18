@@ -1,5 +1,6 @@
 package it.aboutbits.springboot.toolbox.web.response;
 
+import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -9,6 +10,7 @@ import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@NullMarked
 class PagedResponseTest {
     @Test
     void shouldReturnPagedResponseWithDataAndMeta_forSingleParameterOfMethod() {

@@ -1,6 +1,6 @@
 package it.aboutbits.springboot.toolbox.type;
 
-import lombok.NonNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -12,8 +12,9 @@ import java.math.RoundingMode;
  * This class provides various constructors for creating instances with different numerical types.
  * It also provides a set of arithmetic operations that return new instances with the appropriate scale and rounding.
  */
+@NullMarked
 public record ScaledBigDecimal(
-        @NonNull BigDecimal value
+        BigDecimal value
 ) implements CustomType<BigDecimal>, Comparable<ScaledBigDecimal> {
     private static final MathContext MATH_CONTEXT = new MathContext(15, RoundingMode.HALF_UP);
 
@@ -22,7 +23,7 @@ public record ScaledBigDecimal(
     public static final ScaledBigDecimal TWO = new ScaledBigDecimal(2);
     public static final ScaledBigDecimal TEN = new ScaledBigDecimal(10);
 
-    public ScaledBigDecimal(@NonNull BigDecimal value) {
+    public ScaledBigDecimal(BigDecimal value) {
         this.value = value.setScale(MATH_CONTEXT.getPrecision(), MATH_CONTEXT.getRoundingMode());
     }
 
@@ -30,11 +31,11 @@ public record ScaledBigDecimal(
         this(new BigDecimal(value, MATH_CONTEXT));
     }
 
-    public ScaledBigDecimal(@NonNull Integer value) {
+    public ScaledBigDecimal(Integer value) {
         this(new BigDecimal(value, MATH_CONTEXT));
     }
 
-    public ScaledBigDecimal(@NonNull BigInteger value) {
+    public ScaledBigDecimal(BigInteger value) {
         this(new BigDecimal(value, MATH_CONTEXT));
     }
 
@@ -42,7 +43,7 @@ public record ScaledBigDecimal(
         this(new BigDecimal(value, MATH_CONTEXT));
     }
 
-    public ScaledBigDecimal(@NonNull Long value) {
+    public ScaledBigDecimal(Long value) {
         this(new BigDecimal(value, MATH_CONTEXT));
     }
 
@@ -50,7 +51,7 @@ public record ScaledBigDecimal(
         this(new BigDecimal(String.valueOf(value), MATH_CONTEXT));
     }
 
-    public ScaledBigDecimal(@NonNull Float value) {
+    public ScaledBigDecimal(Float value) {
         this(new BigDecimal(String.valueOf(value), MATH_CONTEXT));
     }
 
@@ -58,11 +59,11 @@ public record ScaledBigDecimal(
         this(new BigDecimal(String.valueOf(value), MATH_CONTEXT));
     }
 
-    public ScaledBigDecimal(@NonNull Double value) {
+    public ScaledBigDecimal(Double value) {
         this(new BigDecimal(String.valueOf(value), MATH_CONTEXT));
     }
 
-    public ScaledBigDecimal(@NonNull String value) {
+    public ScaledBigDecimal(String value) {
         this(new BigDecimal(value, MATH_CONTEXT));
     }
 
@@ -70,11 +71,11 @@ public record ScaledBigDecimal(
         return new ScaledBigDecimal(value);
     }
 
-    public static ScaledBigDecimal valueOf(@NonNull Integer value) {
+    public static ScaledBigDecimal valueOf(Integer value) {
         return new ScaledBigDecimal(value);
     }
 
-    public static ScaledBigDecimal valueOf(@NonNull BigInteger value) {
+    public static ScaledBigDecimal valueOf(BigInteger value) {
         return new ScaledBigDecimal(value);
     }
 
@@ -82,7 +83,7 @@ public record ScaledBigDecimal(
         return new ScaledBigDecimal(value);
     }
 
-    public static ScaledBigDecimal valueOf(@NonNull Long value) {
+    public static ScaledBigDecimal valueOf(Long value) {
         return new ScaledBigDecimal(value);
     }
 
@@ -90,7 +91,7 @@ public record ScaledBigDecimal(
         return new ScaledBigDecimal(value);
     }
 
-    public static ScaledBigDecimal valueOf(@NonNull Float value) {
+    public static ScaledBigDecimal valueOf(Float value) {
         return new ScaledBigDecimal(value);
     }
 
@@ -98,116 +99,96 @@ public record ScaledBigDecimal(
         return new ScaledBigDecimal(value);
     }
 
-    public static ScaledBigDecimal valueOf(@NonNull Double value) {
+    public static ScaledBigDecimal valueOf(Double value) {
         return new ScaledBigDecimal(value);
     }
 
-    public static ScaledBigDecimal valueOf(@NonNull String value) {
+    public static ScaledBigDecimal valueOf(String value) {
         return new ScaledBigDecimal(value);
     }
 
-    @NonNull
-    public ScaledBigDecimal add(@NonNull ScaledBigDecimal other) {
+    public ScaledBigDecimal add(ScaledBigDecimal other) {
         return new ScaledBigDecimal(this.value().add(other.value()));
     }
 
-    @NonNull
-    public ScaledBigDecimal subtract(@NonNull ScaledBigDecimal other) {
+    public ScaledBigDecimal subtract(ScaledBigDecimal other) {
         return new ScaledBigDecimal(this.value().subtract(other.value()));
     }
 
-    @NonNull
-    public ScaledBigDecimal multiply(@NonNull ScaledBigDecimal other) {
+    public ScaledBigDecimal multiply(ScaledBigDecimal other) {
         return new ScaledBigDecimal(this.value().multiply(other.value()));
     }
 
-    @NonNull
-    public ScaledBigDecimal divide(@NonNull ScaledBigDecimal other) {
+    public ScaledBigDecimal divide(ScaledBigDecimal other) {
         return new ScaledBigDecimal(this.value().divide(other.value(), MATH_CONTEXT));
     }
 
-    @NonNull
-    public ScaledBigDecimal add(@NonNull BigDecimal other) {
+    public ScaledBigDecimal add(BigDecimal other) {
         return new ScaledBigDecimal(this.value().add(other));
     }
 
-    @NonNull
-    public ScaledBigDecimal subtract(@NonNull BigDecimal other) {
+    public ScaledBigDecimal subtract(BigDecimal other) {
         return new ScaledBigDecimal(this.value().subtract(other));
     }
 
-    @NonNull
-    public ScaledBigDecimal multiply(@NonNull BigDecimal other) {
+    public ScaledBigDecimal multiply(BigDecimal other) {
         return new ScaledBigDecimal(this.value().multiply(other));
     }
 
-    @NonNull
-    public ScaledBigDecimal divide(@NonNull BigDecimal other) {
+    public ScaledBigDecimal divide(BigDecimal other) {
         return new ScaledBigDecimal(this.value().divide(other, MATH_CONTEXT));
     }
 
-    @NonNull
-    public ScaledBigDecimal remainder(@NonNull ScaledBigDecimal divisor) {
+    public ScaledBigDecimal remainder(ScaledBigDecimal divisor) {
         return new ScaledBigDecimal(this.value().remainder(divisor.value(), MATH_CONTEXT));
     }
 
-    @NonNull
-    public ScaledBigDecimal remainder(@NonNull BigDecimal divisor) {
+    public ScaledBigDecimal remainder(BigDecimal divisor) {
         return new ScaledBigDecimal(this.value().remainder(divisor, MATH_CONTEXT));
     }
 
-    @NonNull
     public ScaledBigDecimal sqrt() {
         return new ScaledBigDecimal(this.value().sqrt(MATH_CONTEXT));
     }
 
-    @NonNull
     public ScaledBigDecimal pow(int n) {
         return new ScaledBigDecimal(this.value().pow(n, MATH_CONTEXT));
     }
 
-    @NonNull
     public ScaledBigDecimal abs() {
         return new ScaledBigDecimal(this.value().abs(MATH_CONTEXT));
     }
 
-    @NonNull
     public ScaledBigDecimal negate() {
         return new ScaledBigDecimal(this.value().negate(MATH_CONTEXT));
     }
 
-    @NonNull
-    public ScaledBigDecimal min(@NonNull ScaledBigDecimal val) {
+    public ScaledBigDecimal min(ScaledBigDecimal val) {
         return new ScaledBigDecimal(this.value().min(val.value()));
     }
 
-    @NonNull
-    public ScaledBigDecimal min(@NonNull BigDecimal val) {
+    public ScaledBigDecimal min(BigDecimal val) {
         return new ScaledBigDecimal(this.value().min(val));
     }
 
-    @NonNull
-    public ScaledBigDecimal max(@NonNull ScaledBigDecimal val) {
+    public ScaledBigDecimal max(ScaledBigDecimal val) {
         return new ScaledBigDecimal(this.value().max(val.value()));
     }
 
-    @NonNull
-    public ScaledBigDecimal max(@NonNull BigDecimal val) {
+    public ScaledBigDecimal max(BigDecimal val) {
         return new ScaledBigDecimal(this.value().max(val));
     }
 
-    @NonNull
     public BigDecimal toBigDecimal(int scale) {
         return this.value().setScale(scale, RoundingMode.HALF_UP);
     }
 
-    @NonNull
     public ScaledBigDecimal roundToScale(int scale) {
         return new ScaledBigDecimal(this.value().setScale(scale, RoundingMode.HALF_UP));
     }
 
     @Override
-    @NonNull
+
     public String toString() {
         return this.value().toString();
     }
@@ -231,7 +212,7 @@ public record ScaledBigDecimal(
     }
 
     @Override
-    public int compareTo(@NonNull ScaledBigDecimal o) {
+    public int compareTo(ScaledBigDecimal o) {
         return this.value().compareTo(o.value());
     }
 
@@ -240,7 +221,7 @@ public record ScaledBigDecimal(
      * This is temporary. We need to avoid changing any rounding logic at the moment.
      */
     @Deprecated
-    @NonNull
+
     public BigDecimal toCurrency() {
         return this.value().setScale(2, RoundingMode.HALF_UP);
     }
@@ -250,7 +231,7 @@ public record ScaledBigDecimal(
      * This is temporary. We need to avoid changing any rounding logic at the moment.
      */
     @Deprecated
-    @NonNull
+
     public ScaledBigDecimal roundToCurrency() {
         return new ScaledBigDecimal(this.value().setScale(2, RoundingMode.HALF_UP));
     }

@@ -4,7 +4,10 @@ import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.constraints.Max;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class MaxScaledBigDecimalValidator implements ConstraintValidator<Max, ScaledBigDecimal> {
 
     private long upperBound;
@@ -15,7 +18,7 @@ public class MaxScaledBigDecimalValidator implements ConstraintValidator<Max, Sc
     }
 
     @Override
-    public boolean isValid(ScaledBigDecimal scaledBigDecimal, ConstraintValidatorContext context) {
+    public boolean isValid(@Nullable ScaledBigDecimal scaledBigDecimal, ConstraintValidatorContext context) {
         if (scaledBigDecimal == null) {
             return true;
         }

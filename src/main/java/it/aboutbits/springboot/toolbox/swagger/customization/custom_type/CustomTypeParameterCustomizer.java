@@ -10,6 +10,8 @@ import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import it.aboutbits.springboot.toolbox.type.identity.EntityId;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springdoc.core.customizers.ParameterCustomizer;
 import org.springframework.core.MethodParameter;
 
@@ -20,11 +22,13 @@ import java.util.UUID;
 import static it.aboutbits.springboot.toolbox.swagger.customization.custom_type.SchemaUtil.getClassFromSchemaReference;
 
 @Slf4j
+@NullMarked
 public class CustomTypeParameterCustomizer implements ParameterCustomizer {
     @SuppressWarnings("checkstyle:MethodLength")
     @Override
     @SneakyThrows(NoSuchMethodException.class)
-    public Parameter customize(Parameter parameter, MethodParameter methodParameter) {
+    @Nullable
+    public Parameter customize(@Nullable Parameter parameter, MethodParameter methodParameter) {
         if (parameter == null) {
             return null;
         }
@@ -55,7 +59,6 @@ public class CustomTypeParameterCustomizer implements ParameterCustomizer {
             log.error("Can not resolve type for schema reference: {}", schemaRef);
             return parameter;
         }
-
 
         var rawClass = optionalClass.get();
 

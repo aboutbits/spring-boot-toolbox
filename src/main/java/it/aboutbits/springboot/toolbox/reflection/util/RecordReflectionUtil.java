@@ -1,7 +1,10 @@
 package it.aboutbits.springboot.toolbox.reflection.util;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.lang.reflect.Constructor;
 
+@NullMarked
 public final class RecordReflectionUtil {
     private RecordReflectionUtil() {
     }

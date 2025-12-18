@@ -6,6 +6,8 @@ import it.aboutbits.springboot.toolbox.persistence.transformer.impl.jpa.QueryTra
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ApplicationTest
-public class QueryTransformerTest {
+@NullMarked
+class QueryTransformerTest {
 
     @Autowired
     EntityManager entityManager;
@@ -72,7 +75,6 @@ public class QueryTransformerTest {
             assertThat(result).isPresent();
             assertThat(result.get()).isEqualByComparingTo(ScaledBigDecimal.valueOf(3.14));
         }
-
 
         @Test
         void givenQueryWithOneResult_shouldPass() {
@@ -196,7 +198,6 @@ public class QueryTransformerTest {
             assertThat(result.getFirst().getId()).isEqualTo(testModel.getId());
             assertThat(result.getFirst().getName()).isEqualTo(testModel.getName());
         }
-
 
         @Test
         void givenQuery_shouldPass() {
@@ -383,7 +384,11 @@ public class QueryTransformerTest {
     ) {
     }
 
-    private QueryTransformerTestModel createTestModel(String name, String email, ScaledBigDecimal scaledBigDecimal) {
+    private QueryTransformerTestModel createTestModel(
+            String name,
+            @Nullable String email,
+            ScaledBigDecimal scaledBigDecimal
+    ) {
         var item = new QueryTransformerTestModel();
         item.setName(name);
         item.setEmail(email);

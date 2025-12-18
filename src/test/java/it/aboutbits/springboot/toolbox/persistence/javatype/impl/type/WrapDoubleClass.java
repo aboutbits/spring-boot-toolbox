@@ -5,11 +5,13 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
+import org.jspecify.annotations.NullMarked;
 
 @Getter
 @Accessors(fluent = true)
 @EqualsAndHashCode
 @RequiredArgsConstructor
+@NullMarked
 public class WrapDoubleClass implements CustomType<Double> {
     private final Double value;
 }

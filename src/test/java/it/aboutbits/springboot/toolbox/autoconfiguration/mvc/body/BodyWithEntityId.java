@@ -1,7 +1,9 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body;
 
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.CustomTypeTestModel;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public record BodyWithEntityId(
         CustomTypeTestModel.ID entityId
 ) {

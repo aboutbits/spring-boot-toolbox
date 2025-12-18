@@ -1,6 +1,7 @@
 package it.aboutbits.springboot.toolbox._support;
 
 import it.aboutbits.springboot.toolbox._support.persistence.WithPostgres;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.lang.annotation.ElementType;
@@ -12,6 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @SpringBootTest
 @WithPostgres
+@NullMarked
 public @interface ApplicationTest {
 
 }

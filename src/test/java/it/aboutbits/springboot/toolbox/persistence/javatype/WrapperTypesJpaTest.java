@@ -1,6 +1,8 @@
 package it.aboutbits.springboot.toolbox.persistence.javatype;
 
+import com.tngtech.archunit.junit.ArchIgnore;
 import it.aboutbits.springboot.toolbox._support.ApplicationTest;
+import it.aboutbits.springboot.toolbox._support.ArchIgnoreGroupName;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.jpa.WrapperTypesModel;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.jpa.WrapperTypesModelRepository;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.SampleEnum;
@@ -33,6 +35,7 @@ import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapString
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapUUIDClass;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.WrapUUIDRecord;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
+import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -46,14 +49,17 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ArchIgnore(reason = "This test class has no matching counterpart in the production code.")
 @ApplicationTest
-public class WrapperTypesJpaTest {
+@NullMarked
+class WrapperTypesJpaTest {
     @Autowired
     WrapperTypesModelRepository repository;
 
     @Nested
     class RecordTypes {
         @Nested
+        @ArchIgnoreGroupName
         class WrapBigDecimalRecordType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -88,6 +94,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapBigIntegerRecordType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -122,6 +129,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapDoubleRecordType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -156,6 +164,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapFloatRecordType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -190,6 +199,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapIntegerRecordType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -224,6 +234,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapLongRecordType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -258,6 +269,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapScaledBigDecimalRecordType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -292,6 +304,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapShortRecordType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -326,6 +339,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapStringRecordType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -360,6 +374,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapCharacterRecordType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -394,6 +409,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapByteRecordType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -428,6 +444,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapBooleanRecordType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -462,6 +479,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapUUIDRecordType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -527,6 +545,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapEnumRecordType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -564,6 +583,7 @@ public class WrapperTypesJpaTest {
     @Nested
     class ClassTypes {
         @Nested
+        @ArchIgnoreGroupName
         class WrapBigDecimalClassType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -598,6 +618,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapBigIntegerClassType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -632,6 +653,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapDoubleClassType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -666,6 +688,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapFloatClassType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -700,6 +723,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapIntegerClassType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -734,6 +758,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapLongClassType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -768,6 +793,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapScaledBigDecimalClassType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -802,6 +828,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapShortClassType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -836,6 +863,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapStringClassType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -870,6 +898,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapCharacterClassType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -904,6 +933,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapByteClassType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -938,6 +968,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapBooleanClassType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -972,6 +1003,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapUUIDClassType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {
@@ -1037,6 +1069,7 @@ public class WrapperTypesJpaTest {
         }
 
         @Nested
+        @ArchIgnoreGroupName
         class WrapEnumClassType {
             @Test
             void givenNull_inAndOut_shouldSucceed() {

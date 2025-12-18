@@ -1,6 +1,6 @@
 package it.aboutbits.springboot.toolbox.util;
 
-import lombok.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.data.util.Streamable;
 
 import java.util.Collection;
@@ -18,74 +18,75 @@ import java.util.stream.Stream;
  * <p>
  * The returned collections are unmodifiable.
  */
+@NullMarked
 public final class CollectUtil {
     private CollectUtil() {
     }
 
-    public static <T, R> Set<R> collectToSet(@NonNull Collection<T> items, @NonNull Function<T, R> mapper) {
+    public static <T, R> Set<R> collectToSet(Collection<T> items, Function<T, R> mapper) {
         return items.stream()
                 .map(mapper)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public static <T, R> Set<R> collectToSet(@NonNull Streamable<T> items, @NonNull Function<T, R> mapper) {
+    public static <T, R> Set<R> collectToSet(Streamable<T> items, Function<T, R> mapper) {
         return items.stream()
                 .map(mapper)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public static <T, R> Set<R> collectToSet(@NonNull Stream<T> items, @NonNull Function<T, R> mapper) {
+    public static <T, R> Set<R> collectToSet(Stream<T> items, Function<T, R> mapper) {
         return items
                 .map(mapper)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public static <T, R> List<R> collectToList(@NonNull Collection<T> items, @NonNull Function<T, R> mapper) {
+    public static <T, R> List<R> collectToList(Collection<T> items, Function<T, R> mapper) {
         return items.stream()
                 .map(mapper)
                 .filter(Objects::nonNull)
                 .toList();
     }
 
-    public static <T, R> List<R> collectToList(@NonNull Streamable<T> items, @NonNull Function<T, R> mapper) {
+    public static <T, R> List<R> collectToList(Streamable<T> items, Function<T, R> mapper) {
         return items.stream()
                 .map(mapper)
                 .filter(Objects::nonNull)
                 .toList();
     }
 
-    public static <T, R> List<R> collectToList(@NonNull Stream<T> items, @NonNull Function<T, R> mapper) {
+    public static <T, R> List<R> collectToList(Stream<T> items, Function<T, R> mapper) {
         return items
                 .map(mapper)
                 .filter(Objects::nonNull)
                 .toList();
     }
 
-    public static <T, R> Stream<R> collectToStream(@NonNull Collection<T> items, @NonNull Function<T, R> mapper) {
+    public static <T, R> Stream<R> collectToStream(Collection<T> items, Function<T, R> mapper) {
         return items.stream()
                 .map(mapper)
                 .filter(Objects::nonNull);
     }
 
-    public static <T, R> Stream<R> collectToStream(@NonNull Streamable<T> items, @NonNull Function<T, R> mapper) {
+    public static <T, R> Stream<R> collectToStream(Streamable<T> items, Function<T, R> mapper) {
         return items.stream()
                 .map(mapper)
                 .filter(Objects::nonNull);
     }
 
-    public static <T, R> Stream<R> collectToStream(@NonNull Stream<T> items, @NonNull Function<T, R> mapper) {
+    public static <T, R> Stream<R> collectToStream(Stream<T> items, Function<T, R> mapper) {
         return items
                 .map(mapper)
                 .filter(Objects::nonNull);
     }
 
     public static <T, K, R> Map<K, R> collectToMap(
-            @NonNull Collection<T> items,
-            @NonNull Function<T, K> keyMapper,
-            @NonNull Function<T, R> valueMapper
+            Collection<T> items,
+            Function<T, K> keyMapper,
+            Function<T, R> valueMapper
     ) {
         return items.stream()
                 .filter(Objects::nonNull)
@@ -93,9 +94,9 @@ public final class CollectUtil {
     }
 
     public static <T, K, R> Map<K, R> collectToMap(
-            @NonNull Streamable<T> items,
-            @NonNull Function<T, K> keyMapper,
-            @NonNull Function<T, R> valueMapper
+            Streamable<T> items,
+            Function<T, K> keyMapper,
+            Function<T, R> valueMapper
     ) {
         return items.stream()
                 .filter(Objects::nonNull)
@@ -103,9 +104,9 @@ public final class CollectUtil {
     }
 
     public static <T, K, R> Map<K, R> collectToMap(
-            @NonNull Stream<T> items,
-            @NonNull Function<T, K> keyMapper,
-            @NonNull Function<T, R> valueMapper
+            Stream<T> items,
+            Function<T, K> keyMapper,
+            Function<T, R> valueMapper
     ) {
         return items
                 .filter(Objects::nonNull)

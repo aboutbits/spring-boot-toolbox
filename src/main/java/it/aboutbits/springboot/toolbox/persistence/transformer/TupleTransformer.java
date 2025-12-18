@@ -2,6 +2,8 @@ package it.aboutbits.springboot.toolbox.persistence.transformer;
 
 import it.aboutbits.springboot.toolbox.reflection.util.RecordReflectionUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -12,10 +14,11 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
 
+@NullMarked
 public class TupleTransformer<T> {
     private final Class<T> outputClass;
-    private Constructor<T> outputClassConstructor = null;
-    private Class<?>[] outputClassFieldClasses = null;
+    private @Nullable Constructor<T> outputClassConstructor = null;
+    private Class<?> @Nullable [] outputClassFieldClasses = null;
 
     private final Mode mode;
 
@@ -84,7 +87,7 @@ public class TupleTransformer<T> {
                 return (T) objects[0];
             }
 
-            if (objects.length != outputClassFieldClasses.length) {
+            if (outputClassFieldClasses == null || objects.length != outputClassFieldClasses.length) {
                 throw new TransformerRuntimeException(
                         String.format(
                                 "Invalid query transforming: object count does not match target class field count for %s",
@@ -98,7 +101,7 @@ public class TupleTransformer<T> {
 
                 // Everything ok, null matches every object and equal classes do not need casting!
                 // Unboxing of primitives is automatic when we call the constructor of the target result class.
-                if (objects[i] == null || outputClassFieldClasses[i].isPrimitive() || objects[i].getClass() == outputClassFieldClasses[i]) {
+                if (objects[i] == null || outputClassFieldClasses[i] == null || outputClassFieldClasses[i].isPrimitive() || objects[i].getClass() == outputClassFieldClasses[i]) {
                     continue;
                 }
 
@@ -145,8 +148,11 @@ public class TupleTransformer<T> {
                 );
             }
 
-            return outputClassConstructor.newInstance(objects);
+            if (outputClassConstructor == null) {
+                throw new IllegalStateException("Constructor not initialized!");
+            }
 
+            return outputClassConstructor.newInstance(objects);
         } catch (
                 InstantiationException
                 | IllegalAccessException

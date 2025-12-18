@@ -4,6 +4,8 @@ import it.aboutbits.springboot.toolbox.type.EmailAddress;
 import it.aboutbits.springboot.toolbox.type.Iban;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import lombok.Data;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.NullUnmarked;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -12,7 +14,8 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TupleTransformerTest {
+@NullMarked
+class TupleTransformerTest {
 
     @Test
     void createObjectWithPrimitiveFields_givenPrimitives_shouldPass() {
@@ -66,7 +69,6 @@ public class TupleTransformerTest {
         assertThat(result.booleanField).isTrue();
     }
 
-
     @Test
     void createRecord_givenMixedObjects_shouldPass() {
         // given
@@ -89,7 +91,6 @@ public class TupleTransformerTest {
         assertThat(result.uuid).isEqualTo(UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88"));
     }
 
-
     @Test
     void createRecord_givenMixedObjects_enumValueAsString_shouldPass() {
         // given
@@ -111,7 +112,6 @@ public class TupleTransformerTest {
         assertThat(result.anEnum).isEqualTo(SomeEnum.ENUM_1);
         assertThat(result.uuid).isEqualTo(UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88"));
     }
-
 
     @Test
     void createRecordInsideAClass_givenMixedObjects_shouldPass() {
@@ -140,7 +140,6 @@ public class TupleTransformerTest {
         assertThat(result.someOtherField).isEqualTo(33);
     }
 
-
     @Test
     void createRecord_givenMixedObjects_someNullValues_shouldPass() {
         // given
@@ -160,7 +159,6 @@ public class TupleTransformerTest {
         assertThat(result.anEnum).isNull();
         assertThat(result.uuid).isEqualTo(UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88"));
     }
-
 
     @Test
     void createRecordInsideAClass_givenMixedObjectsAsList_shouldPass() {
@@ -210,7 +208,6 @@ public class TupleTransformerTest {
         assertThat(result.someOtherField).isEqualTo(33);
     }
 
-
     @Data
     private static final class DataClassWithPrimitives {
         private final long longField;
@@ -218,6 +215,7 @@ public class TupleTransformerTest {
         private final boolean booleanField;
     }
 
+    @NullUnmarked
     protected record DataRecord(
             Long longField,
             Boolean booleanBoxed,
@@ -228,13 +226,11 @@ public class TupleTransformerTest {
     ) {
     }
 
-
     protected record DataRecordParent(
             DataRecord dataRecord,
             long someOtherField
     ) {
     }
-
 
     protected record DataRecordWithCustomType(
             ScaledBigDecimal scaledBigDecimal,

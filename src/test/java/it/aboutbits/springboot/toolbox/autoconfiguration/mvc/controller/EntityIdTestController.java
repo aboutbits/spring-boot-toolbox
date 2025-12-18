@@ -4,6 +4,7 @@ import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithEntity
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithEnumEntityId;
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.CustomTypeEnumTestModel;
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.CustomTypeTestModel;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/test/entity-id")
+@NullMarked
 public class EntityIdTestController {
     @GetMapping("/CustomTypeTestModel.ID/as-path-variable/{value}")
     public CustomTypeTestModel.ID customTypeTestModelIdAsPathVariable(@PathVariable CustomTypeTestModel.ID value) {

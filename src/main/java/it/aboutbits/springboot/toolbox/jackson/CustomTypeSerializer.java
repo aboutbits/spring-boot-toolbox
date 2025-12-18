@@ -1,13 +1,14 @@
 package it.aboutbits.springboot.toolbox.jackson;
 
-
 import it.aboutbits.springboot.toolbox.type.CustomType;
+import org.jspecify.annotations.NullMarked;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ValueSerializer;
 
 import java.util.UUID;
 
+@NullMarked
 public class CustomTypeSerializer extends ValueSerializer<CustomType<?>> {
     @SuppressWarnings("unchecked")
     @Override

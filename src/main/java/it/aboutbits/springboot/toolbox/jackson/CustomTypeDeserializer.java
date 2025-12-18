@@ -3,6 +3,8 @@ package it.aboutbits.springboot.toolbox.jackson;
 import it.aboutbits.springboot.toolbox.reflection.util.CustomTypeReflectionUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.JsonParser;
 import tools.jackson.core.TokenStreamLocation;
@@ -18,10 +20,11 @@ import java.math.BigInteger;
 import java.util.UUID;
 import java.util.function.Function;
 
+@NullMarked
 public class CustomTypeDeserializer<T extends CustomType<?>> extends ValueDeserializer<T> {
     private final Class<T> customType;
     private final Constructor<T> constructor;
-    private final Function<JsonParser, Object> typeConverter;
+    private final Function<JsonParser, @Nullable Object> typeConverter;
 
     public CustomTypeDeserializer(Class<T> customType) {
         this.customType = customType;
@@ -98,7 +101,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends ValueDeseri
         }
     }
 
-    private static Function<JsonParser, Object> getTypeConverter(Class<?> wrappedType) {
+    private static Function<JsonParser, @Nullable Object> getTypeConverter(Class<?> wrappedType) {
         if (Byte.class.isAssignableFrom(wrappedType)) {
             return getByteConverter();
         }
@@ -144,7 +147,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends ValueDeseri
         throw new CustomTypeDeserializerException("Value type not supported: " + wrappedType.getName());
     }
 
-    private static Function<JsonParser, Object> getByteConverter() {
+    private static Function<JsonParser, @Nullable Object> getByteConverter() {
         return jsonParser -> {
             try {
                 return jsonParser.getByteValue();
@@ -154,7 +157,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends ValueDeseri
         };
     }
 
-    private static Function<JsonParser, Object> getBooleanConverter() {
+    private static Function<JsonParser, @Nullable Object> getBooleanConverter() {
         return jsonParser -> {
             try {
                 return jsonParser.getBooleanValue();
@@ -164,7 +167,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends ValueDeseri
         };
     }
 
-    private static Function<JsonParser, Object> getScaledBigDecimalConverter() {
+    private static Function<JsonParser, @Nullable Object> getScaledBigDecimalConverter() {
         return jsonParser -> {
             try {
                 return new ScaledBigDecimal(jsonParser.getDecimalValue());
@@ -174,7 +177,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends ValueDeseri
         };
     }
 
-    private static Function<JsonParser, Object> getBigDecimalConverter() {
+    private static Function<JsonParser, @Nullable Object> getBigDecimalConverter() {
         return jsonParser -> {
             try {
                 return jsonParser.getDecimalValue();
@@ -184,7 +187,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends ValueDeseri
         };
     }
 
-    private static Function<JsonParser, Object> getDoubleConverter() {
+    private static Function<JsonParser, @Nullable Object> getDoubleConverter() {
         return jsonParser -> {
             try {
                 return jsonParser.getDoubleValue();
@@ -194,7 +197,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends ValueDeseri
         };
     }
 
-    private static Function<JsonParser, Object> getFloatConverter() {
+    private static Function<JsonParser, @Nullable Object> getFloatConverter() {
         return jsonParser -> {
             try {
                 return jsonParser.getFloatValue();
@@ -204,7 +207,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends ValueDeseri
         };
     }
 
-    private static Function<JsonParser, Object> getBigIntegerConverter() {
+    private static Function<JsonParser, @Nullable Object> getBigIntegerConverter() {
         return jsonParser -> {
             try {
                 return jsonParser.getBigIntegerValue();
@@ -214,7 +217,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends ValueDeseri
         };
     }
 
-    private static Function<JsonParser, Object> getLongConverter() {
+    private static Function<JsonParser, @Nullable Object> getLongConverter() {
         return jsonParser -> {
             try {
                 return jsonParser.getLongValue();
@@ -224,7 +227,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends ValueDeseri
         };
     }
 
-    private static Function<JsonParser, Object> getIntegerConverter() {
+    private static Function<JsonParser, @Nullable Object> getIntegerConverter() {
         return jsonParser -> {
             try {
                 return jsonParser.getIntValue();
@@ -234,7 +237,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends ValueDeseri
         };
     }
 
-    private static Function<JsonParser, Object> getShortConverter() {
+    private static Function<JsonParser, @Nullable Object> getShortConverter() {
         return jsonParser -> {
             try {
                 return jsonParser.getShortValue();
@@ -244,7 +247,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends ValueDeseri
         };
     }
 
-    private static Function<JsonParser, Object> getStringConverter() {
+    private static Function<JsonParser, @Nullable Object> getStringConverter() {
         return jsonParser -> {
             try {
                 return jsonParser.getValueAsString();
@@ -254,7 +257,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends ValueDeseri
         };
     }
 
-    private static Function<JsonParser, Object> getCharConverter() {
+    private static Function<JsonParser, @Nullable Object> getCharConverter() {
         return jsonParser -> {
             try {
                 var value = jsonParser.getValueAsString();
@@ -273,7 +276,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends ValueDeseri
         };
     }
 
-    private static Function<JsonParser, Object> getUUIDConverter() {
+    private static Function<JsonParser, @Nullable Object> getUUIDConverter() {
         return jsonParser -> {
             try {
                 var value = jsonParser.getValueAsString();
@@ -293,7 +296,7 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends ValueDeseri
     }
 
     @SuppressWarnings("unchecked")
-    private static Function<JsonParser, Object> getEnumConverter(Class<?> wrappedType) {
+    private static Function<JsonParser, @Nullable Object> getEnumConverter(Class<?> wrappedType) {
         var enumClass = (Class<? extends Enum<?>>) wrappedType.asSubclass(Enum.class);
         return jsonParser -> {
             try {

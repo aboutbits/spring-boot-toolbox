@@ -1,5 +1,6 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.mvc;
 
+import com.tngtech.archunit.junit.ArchIgnore;
 import it.aboutbits.springboot.toolbox._support.HttpTest;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithEmailAddress;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithIban;
@@ -8,7 +9,7 @@ import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithUUID;
 import it.aboutbits.springboot.toolbox.type.EmailAddress;
 import it.aboutbits.springboot.toolbox.type.Iban;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
-import lombok.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,8 +24,10 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ArchIgnore(reason = "This test class has no matching counterpart in the production code.")
 @HttpTest
-public class CustomTypeBindingsForControllerTest {
+@NullMarked
+class CustomTypeBindingsForControllerTest {
     @Autowired
     protected MockMvc mockMvc;
 
@@ -217,7 +220,7 @@ public class CustomTypeBindingsForControllerTest {
         }
     }
 
-    private @NonNull String performGetAndReturnResult(@NonNull String url) throws Exception {
+    private String performGetAndReturnResult(String url) throws Exception {
         var requestBuilder = MockMvcRequestBuilders.get(url)
                 .contentType(MediaType.APPLICATION_JSON);
 
@@ -227,7 +230,7 @@ public class CustomTypeBindingsForControllerTest {
                 .getContentAsString();
     }
 
-    private @NonNull String performPostAndReturnResult(@NonNull String url, @NonNull Object body) throws Exception {
+    private String performPostAndReturnResult(String url, Object body) throws Exception {
         var requestBuilder = MockMvcRequestBuilders.post(url)
                 .content(jsonMapper.writeValueAsString(body))
                 .contentType(MediaType.APPLICATION_JSON);
@@ -237,5 +240,4 @@ public class CustomTypeBindingsForControllerTest {
                 .getResponse()
                 .getContentAsString();
     }
-
 }

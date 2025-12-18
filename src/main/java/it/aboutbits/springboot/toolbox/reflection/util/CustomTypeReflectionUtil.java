@@ -1,11 +1,13 @@
 package it.aboutbits.springboot.toolbox.reflection.util;
 
 import it.aboutbits.springboot.toolbox.type.CustomType;
+import org.jspecify.annotations.NullMarked;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 
+@NullMarked
 public final class CustomTypeReflectionUtil {
     private CustomTypeReflectionUtil() {
     }

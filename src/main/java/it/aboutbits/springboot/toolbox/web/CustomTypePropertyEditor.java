@@ -4,8 +4,8 @@ import it.aboutbits.springboot.toolbox.jackson.CustomTypeDeserializer;
 import it.aboutbits.springboot.toolbox.reflection.util.CustomTypeReflectionUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
-import lombok.NonNull;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.beans.PropertyEditorSupport;
 import java.lang.reflect.Constructor;
@@ -15,11 +15,12 @@ import java.math.BigInteger;
 import java.util.UUID;
 import java.util.function.Function;
 
+@NullMarked
 public final class CustomTypePropertyEditor<T extends CustomType<?>> extends PropertyEditorSupport {
     private final Constructor<T> constructor;
-    private final Function<String, Object> typeConverter;
+    private final Function<@Nullable String, @Nullable Object> typeConverter;
 
-    public CustomTypePropertyEditor(@NonNull Class<T> customType) {
+    public CustomTypePropertyEditor(Class<T> customType) {
         try {
             this.constructor = CustomTypeReflectionUtil.getCustomTypeConstructor(customType);
         } catch (NoSuchMethodException e) {
@@ -59,7 +60,7 @@ public final class CustomTypePropertyEditor<T extends CustomType<?>> extends Pro
         }
     }
 
-    private static Function<String, Object> getTextToTypeConverter(Class<?> wrappedType) {
+    private static Function<@Nullable String, @Nullable Object> getTextToTypeConverter(Class<?> wrappedType) {
         if (Boolean.class.isAssignableFrom(wrappedType)) {
             return Boolean::parseBoolean;
         }
@@ -75,34 +76,34 @@ public final class CustomTypePropertyEditor<T extends CustomType<?>> extends Pro
             };
         }
         if (Byte.class.isAssignableFrom(wrappedType)) {
-            return Byte::parseByte;
+            return s -> s != null ? Byte.parseByte(s) : null;
         }
         if (Short.class.isAssignableFrom(wrappedType)) {
-            return Short::parseShort;
+            return s -> s != null ? Short.parseShort(s) : null;
         }
         if (Integer.class.isAssignableFrom(wrappedType)) {
-            return Integer::parseInt;
+            return s -> s != null ? Integer.parseInt(s) : null;
         }
         if (Long.class.isAssignableFrom(wrappedType)) {
-            return Long::parseLong;
+            return s -> s != null ? Long.parseLong(s) : null;
         }
         if (BigInteger.class.isAssignableFrom(wrappedType)) {
-            return BigInteger::new;
+            return val -> val != null ? new BigInteger(val) : null;
         }
         if (Float.class.isAssignableFrom(wrappedType)) {
-            return Float::parseFloat;
+            return s -> s != null ? Float.parseFloat(s) : null;
         }
         if (Double.class.isAssignableFrom(wrappedType)) {
-            return Double::parseDouble;
+            return s -> s != null ? Double.parseDouble(s) : null;
         }
         if (BigDecimal.class.isAssignableFrom(wrappedType)) {
-            return BigDecimal::new;
+            return val -> val != null ? new BigDecimal(val) : null;
         }
         if (ScaledBigDecimal.class.isAssignableFrom(wrappedType)) {
-            return ScaledBigDecimal::new;
+            return value -> value != null ? new ScaledBigDecimal(value) : null;
         }
         if (UUID.class.isAssignableFrom(wrappedType)) {
-            return UUID::fromString;
+            return name -> name != null ? UUID.fromString(name) : null;
         }
         if (Enum.class.isAssignableFrom(wrappedType)) {
             return toEnumConverter(wrappedType);
@@ -111,7 +112,7 @@ public final class CustomTypePropertyEditor<T extends CustomType<?>> extends Pro
     }
 
     @SuppressWarnings("unchecked")
-    private static Function<String, Object> toEnumConverter(Class<?> wrappedType) {
+    private static Function<@Nullable String, @Nullable Object> toEnumConverter(Class<?> wrappedType) {
         var enumClass = (Class<? extends Enum<?>>) wrappedType.asSubclass(Enum.class);
 
         return text -> {

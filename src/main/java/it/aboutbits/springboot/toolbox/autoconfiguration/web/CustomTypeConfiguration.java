@@ -7,6 +7,7 @@ import it.aboutbits.springboot.toolbox.type.CustomType;
 import it.aboutbits.springboot.toolbox.type.identity.EntityId;
 import it.aboutbits.springboot.toolbox.web.CustomTypePropertyEditor;
 import it.aboutbits.springboot.toolbox.web.EntityIdPropertyEditor;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,7 @@ import tools.jackson.databind.module.SimpleModule;
 import java.util.Set;
 
 @Configuration
+@NullMarked
 public class CustomTypeConfiguration {
     @ControllerAdvice
     public static class CustomTypePropertyBinder {
@@ -56,5 +58,4 @@ public class CustomTypeConfiguration {
         return builder -> builder
                 .addModule(module);
     }
-
 }

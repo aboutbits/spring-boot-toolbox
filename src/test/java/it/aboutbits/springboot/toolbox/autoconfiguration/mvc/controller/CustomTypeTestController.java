@@ -7,6 +7,7 @@ import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithUUID;
 import it.aboutbits.springboot.toolbox.type.EmailAddress;
 import it.aboutbits.springboot.toolbox.type.Iban;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/test/type")
+@NullMarked
 public class CustomTypeTestController {
     @GetMapping("/EmailAddress/as-path-variable/{value}")
     public EmailAddress emailAddressAsPathVariable(@PathVariable EmailAddress value) {

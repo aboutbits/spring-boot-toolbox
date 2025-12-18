@@ -1,5 +1,6 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.web;
 
+import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -8,6 +9,7 @@ import org.springframework.core.type.AnnotationMetadata;
 
 import java.util.Objects;
 
+@NullMarked
 public class CustomTypeScannerRegistrar implements ImportBeanDefinitionRegistrar {
 
     /**

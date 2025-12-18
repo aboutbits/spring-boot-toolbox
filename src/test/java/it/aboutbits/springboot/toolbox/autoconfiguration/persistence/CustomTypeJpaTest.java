@@ -1,11 +1,13 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.persistence;
 
+import com.tngtech.archunit.junit.ArchIgnore;
 import it.aboutbits.springboot.toolbox._support.ApplicationTest;
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.CustomTypeTestModel;
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.CustomTypeTestModelRepository;
 import it.aboutbits.springboot.toolbox.type.EmailAddress;
 import it.aboutbits.springboot.toolbox.type.Iban;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
+import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,8 +18,10 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ArchIgnore(reason = "This test class has no matching counterpart in the production code.")
 @ApplicationTest
-public class CustomTypeJpaTest {
+@NullMarked
+class CustomTypeJpaTest {
     @Autowired
     CustomTypeTestModelRepository repository;
 

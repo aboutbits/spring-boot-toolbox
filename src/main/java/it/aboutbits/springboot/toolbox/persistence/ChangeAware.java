@@ -1,7 +1,10 @@
 package it.aboutbits.springboot.toolbox.persistence;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.time.OffsetDateTime;
 
+@NullMarked
 public interface ChangeAware {
     OffsetDateTime getCreatedAt();
 

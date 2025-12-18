@@ -2,11 +2,13 @@ package it.aboutbits.springboot.toolbox.reflection.util;
 
 import it.aboutbits.springboot.toolbox.autoconfiguration.web.CustomTypeScanner;
 import it.aboutbits.springboot.toolbox.type.CustomType;
+import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+@NullMarked
 class CustomTypeReflectionUtilTest {
     @Test
     void testGetCustomTypeConstructorWithValidCustomType() throws Exception {
@@ -79,6 +81,7 @@ class CustomTypeReflectionUtilTest {
 
     @CustomTypeScanner.DisableCustomTypeConfiguration
     public static class InvalidCustomType implements CustomType<String> {
+        @SuppressWarnings("NullAway")
         @Override
         public String value() {
             return null;

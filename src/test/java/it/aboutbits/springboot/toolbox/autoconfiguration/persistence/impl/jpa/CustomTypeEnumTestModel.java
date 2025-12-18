@@ -10,11 +10,14 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.JavaType;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.NullUnmarked;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "custom_type_enum_test_model")
+@NullUnmarked
 public class CustomTypeEnumTestModel implements Identified<CustomTypeEnumTestModel.ID> {
     @Id
     @JavaType(CustomTypeEnumTestModel.ID.JavaType.class)
@@ -24,6 +27,7 @@ public class CustomTypeEnumTestModel implements Identified<CustomTypeEnumTestMod
         ENUM_FIRST, ENUM_OTHER, ENUM_LAST
     }
 
+    @NullMarked
     public record ID(
             CustomTypeEnum value
     ) implements EntityId<CustomTypeEnum> {

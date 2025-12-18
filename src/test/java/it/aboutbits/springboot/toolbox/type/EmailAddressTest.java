@@ -1,5 +1,7 @@
 package it.aboutbits.springboot.toolbox.type;
 
+import it.aboutbits.springboot.toolbox._support.ArchIgnoreGroupName;
+import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -9,8 +11,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
+@NullMarked
 class EmailAddressTest {
     @Nested
+    @ArchIgnoreGroupName
     class Constructor {
         @ParameterizedTest
         @ValueSource(strings = {"egon@aboutbits.it", "hans.mueller@aboutbits.it", "peterP_pansky@aboutbits.it"})
@@ -51,6 +55,7 @@ class EmailAddressTest {
     }
 
     @Nested
+    @ArchIgnoreGroupName
     class ToStringAndValue {
         @Test
         void shouldAlwaysReturnTheSameValue() {

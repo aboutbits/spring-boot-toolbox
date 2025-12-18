@@ -10,6 +10,7 @@ import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import it.aboutbits.springboot.toolbox.type.identity.EntityId;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NullMarked;
 import org.springdoc.core.customizers.PropertyCustomizer;
 
 import java.math.BigDecimal;
@@ -17,6 +18,7 @@ import java.math.BigInteger;
 import java.util.UUID;
 
 @Slf4j
+@NullMarked
 public class CustomTypePropertyCustomizer implements PropertyCustomizer {
     @Override
     @SneakyThrows(NoSuchMethodException.class)

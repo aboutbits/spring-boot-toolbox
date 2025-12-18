@@ -3,12 +3,13 @@ package it.aboutbits.springboot.toolbox.reflection.util;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
-import lombok.NonNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.lang.annotation.Annotation;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@NullMarked
 public final class ClassScannerUtil {
     private ClassScannerUtil() {
     }
@@ -34,14 +35,14 @@ public final class ClassScannerUtil {
         }
 
         @SuppressWarnings("unchecked")
-        public <T> Set<Class<? extends T>> getSubTypesOf(@NonNull Class<T> clazz) {
+        public <T> Set<Class<? extends T>> getSubTypesOf(Class<T> clazz) {
             return scanResult.getClassesImplementing(clazz).loadClasses()
                     .stream()
                     .map(item -> (Class<? extends T>) item)
                     .collect(Collectors.toSet());
         }
 
-        public Set<Class<?>> getClassesAnnotatedWith(@NonNull Class<? extends Annotation> clazz) {
+        public Set<Class<?>> getClassesAnnotatedWith(Class<? extends Annotation> clazz) {
             var result = scanResult.getClassesWithAnnotation(clazz);
             return result.stream().map(
                     ClassInfo::loadClass

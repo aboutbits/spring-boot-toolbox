@@ -71,11 +71,13 @@ import org.hibernate.annotations.JavaType;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.type.descriptor.jdbc.CharJdbcType;
 import org.hibernate.type.descriptor.jdbc.UUIDJdbcType;
+import org.jspecify.annotations.NullUnmarked;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "wrapper_type_test_model")
+@NullUnmarked
 public class WrapperTypesModel implements Identified<WrapperTypesModel.ID> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

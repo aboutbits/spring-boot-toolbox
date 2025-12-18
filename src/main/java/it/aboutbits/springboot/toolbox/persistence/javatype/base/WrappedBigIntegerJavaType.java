@@ -6,12 +6,15 @@ import org.hibernate.type.descriptor.WrapperOptions;
 import org.hibernate.type.descriptor.java.AbstractClassJavaType;
 import org.hibernate.type.descriptor.jdbc.JdbcType;
 import org.hibernate.type.descriptor.jdbc.JdbcTypeIndicators;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.sql.Types;
 
+@NullMarked
 public abstract class WrappedBigIntegerJavaType<T extends CustomType<BigInteger>> extends AbstractClassJavaType<T> {
     private final transient Constructor<T> constructor;
 
@@ -34,7 +37,8 @@ public abstract class WrappedBigIntegerJavaType<T extends CustomType<BigInteger>
 
     @SuppressWarnings("unchecked")
     @Override
-    public <X> X unwrap(T id, Class<X> aClass, WrapperOptions wrapperOptions) {
+    @Nullable
+    public <X> X unwrap(@Nullable T id, Class<X> aClass, WrapperOptions wrapperOptions) {
         var javaTypeClass = getJavaTypeClass();
 
         if (id == null) {
@@ -53,7 +57,8 @@ public abstract class WrappedBigIntegerJavaType<T extends CustomType<BigInteger>
     @SuppressWarnings("unchecked")
     @SneakyThrows({InstantiationException.class, IllegalAccessException.class, InvocationTargetException.class})
     @Override
-    public <X> T wrap(X value, WrapperOptions wrapperOptions) {
+    @Nullable
+    public <X> T wrap(@Nullable X value, WrapperOptions wrapperOptions) {
         var clazz = getJavaTypeClass();
 
         if (value == null) {
