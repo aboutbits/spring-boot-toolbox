@@ -24,72 +24,72 @@ public final class CollectUtil {
     private CollectUtil() {
     }
 
-    public static <T, R> Set<R> collectToSet(Collection<T> items, Function<T, @Nullable R> mapper) {
+    public static <T, R> Set<R> collectToSet(Collection<T> items, NullableFunction<? super T, R> mapper) {
         return items.stream()
-                .map(mapper)
+                .map(mapper::apply)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public static <T, R> Set<R> collectToSet(Streamable<T> items, Function<T, @Nullable R> mapper) {
+    public static <T, R> Set<R> collectToSet(Streamable<T> items, NullableFunction<? super T, R> mapper) {
         return items.stream()
-                .map(mapper)
+                .map(mapper::apply)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public static <T, R> Set<R> collectToSet(Stream<T> items, Function<T, @Nullable R> mapper) {
+    public static <T, R> Set<R> collectToSet(Stream<T> items, NullableFunction<? super T, R> mapper) {
         return items
-                .map(mapper)
+                .map(mapper::apply)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toUnmodifiableSet());
     }
 
     @SuppressWarnings("java:S6204")
-    public static <T, R> List<R> collectToList(Collection<T> items, Function<T, @Nullable R> mapper) {
+    public static <T, R> List<R> collectToList(Collection<T> items, NullableFunction<? super T, R> mapper) {
         //noinspection SimplifyStreamApiCallChains
         return items.stream()
-                .map(mapper)
+                .map(mapper::apply)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toUnmodifiableList());
     }
 
     @SuppressWarnings("java:S6204")
-    public static <T, R> List<R> collectToList(Streamable<T> items, Function<T, @Nullable R> mapper) {
+    public static <T, R> List<R> collectToList(Streamable<T> items, NullableFunction<? super T, R> mapper) {
         //noinspection SimplifyStreamApiCallChains
         return items.stream()
-                .map(mapper)
+                .map(mapper::apply)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toUnmodifiableList());
     }
 
     @SuppressWarnings("java:S6204")
-    public static <T, R> List<R> collectToList(Stream<T> items, Function<T, @Nullable R> mapper) {
+    public static <T, R> List<R> collectToList(Stream<T> items, NullableFunction<? super T, R> mapper) {
         //noinspection SimplifyStreamApiCallChains
         return items
-                .map(mapper)
+                .map(mapper::apply)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public static <T, R> Stream<R> collectToStream(Collection<T> items, Function<T, @Nullable R> mapper) {
+    public static <T, R> Stream<R> collectToStream(Collection<T> items, NullableFunction<? super T, R> mapper) {
         //noinspection NullableProblems
         return items.stream()
-                .map(mapper)
+                .map(mapper::apply)
                 .filter(Objects::nonNull);
     }
 
-    public static <T, R> Stream<R> collectToStream(Streamable<T> items, Function<T, @Nullable R> mapper) {
+    public static <T, R> Stream<R> collectToStream(Streamable<T> items, NullableFunction<? super T, R> mapper) {
         //noinspection NullableProblems
         return items.stream()
-                .map(mapper)
+                .map(mapper::apply)
                 .filter(Objects::nonNull);
     }
 
-    public static <T, R> Stream<R> collectToStream(Stream<T> items, Function<T, @Nullable R> mapper) {
+    public static <T, R> Stream<R> collectToStream(Stream<T> items, NullableFunction<? super T, R> mapper) {
         //noinspection NullableProblems
         return items
-                .map(mapper)
+                .map(mapper::apply)
                 .filter(Objects::nonNull);
     }
 

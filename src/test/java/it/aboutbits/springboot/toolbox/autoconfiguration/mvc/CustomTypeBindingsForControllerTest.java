@@ -1,6 +1,6 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.mvc;
 
-import com.tngtech.archunit.junit.ArchIgnore;
+import it.aboutbits.archunit.toolbox.support.ArchIgnoreNoProductionCounterpart;
 import it.aboutbits.springboot.toolbox._support.HttpTest;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithEmailAddress;
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithIban;
@@ -24,7 +24,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ArchIgnore(reason = "This test class has no matching counterpart in the production code.")
+@ArchIgnoreNoProductionCounterpart
 @HttpTest
 @NullMarked
 class CustomTypeBindingsForControllerTest {

@@ -1,6 +1,6 @@
 package it.aboutbits.springboot.toolbox.type;
 
-import it.aboutbits.springboot.toolbox._support.ArchIgnoreGroupName;
+import it.aboutbits.archunit.toolbox.support.ArchIgnoreGroupName;
 import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,8 +13,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 
 @NullMarked
 class IbanTest {
-    @Nested
     @ArchIgnoreGroupName
+    @Nested
     class Constructor {
         @ParameterizedTest
         @ValueSource(
@@ -60,8 +60,8 @@ class IbanTest {
         }
     }
 
-    @Nested
     @ArchIgnoreGroupName
+    @Nested
     class ToStringAndValue {
         @Test
         void shouldAlwaysReturnTheSameValue() {

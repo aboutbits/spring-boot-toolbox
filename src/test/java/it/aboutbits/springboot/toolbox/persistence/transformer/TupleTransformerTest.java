@@ -1,6 +1,6 @@
 package it.aboutbits.springboot.toolbox.persistence.transformer;
 
-import it.aboutbits.springboot.toolbox._support.ArchIgnoreGroupName;
+import it.aboutbits.archunit.toolbox.support.ArchIgnoreGroupName;
 import it.aboutbits.springboot.toolbox.type.EmailAddress;
 import it.aboutbits.springboot.toolbox.type.Iban;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;

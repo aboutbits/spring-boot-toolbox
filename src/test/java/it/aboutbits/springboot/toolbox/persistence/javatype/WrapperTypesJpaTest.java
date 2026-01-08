@@ -1,8 +1,8 @@
 package it.aboutbits.springboot.toolbox.persistence.javatype;
 
-import com.tngtech.archunit.junit.ArchIgnore;
+import it.aboutbits.archunit.toolbox.support.ArchIgnoreGroupName;
+import it.aboutbits.archunit.toolbox.support.ArchIgnoreNoProductionCounterpart;
 import it.aboutbits.springboot.toolbox._support.ApplicationTest;
-import it.aboutbits.springboot.toolbox._support.ArchIgnoreGroupName;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.jpa.WrapperTypesModel;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.jpa.WrapperTypesModelRepository;
 import it.aboutbits.springboot.toolbox.persistence.javatype.impl.type.SampleEnum;
@@ -49,7 +49,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ArchIgnore(reason = "This test class has no matching counterpart in the production code.")
+@ArchIgnoreNoProductionCounterpart
 @ApplicationTest
 @NullMarked
 class WrapperTypesJpaTest {

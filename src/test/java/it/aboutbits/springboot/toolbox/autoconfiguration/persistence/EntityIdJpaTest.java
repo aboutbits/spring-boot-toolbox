@@ -1,6 +1,6 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.persistence;
 
-import com.tngtech.archunit.junit.ArchIgnore;
+import it.aboutbits.archunit.toolbox.support.ArchIgnoreNoProductionCounterpart;
 import it.aboutbits.springboot.toolbox._support.ApplicationTest;
 import it.aboutbits.springboot.toolbox._support.WithPersistence;
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.CustomTypeEnumTestModel;
@@ -17,7 +17,7 @@ import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ArchIgnore(reason = "This test class has no matching counterpart in the production code.")
+@ArchIgnoreNoProductionCounterpart
 @ApplicationTest
 @WithPersistence
 @NullMarked
