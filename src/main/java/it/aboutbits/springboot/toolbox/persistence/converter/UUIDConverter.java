@@ -2,15 +2,17 @@ package it.aboutbits.springboot.toolbox.persistence.converter;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.UUID;
 
 @Converter
-@NullUnmarked
+@NullMarked
 public class UUIDConverter implements AttributeConverter<UUID, String> {
     @Override
-    public String convertToDatabaseColumn(UUID attribute) {
+    @Nullable
+    public String convertToDatabaseColumn(@Nullable UUID attribute) {
         if (attribute == null) {
             return null;
         }
@@ -19,7 +21,8 @@ public class UUIDConverter implements AttributeConverter<UUID, String> {
     }
 
     @Override
-    public UUID convertToEntityAttribute(String dbData) {
+    @Nullable
+    public UUID convertToEntityAttribute(@Nullable String dbData) {
         if (dbData == null || dbData.isBlank()) {
             return null;
         }

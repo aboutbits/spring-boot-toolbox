@@ -42,7 +42,6 @@ class SortParameterResolverTest {
     @InjectMocks
     private SortParameterResolver sut;
 
-    @SuppressWarnings("NullAway.Init")
     @BeforeEach
     void setUp() {
         when(methodParameter.getParameterName()).thenReturn("sort");

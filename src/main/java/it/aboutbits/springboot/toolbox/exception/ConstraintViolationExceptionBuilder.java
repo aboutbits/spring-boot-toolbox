@@ -6,7 +6,7 @@ import jakarta.validation.Path;
 import jakarta.validation.metadata.ConstraintDescriptor;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -54,28 +54,32 @@ public final class ConstraintViolationExceptionBuilder {
         return !constraintViolations.isEmpty();
     }
 
-    @NullUnmarked
-    private record CustomConstraintViolation(String message, Path propertyPath) implements ConstraintViolation<Object> {
+    @NullMarked
+    public record CustomConstraintViolation(String message, Path propertyPath) implements ConstraintViolation<Object> {
         @Override
         public String getMessage() {
             return message;
         }
 
+        @Nullable
         @Override
         public String getMessageTemplate() {
             return null;
         }
 
+        @Nullable
         @Override
         public Object getRootBean() {
             return null;
         }
 
+        @Nullable
         @Override
         public Class<Object> getRootBeanClass() {
             return null;
         }
 
+        @Nullable
         @Override
         public Object getLeafBean() {
             return null;
@@ -86,6 +90,7 @@ public final class ConstraintViolationExceptionBuilder {
             return new Object[0];
         }
 
+        @Nullable
         @Override
         public Object getExecutableReturnValue() {
             return null;
@@ -96,16 +101,19 @@ public final class ConstraintViolationExceptionBuilder {
             return propertyPath;
         }
 
+        @Nullable
         @Override
         public Object getInvalidValue() {
             return null;
         }
 
+        @Nullable
         @Override
         public ConstraintDescriptor<?> getConstraintDescriptor() {
             return null;
         }
 
+        @Nullable
         @Override
         public <U> U unwrap(Class<U> type) {
             return null;

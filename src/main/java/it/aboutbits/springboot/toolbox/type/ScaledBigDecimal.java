@@ -188,7 +188,6 @@ public record ScaledBigDecimal(
     }
 
     @Override
-
     public String toString() {
         return this.value().toString();
     }
@@ -221,7 +220,6 @@ public record ScaledBigDecimal(
      * This is temporary. We need to avoid changing any rounding logic at the moment.
      */
     @Deprecated
-
     public BigDecimal toCurrency() {
         return this.value().setScale(2, RoundingMode.HALF_UP);
     }
@@ -231,7 +229,6 @@ public record ScaledBigDecimal(
      * This is temporary. We need to avoid changing any rounding logic at the moment.
      */
     @Deprecated
-
     public ScaledBigDecimal roundToCurrency() {
         return new ScaledBigDecimal(this.value().setScale(2, RoundingMode.HALF_UP));
     }
