@@ -1,5 +1,8 @@
 package it.aboutbits.springboot.toolbox.exception;
 
+import org.jspecify.annotations.NullMarked;
+
+@NullMarked
 public class ServerRuntimeException extends RuntimeException {
     public ServerRuntimeException() {
     }

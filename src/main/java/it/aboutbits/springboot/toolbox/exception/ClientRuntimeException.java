@@ -1,5 +1,8 @@
 package it.aboutbits.springboot.toolbox.exception;
 
+import org.jspecify.annotations.NullMarked;
+
+@NullMarked
 public class ClientRuntimeException extends RuntimeException {
     public ClientRuntimeException() {
     }

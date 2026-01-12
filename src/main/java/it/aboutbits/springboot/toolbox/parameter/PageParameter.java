@@ -5,12 +5,15 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 @Slf4j
 @ToString
 @Accessors(fluent = true)
+@NullMarked
 public final class PageParameter {
     @Getter
     @Setter
@@ -27,7 +30,7 @@ public final class PageParameter {
 
     private final PageInfo pageInfo;
 
-    private PageParameter(Integer page, Integer size) {
+    private PageParameter(@Nullable Integer page, @Nullable Integer size) {
         var actualPage = (page == null) ? 0 : page;
         var actualSize = (size == null) ? DEFAULT_PAGE_SIZE : size;
 
@@ -46,11 +49,11 @@ public final class PageParameter {
         pageInfo = new PageInfo(0, Integer.MAX_VALUE, false);
     }
 
-    public static PageParameter of(Integer page) {
+    public static PageParameter of(@Nullable Integer page) {
         return new PageParameter(page, null);
     }
 
-    public static PageParameter of(Integer page, Integer size) {
+    public static PageParameter of(@Nullable Integer page, @Nullable Integer size) {
         return new PageParameter(page, size);
     }
 

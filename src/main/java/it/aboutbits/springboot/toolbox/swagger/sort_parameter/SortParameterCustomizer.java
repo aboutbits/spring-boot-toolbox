@@ -4,8 +4,10 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.StringSchema;
 import it.aboutbits.springboot.toolbox.parameter.SortParameter;
+import org.jspecify.annotations.NullMarked;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 
+@NullMarked
 public class SortParameterCustomizer implements OpenApiCustomizer {
     private final String nameToMatch = "." + SortParameter.class.getSimpleName();
 

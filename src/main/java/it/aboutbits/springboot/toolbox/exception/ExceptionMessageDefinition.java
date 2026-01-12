@@ -1,5 +1,7 @@
 package it.aboutbits.springboot.toolbox.exception;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Use this to create a class or enum that defines the exception messages.
  * This way, the messages can be referenced by a constant rather than using plain strings.
@@ -16,6 +18,7 @@ package it.aboutbits.springboot.toolbox.exception;
  * }
  *}
  */
+@NullMarked
 public interface ExceptionMessageDefinition {
     String code();
 }

@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
+import org.jspecify.annotations.NullMarked;
 
 import java.math.BigDecimal;
 
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
 @Accessors(fluent = true)
 @EqualsAndHashCode
 @RequiredArgsConstructor
+@NullMarked
 public class WrapBigDecimalClass implements CustomType<BigDecimal> {
     private final BigDecimal value;
 }

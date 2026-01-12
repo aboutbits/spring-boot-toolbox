@@ -9,6 +9,7 @@ import it.aboutbits.springboot.toolbox.reflection.util.ClassScannerUtil;
 import it.aboutbits.springboot.toolbox.swagger.annotation.ForceSwaggerSchema;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NullMarked;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 
 import java.util.Arrays;
@@ -16,6 +17,7 @@ import java.util.LinkedHashMap;
 
 @RequiredArgsConstructor
 @Slf4j
+@NullMarked
 public class ForceSchemaCustomizer implements OpenApiCustomizer {
     private final ModelResolver modelResolver;
     private final ClassScannerUtil.ClassScanner classScanner;

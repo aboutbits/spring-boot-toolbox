@@ -1,7 +1,8 @@
 package it.aboutbits.springboot.toolbox.web;
 
 import it.aboutbits.springboot.toolbox.parameter.SortParameter;
-import lombok.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -11,6 +12,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import java.util.ArrayList;
 import java.util.Objects;
 
+@NullMarked
 public class SortParameterResolver implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -19,10 +21,10 @@ public class SortParameterResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public Object resolveArgument(
-            @NonNull MethodParameter parameter,
-            ModelAndViewContainer mavContainer,
+            MethodParameter parameter,
+            @Nullable ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest,
-            WebDataBinderFactory binderFactory
+            @Nullable WebDataBinderFactory binderFactory
     ) throws IllegalArgumentException {
         var sorts = webRequest.getParameterValues(
                 Objects.requireNonNull(parameter.getParameterName())
@@ -64,7 +66,7 @@ public class SortParameterResolver implements HandlerMethodArgumentResolver {
         return new SortParameter<>(sortFields);
     }
 
-    private org.springframework.data.domain.Sort.NullHandling nullHandlingFromString(@NonNull String value) {
+    private org.springframework.data.domain.Sort.NullHandling nullHandlingFromString(String value) {
         return switch (value.toLowerCase()) {
             case "first":
                 yield org.springframework.data.domain.Sort.NullHandling.NULLS_FIRST;

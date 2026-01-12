@@ -1,5 +1,8 @@
 package it.aboutbits.springboot.toolbox.persistence.transformer;
 
+import org.jspecify.annotations.NullMarked;
+
+@NullMarked
 public class TransformerRuntimeException extends RuntimeException {
     public TransformerRuntimeException() {
     }

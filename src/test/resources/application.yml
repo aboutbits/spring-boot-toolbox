@@ -1,6 +1,9 @@
 server:
   shutdown: graceful
 
+app:
+  name: Spring Boot Toolbox
+
 spring:
   lifecycle:
     timeout-per-shutdown-phase: 30s

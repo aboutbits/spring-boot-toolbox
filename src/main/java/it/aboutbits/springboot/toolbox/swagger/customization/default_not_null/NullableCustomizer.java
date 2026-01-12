@@ -2,11 +2,13 @@ package it.aboutbits.springboot.toolbox.swagger.customization.default_not_null;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.Schema;
+import org.jspecify.annotations.NullMarked;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 
 import java.util.ArrayList;
 import java.util.Map;
 
+@NullMarked
 public class NullableCustomizer implements OpenApiCustomizer {
     public static final String NULLABLE_MARKER = "NULLABLE";
 
@@ -68,7 +70,7 @@ public class NullableCustomizer implements OpenApiCustomizer {
 
         if (property.getItems() != null && property.getItems().get$ref() != null && property.getItems()
                 .get$ref()
-                .endsWith("?nullable=true")) {
+                .endsWith(NULLABLE_MARKER)) {
             return true;
         }
 

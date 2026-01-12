@@ -4,6 +4,7 @@ import it.aboutbits.springboot.toolbox.reflection.util.ClassScannerUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NullMarked;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Getter
+@NullMarked
 public class CustomTypeScanner {
     private static final String LIBRARY_BASE_PACKAGE_NAME = "it.aboutbits.springboot.toolbox";
 

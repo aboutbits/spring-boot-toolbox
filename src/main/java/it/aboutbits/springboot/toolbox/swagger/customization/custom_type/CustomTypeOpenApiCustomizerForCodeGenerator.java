@@ -6,17 +6,18 @@ import it.aboutbits.springboot.toolbox.swagger.SwaggerMetaUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import it.aboutbits.springboot.toolbox.type.identity.EntityId;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NullMarked;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 
 import static it.aboutbits.springboot.toolbox.swagger.customization.custom_type.SchemaUtil.getClassFromSchemaReference;
 
 @Slf4j
+@NullMarked
 public class CustomTypeOpenApiCustomizerForCodeGenerator implements OpenApiCustomizer {
     @Override
     public void customise(OpenAPI openApi) {
         openApi.getComponents().getSchemas().forEach(this::updateSchema);
     }
-
 
     private void updateSchema(String fqn, Schema<?> schema) {
         var type = getClassFromSchemaReference(fqn);
@@ -40,6 +41,5 @@ public class CustomTypeOpenApiCustomizerForCodeGenerator implements OpenApiCusto
             description = SwaggerMetaUtil.setIsCustomType(description, true);
             schema.setDescription(description);
         }
-
     }
 }

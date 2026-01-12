@@ -1,10 +1,11 @@
 package it.aboutbits.springboot.toolbox._support.persistence;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.sql.Connection;
@@ -15,9 +16,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
 
-@Log4j2
+@Slf4j
+@NullMarked
 public class PostgresTestcontainer implements BeforeAllCallback, AfterEachCallback {
-    public static final PostgreSQLContainer<?> POSTGRES_CONTAINER;
+    public static final PostgreSQLContainer POSTGRES_CONTAINER;
     private static final Set<String> TABLES_TO_IGNORE = Set.of(
             "databasechangelog",
             "databasechangeloglock"
@@ -25,7 +27,7 @@ public class PostgresTestcontainer implements BeforeAllCallback, AfterEachCallba
 
     // See https://www.postgresql.org/docs/current/non-durability.html for details about PostgreSQL CLI parameters
     static {
-        POSTGRES_CONTAINER = new PostgreSQLContainer<>(
+        POSTGRES_CONTAINER = new PostgreSQLContainer(
                 DockerImageName.parse("postgres:16").asCompatibleSubstituteFor("postgres"))
                 .withDatabaseName("app")
                 .withCommand(
@@ -62,7 +64,7 @@ public class PostgresTestcontainer implements BeforeAllCallback, AfterEachCallba
             cleanTablesData(tablesToClean, connection);
             connection.commit();
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            log.error("Error cleaning database", exception);
         }
     }
 

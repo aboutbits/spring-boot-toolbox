@@ -4,15 +4,16 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.responses.ApiResponses;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NullMarked;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 
 @RequiredArgsConstructor
+@NullMarked
 public class LogoutCustomizer implements OpenApiCustomizer {
-    @NonNull
+
     private final String logoutUrl;
-    @NonNull
+
     private final String tag;
 
     @Override

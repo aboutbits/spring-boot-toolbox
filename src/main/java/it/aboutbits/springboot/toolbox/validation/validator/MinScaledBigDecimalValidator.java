@@ -4,10 +4,13 @@ import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.constraints.Min;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class MinScaledBigDecimalValidator implements ConstraintValidator<Min, ScaledBigDecimal> {
 
-    private Long lowerBound;
+    private @Nullable Long lowerBound;
 
     @Override
     public void initialize(Min constraintAnnotation) {
@@ -15,7 +18,11 @@ public class MinScaledBigDecimalValidator implements ConstraintValidator<Min, Sc
     }
 
     @Override
-    public boolean isValid(ScaledBigDecimal scaledBigDecimal, ConstraintValidatorContext context) {
+    public boolean isValid(@Nullable ScaledBigDecimal scaledBigDecimal, ConstraintValidatorContext context) {
+        if (lowerBound == null) {
+            throw new IllegalStateException("lowerBound must be initialized");
+        }
+
         if (scaledBigDecimal == null) {
             return true;
         }

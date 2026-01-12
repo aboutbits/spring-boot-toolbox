@@ -2,10 +2,11 @@ package it.aboutbits.springboot.toolbox.persistence.transformer;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.hibernate.query.NativeQuery;
-import org.hibernate.transform.ResultTransformer;
+import org.hibernate.query.Query;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -13,24 +14,23 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
+@NullMarked
 public final class QueryTransformer<T> {
-
     private final EntityManager entityManager;
     private final TupleTransformer<T> tupleTransformer;
-    private org.hibernate.query.Query<?> unwrappedQuery;
+    private @Nullable Query<?> unwrappedQuery = null;
     private boolean isNative = false;
 
     private QueryTransformer(EntityManager entityManager, Class<T> outputClass) {
         this.entityManager = entityManager;
         this.tupleTransformer = new TupleTransformer<>(outputClass);
-
     }
 
     public static <T> QueryTransformer<T> of(EntityManager entityManager, Class<T> outputClass) {
         return new QueryTransformer<>(entityManager, outputClass);
     }
 
-    public QueryTransformer<T> withQuery(Query query) {
+    public QueryTransformer<T> withQuery(jakarta.persistence.Query query) {
         if (query instanceof NativeQuery<?>) {
             this.isNative = true;
         }
@@ -66,10 +66,13 @@ public final class QueryTransformer<T> {
                 .orElseThrow(EntityNotFoundException::new);
     }
 
-    @SuppressWarnings({"deprecation", "unchecked"})
-    private List<T> asList(Integer pageNumber, Integer pageSize) {
-        unwrappedQuery.setResultTransformer(
-                (ResultTransformer<?>) (objects, aliases) -> tupleTransformer.transform(objects)
+    private List<T> asList(@Nullable Integer pageNumber, @Nullable Integer pageSize) {
+        if (unwrappedQuery == null) {
+            throw new IllegalStateException("Query not set!");
+        }
+
+        unwrappedQuery.setTupleTransformer(
+                tupleTransformer
         );
 
         if (pageSize != null && pageNumber != null) {
@@ -78,10 +81,15 @@ public final class QueryTransformer<T> {
                     .setFirstResult(pageSize * pageNumber);
         }
 
+        // noinspection unchecked
         return (List<T>) unwrappedQuery.getResultList();
     }
 
     private Page<T> asPageQuery(int pageNumber, int pageSize) {
+        if (unwrappedQuery == null) {
+            throw new IllegalStateException("Query not set!");
+        }
+
         var selectPattern = "(?i)select.*?[ \\t]*from ";
         var queryString = unwrappedQuery.getQueryString().trim().replaceAll("\\R", " ");
         var countQueryString = queryString.replaceFirst(selectPattern, "select count(*) from ");
@@ -111,6 +119,10 @@ public final class QueryTransformer<T> {
     }
 
     private Page<T> asPageNativeQuery(int pageNumber, int pageSize) {
+        if (unwrappedQuery == null) {
+            throw new IllegalStateException("Query not set!");
+        }
+
         var queryString = unwrappedQuery.getQueryString().trim().replaceAll("\\R", " ");
         var countQueryString = "select count(*) from (" + queryString + ") as count";
         var parameters = unwrappedQuery.getParameters();
@@ -147,7 +159,7 @@ public final class QueryTransformer<T> {
         return countQueryResults.getFirst();
     }
 
-    private static long getCount(Query countQuery) {
+    private static long getCount(jakarta.persistence.Query countQuery) {
         var countQueryResults = countQuery.getResultList();
         if (countQueryResults == null || countQueryResults.isEmpty()) {
             return 0L;

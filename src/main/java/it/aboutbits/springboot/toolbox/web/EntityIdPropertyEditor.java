@@ -1,10 +1,12 @@
 package it.aboutbits.springboot.toolbox.web;
 
 import it.aboutbits.springboot.toolbox.type.identity.EntityId;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.beans.PropertyEditorSupport;
 
+@NullMarked
 public final class EntityIdPropertyEditor extends PropertyEditorSupport {
     @SuppressWarnings("unchecked")
     @Override
@@ -17,7 +19,7 @@ public final class EntityIdPropertyEditor extends PropertyEditorSupport {
 
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
-        EntityId<?> value = null;
+        EntityId<?> value;
         try {
             var theValue = Long.parseLong(text);
             value = new EntityId<Long>() {
@@ -31,7 +33,7 @@ public final class EntityIdPropertyEditor extends PropertyEditorSupport {
                     return String.valueOf(value());
                 }
             };
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException _) {
             value = new EntityId<String>() {
                 @Override
                 public String value() {

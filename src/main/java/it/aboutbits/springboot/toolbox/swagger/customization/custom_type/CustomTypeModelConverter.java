@@ -10,16 +10,20 @@ import it.aboutbits.springboot.toolbox.type.CustomType;
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import it.aboutbits.springboot.toolbox.type.identity.EntityId;
 import lombok.SneakyThrows;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.UUID;
 
+@NullMarked
 public class CustomTypeModelConverter implements ModelConverter {
 
     @Override
     @SneakyThrows(NoSuchMethodException.class)
+    @Nullable
     public Schema<?> resolve(
             AnnotatedType annotatedType,
             ModelConverterContext context,

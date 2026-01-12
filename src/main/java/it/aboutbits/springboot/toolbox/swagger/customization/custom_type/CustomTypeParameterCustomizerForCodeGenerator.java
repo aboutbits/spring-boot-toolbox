@@ -5,16 +5,20 @@ import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import it.aboutbits.springboot.toolbox.swagger.SwaggerMetaUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springdoc.core.customizers.ParameterCustomizer;
 import org.springframework.core.MethodParameter;
 
 import static it.aboutbits.springboot.toolbox.swagger.customization.custom_type.SchemaUtil.getClassFromSchemaReference;
 
 @Slf4j
+@NullMarked
 public class CustomTypeParameterCustomizerForCodeGenerator implements ParameterCustomizer {
     @SuppressWarnings("checkstyle:MethodLength")
     @Override
-    public Parameter customize(Parameter parameter, MethodParameter methodParameter) {
+    @Nullable
+    public Parameter customize(@Nullable Parameter parameter, MethodParameter methodParameter) {
         if (parameter == null) {
             return null;
         }
@@ -45,7 +49,6 @@ public class CustomTypeParameterCustomizerForCodeGenerator implements ParameterC
             log.error("Can not resolve type for schema reference: {}", schemaRef);
             return parameter;
         }
-
 
         var rawClass = optionalClass.get();
 

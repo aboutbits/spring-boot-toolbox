@@ -2,12 +2,14 @@ package it.aboutbits.springboot.toolbox.swagger.customization.nested_structure;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import it.aboutbits.springboot.toolbox.swagger.SwaggerMetaUtil;
+import org.jspecify.annotations.NullMarked;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 
 /**
  * We assume that records that are inner classes of other records should be treated as substructure.
  * As such, we set the corresponding metadata for the FE code-generator.
  */
+@NullMarked
 public class NestedStructuresCustomizer implements OpenApiCustomizer {
     @Override
     public void customise(OpenAPI openApi) {
@@ -25,7 +27,6 @@ public class NestedStructuresCustomizer implements OpenApiCustomizer {
                                     true
                             ));
                         }
-
                     } catch (ClassNotFoundException ignored) {
                         // do nothing
                     }

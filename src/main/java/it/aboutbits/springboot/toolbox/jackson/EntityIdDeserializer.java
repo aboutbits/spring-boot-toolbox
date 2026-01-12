@@ -1,11 +1,13 @@
 package it.aboutbits.springboot.toolbox.jackson;
 
 import it.aboutbits.springboot.toolbox.type.identity.EntityId;
+import org.jspecify.annotations.NullMarked;
 import tools.jackson.core.JsonParser;
 import tools.jackson.core.exc.InputCoercionException;
 import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.ValueDeserializer;
 
+@NullMarked
 public class EntityIdDeserializer extends ValueDeserializer<EntityId<?>> {
     /*
     This is needed because EntityId is just the interface. Jackson does not know what implementation to take.

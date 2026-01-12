@@ -1,5 +1,7 @@
 package it.aboutbits.springboot.toolbox.type;
 
+import it.aboutbits.archunit.toolbox.support.ArchIgnoreGroupName;
+import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -9,7 +11,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
+@NullMarked
 class IbanTest {
+    @ArchIgnoreGroupName
     @Nested
     class Constructor {
         @ParameterizedTest
@@ -49,12 +53,14 @@ class IbanTest {
 
         @Test
         void null_shouldFail() {
+            //noinspection DataFlowIssue
             assertThatIllegalArgumentException().isThrownBy(
                     () -> new Iban(null)
             );
         }
     }
 
+    @ArchIgnoreGroupName
     @Nested
     class ToStringAndValue {
         @Test

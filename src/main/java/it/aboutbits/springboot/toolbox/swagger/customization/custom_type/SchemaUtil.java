@@ -1,7 +1,10 @@
 package it.aboutbits.springboot.toolbox.swagger.customization.custom_type;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.Optional;
 
+@NullMarked
 final class SchemaUtil {
     private SchemaUtil() {
     }

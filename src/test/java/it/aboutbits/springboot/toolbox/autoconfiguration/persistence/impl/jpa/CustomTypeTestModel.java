@@ -20,6 +20,9 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.JavaType;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.NullUnmarked;
 
 import java.util.UUID;
 
@@ -27,7 +30,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @Table(name = "custom_type_test_model")
-public class CustomTypeTestModel implements Identified<CustomTypeTestModel.ID> {
+@NullUnmarked
+public class CustomTypeTestModel implements Identified<CustomTypeTestModel.@NonNull ID> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JavaType(CustomTypeTestModel.ID.JavaType.class)
@@ -53,6 +57,7 @@ public class CustomTypeTestModel implements Identified<CustomTypeTestModel.ID> {
     @JavaType(ReferencedTestModel.ID.JavaType.class)
     private ReferencedTestModel.ID referencedId;
 
+    @NullMarked
     public record ID(
             Long value
     ) implements EntityId<Long> {

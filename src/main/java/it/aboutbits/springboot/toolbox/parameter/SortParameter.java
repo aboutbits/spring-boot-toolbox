@@ -2,13 +2,15 @@ package it.aboutbits.springboot.toolbox.parameter;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.experimental.Accessors;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -19,6 +21,7 @@ import java.util.stream.Stream;
  * with various configurations, including direction and null-handling behavior.
  */
 @EqualsAndHashCode
+@NullMarked
 public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
     private static final String DEFAULT_SORT_PROPERTY = "id";
     private static final Sort.Direction DEFAULT_SORT_DIRETION = Sort.Direction.ASC;
@@ -27,7 +30,7 @@ public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
     @Getter
     private final List<SortField> sortFields = new ArrayList<>();
 
-    public SortParameter(List<SortField> sortFields) {
+    public SortParameter(@Nullable List<SortField> sortFields) {
         if (sortFields == null) {
             return;
         }
@@ -59,7 +62,7 @@ public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
      */
     @SafeVarargs
     public static <T extends Enum<?> & Definition> SortParameter<T> by(
-            @NonNull T... sortDefinitions
+            T... sortDefinitions
     ) {
         return new SortParameter<>(
                 Stream.of(sortDefinitions)
@@ -85,8 +88,8 @@ public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
      * @return an instance of {@link SortParameter} configured with the given sort definition and direction.
      */
     public static <T extends Enum<?> & Definition> SortParameter<T> by(
-            @NonNull T sortDefinition,
-            @NonNull Sort.Direction direction
+            T sortDefinition,
+            Sort.Direction direction
     ) {
         return new SortParameter<>(
                 List.of(new SortField(
@@ -110,9 +113,9 @@ public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
      * @return an instance of {@link SortParameter} configured with the given sort definition, direction, and null-handling behavior.
      */
     public static <T extends Enum<?> & Definition> SortParameter<T> by(
-            @NonNull T sortDefinition,
-            @NonNull Sort.Direction direction,
-            @NonNull Sort.NullHandling nullHandling
+            T sortDefinition,
+            Sort.Direction direction,
+            Sort.NullHandling nullHandling
     ) {
         return new SortParameter<>(
                 List.of(new SortField(
@@ -134,7 +137,7 @@ public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
      */
     @SafeVarargs
     public final SortParameter<T> and(
-            @NonNull T... sortDefinitions
+            T... sortDefinitions
     ) {
         sortFields.addAll(
                 Stream.of(sortDefinitions)
@@ -160,8 +163,8 @@ public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
      * @return the updated {@link SortParameter} instance containing the new sorting criterion.
      */
     public SortParameter<T> and(
-            @NonNull T sortDefinition,
-            @NonNull Sort.Direction direction
+            T sortDefinition,
+            Sort.Direction direction
     ) {
         sortFields.add(
                 new SortField(
@@ -185,9 +188,9 @@ public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
      * @return the updated {@link SortParameter} instance containing the new sorting criterion.
      */
     public SortParameter<T> and(
-            @NonNull T sortDefinition,
-            @NonNull Sort.Direction direction,
-            @NonNull Sort.NullHandling nullHandling
+            T sortDefinition,
+            Sort.Direction direction,
+            Sort.NullHandling nullHandling
     ) {
         sortFields.add(
                 new SortField(
@@ -209,7 +212,7 @@ public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
      * @return the current {@link SortParameter} if it has defined sorting fields,
      * or the provided fallback if it does not.
      */
-    public SortParameter<T> or(@NonNull SortParameter<T> fallback) {
+    public SortParameter<T> or(SortParameter<T> fallback) {
         return sortFields.isEmpty() ? fallback : this;
     }
 
@@ -223,7 +226,7 @@ public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
      * @return an instance of {@link Sort} created using the transformed key-value mapping,
      * excluding default sorting behavior.
      */
-    public Sort buildSortWithoutDefault(@NonNull Map<T, String> mapping) {
+    public Sort buildSortWithoutDefault(Map<T, String> mapping) {
         var stringMapping = mapping.entrySet().stream()
                 .collect(Collectors.toMap(
                         entry -> entry.getKey().name(),
@@ -243,7 +246,7 @@ public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
      *                The enumeration keys must implement the `name()` method to retrieve their string representation.
      * @return an instance of {@link Sort} created using the transformed key-value mapping with default sorting behavior.
      */
-    public Sort buildSort(@NonNull Map<T, String> mapping) {
+    public Sort buildSort(Map<T, String> mapping) {
         var stringMapping = mapping.entrySet().stream()
                 .collect(Collectors.toMap(
                         entry -> entry.getKey().name(),
@@ -253,7 +256,7 @@ public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
         return buildSort(stringMapping, true);
     }
 
-    private Sort buildSort(@NonNull Map<String, String> mapping, boolean withDefault) {
+    private Sort buildSort(Map<String, String> mapping, boolean withDefault) {
         if (sortFields.isEmpty()) {
             return withDefault ? getMappedDefaultSort(mapping) : Sort.unsorted();
         }
@@ -261,12 +264,17 @@ public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
         var additionalSort = Sort.by(
                 new ArrayList<>(
                         sortFields.stream()
-                                .filter(sortField -> mapping.containsKey(sortField.property()))
-                                .map(sortField -> new Sort.Order(
-                                        sortField.direction(),
-                                        mapping.get(sortField.property()),
-                                        sortField.nullHandling()
-                                ))
+                                .map(sortField -> {
+                                    if (!mapping.containsKey(sortField.property())) {
+                                        return null;
+                                    }
+                                    return new Sort.Order(
+                                            sortField.direction(),
+                                            mapping.get(sortField.property()),
+                                            sortField.nullHandling()
+                                    );
+                                })
+                                .filter(Objects::nonNull)
                                 .toList()
                 )
         );
@@ -285,9 +293,9 @@ public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
     }
 
     public record SortField(
-            @NonNull String property,
-            @NonNull Sort.Direction direction,
-            @NonNull Sort.NullHandling nullHandling
+            String property,
+            Sort.Direction direction,
+            Sort.NullHandling nullHandling
     ) {
     }
 

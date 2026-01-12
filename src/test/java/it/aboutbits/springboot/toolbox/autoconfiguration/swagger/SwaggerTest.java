@@ -1,7 +1,8 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.swagger;
 
+import it.aboutbits.archunit.toolbox.support.ArchIgnoreNoProductionCounterpart;
 import it.aboutbits.springboot.toolbox._support.HttpTest;
-import lombok.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -10,8 +11,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ArchIgnoreNoProductionCounterpart
 @HttpTest
-public class SwaggerTest {
+@NullMarked
+class SwaggerTest {
     @Autowired
     MockMvc mockMvc;
 
@@ -24,7 +27,7 @@ public class SwaggerTest {
         assertThat(swaggerSchemaString).isNotBlank();
     }
 
-    private @NonNull String performGetAndReturnResult(@NonNull String url) throws Exception {
+    private String performGetAndReturnResult(String url) throws Exception {
         var requestBuilder = MockMvcRequestBuilders.get(url)
                 .contentType(MediaType.APPLICATION_JSON);
 

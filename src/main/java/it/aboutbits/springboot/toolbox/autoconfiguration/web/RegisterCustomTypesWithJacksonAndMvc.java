@@ -1,5 +1,6 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.web;
 
+import org.jspecify.annotations.NullMarked;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.ElementType;
@@ -10,6 +11,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Import({CustomTypeScannerRegistrar.class, CustomTypeConfiguration.class})
+@NullMarked
 public @interface RegisterCustomTypesWithJacksonAndMvc {
     String[] additionalTypePackages() default "";
 }

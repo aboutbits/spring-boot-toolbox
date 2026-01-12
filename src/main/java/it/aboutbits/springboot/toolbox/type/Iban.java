@@ -1,7 +1,8 @@
 package it.aboutbits.springboot.toolbox.type;
 
 import it.aboutbits.springboot.toolbox.validation.util.IbanValidator;
-import lombok.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -11,8 +12,9 @@ import java.util.Optional;
  *
  * @param value the IBAN value, which must be a valid and non-null string
  */
+@NullMarked
 public record Iban(String value) implements CustomType<String>, Comparable<Iban> {
-    public Iban(String value) {
+    public Iban(@Nullable String value) {
         if (value == null || IbanValidator.isNotValid(value.toUpperCase())) {
             throw new IllegalArgumentException("Value is not a valid IBAN: " + value);
         }
@@ -20,7 +22,6 @@ public record Iban(String value) implements CustomType<String>, Comparable<Iban>
         this.value = value.toUpperCase();
     }
 
-    @NonNull
     @Override
     public String toString() {
         return value;
@@ -31,7 +32,7 @@ public record Iban(String value) implements CustomType<String>, Comparable<Iban>
      *
      * @return An {@code Optional} containing the ABI value if the IBAN is Italian, or an empty {@code Optional} otherwise.
      */
-    @NonNull
+
     public Optional<String> getAbiIfItalian() {
         var iban = value();
 
@@ -42,7 +43,7 @@ public record Iban(String value) implements CustomType<String>, Comparable<Iban>
     }
 
     @Override
-    public int compareTo(@NonNull Iban o) {
+    public int compareTo(Iban o) {
         return value().compareTo(o.value());
     }
 }
