@@ -1,7 +1,6 @@
 package it.aboutbits.springboot.toolbox.util;
 
 import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -381,7 +380,7 @@ class CollectUtilTest {
         @DisplayName("Should convert Collection to Map using key and value mappers")
         void shouldConvertCollectionToMapUsingMappers() {
             // given
-            var items = (Collection<@Nullable String>) Arrays.asList("a", "bb", "ccc");
+            var items = (Collection<String>) Arrays.asList("a", "bb", "ccc");
 
             // when
             var result = CollectUtil.collectToMap(items, String::length, Function.identity());
@@ -398,7 +397,7 @@ class CollectUtilTest {
         @DisplayName("Should throw on duplicate keys according to Collectors.toMap default behavior")
         void shouldThrowOnDuplicateKeys() {
             // given
-            var items = (Collection<@Nullable String>) Arrays.asList("a", "b"); // both have length of 1
+            var items = (Collection<String>) Arrays.asList("a", "b"); // both have length of 1
 
             // when / then
             assertThatIllegalStateException().isThrownBy(
@@ -431,7 +430,7 @@ class CollectUtilTest {
         @DisplayName("Should convert Stream to Map using key and value mappers")
         void shouldConvertStreamToMapUsingMappers() {
             // given
-            var items = Stream.<@Nullable String>of("m", "nn");
+            var items = Stream.of("m", "nn");
 
             // when
             var result = CollectUtil.collectToMap(items, String::length, Function.identity());
@@ -447,7 +446,7 @@ class CollectUtilTest {
         @DisplayName("Should return empty map for empty collection")
         void shouldReturnEmptyMapForEmptyCollection() {
             // given
-            var items = Collections.<@Nullable String>emptyList();
+            var items = Collections.<String>emptyList();
 
             // when
             var result = CollectUtil.collectToMap(items, String::length, Function.identity());
@@ -473,7 +472,7 @@ class CollectUtilTest {
         @DisplayName("Should return empty map for empty stream")
         void shouldReturnEmptyMapForEmptyStream() {
             // given
-            var items = Stream.<@Nullable String>empty();
+            var items = Stream.<String>empty();
 
             // when
             var result = CollectUtil.collectToMap(items, String::length, Function.identity());
