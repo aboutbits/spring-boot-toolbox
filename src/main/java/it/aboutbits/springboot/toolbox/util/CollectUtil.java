@@ -1,7 +1,6 @@
 package it.aboutbits.springboot.toolbox.util;
 
 import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.Nullable;
 import org.springframework.data.util.Streamable;
 
 import java.util.Collection;
@@ -94,12 +93,11 @@ public final class CollectUtil {
     }
 
     public static <T, K, R> Map<K, R> collectToMap(
-            Collection<@Nullable T> items,
+            Collection<T> items,
             Function<T, K> keyMapper,
             Function<T, R> valueMapper
     ) {
         return items.stream()
-                .filter(Objects::nonNull)
                 .collect(Collectors.toMap(keyMapper, valueMapper));
     }
 
@@ -113,12 +111,11 @@ public final class CollectUtil {
     }
 
     public static <T, K, R> Map<K, R> collectToMap(
-            Stream<@Nullable T> items,
+            Stream<T> items,
             Function<T, K> keyMapper,
             Function<T, R> valueMapper
     ) {
         return items
-                .filter(Objects::nonNull)
                 .collect(Collectors.toMap(keyMapper, valueMapper));
     }
 }
