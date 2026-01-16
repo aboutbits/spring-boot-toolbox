@@ -130,12 +130,13 @@ public class NullableCustomizer implements OpenApiCustomizer {
             AnnotatedType annotatedType,
             Annotation[] annotations
     ) {
-        if (annotatedType.isAnnotationPresent(org.jspecify.annotations.Nullable.class)) {
-            return true;
+        for (var annotation : annotatedType.getAnnotations()) {
+            if (annotation.annotationType().getSimpleName().equals("Nullable")) {
+                return true;
+            }
         }
         for (var annotation : annotations) {
-            var name = annotation.annotationType().getName();
-            if (name.equals("org.springframework.lang.Nullable") || name.equals("jakarta.annotation.Nullable")) {
+            if (annotation.annotationType().getSimpleName().equals("Nullable")) {
                 return true;
             }
         }
