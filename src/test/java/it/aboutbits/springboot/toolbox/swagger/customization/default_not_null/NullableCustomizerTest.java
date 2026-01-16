@@ -7,10 +7,10 @@ import io.swagger.v3.oas.models.media.StringSchema;
 import org.jspecify.annotations.NullUnmarked;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @NullUnmarked
 class NullableCustomizerTest {
@@ -52,6 +52,7 @@ class NullableCustomizerTest {
 
     @Test
     void shouldFindFieldInSuperClass() {
+        // given
         var customizer = new NullableCustomizer();
         var openApi = new OpenAPI();
         var components = new Components();
@@ -64,15 +65,19 @@ class NullableCustomizerTest {
         components.addSchemas(SubClass.class.getName(), subClassSchema);
         openApi.setComponents(components);
 
-        assertDoesNotThrow(() -> customizer.customise(openApi));
+        // when
+        customizer.customise(openApi);
 
-        List<String> required = subClassSchema.getRequired();
-        assertTrue(required != null && required.contains("subField"), "subField should be required");
-        assertTrue(required == null || !required.contains("baseField"), "baseField should NOT be required");
+        // then
+        var required = subClassSchema.getRequired();
+
+        assertThat(required).as("subField should be required").contains("subField");
+        assertThat(required).as("baseField should NOT be required").doesNotContain("baseField");
     }
 
     @Test
     void shouldFindAnnotationOnGetter() {
+        // given
         var customizer = new NullableCustomizer();
         var openApi = new OpenAPI();
         var components = new Components();
@@ -84,14 +89,17 @@ class NullableCustomizerTest {
         components.addSchemas(MethodAnnotated.class.getName(), schema);
         openApi.setComponents(components);
 
-        assertDoesNotThrow(() -> customizer.customise(openApi));
+        // when
+        customizer.customise(openApi);
 
-        List<String> required = schema.getRequired();
-        assertTrue(required == null || !required.contains("annotatedGetter"), "annotatedGetter should NOT be required");
+        // then
+        var required = schema.getRequired();
+        assertThat(required).as("annotatedGetter should NOT be required").isNullOrEmpty();
     }
 
     @Test
     void shouldFindAnnotationOnDirectMethod() {
+        // given
         var customizer = new NullableCustomizer();
         var openApi = new OpenAPI();
         var components = new Components();
@@ -103,14 +111,17 @@ class NullableCustomizerTest {
         components.addSchemas(DirectMethodAnnotated.class.getName(), schema);
         openApi.setComponents(components);
 
-        assertDoesNotThrow(() -> customizer.customise(openApi));
+        // when
+        customizer.customise(openApi);
 
-        List<String> required = schema.getRequired();
-        assertTrue(required == null || !required.contains("directMethod"), "directMethod should NOT be required");
+        // then
+        var required = schema.getRequired();
+        assertThat(required).as("directMethod should NOT be required").isNullOrEmpty();
     }
 
     @Test
     void shouldHandleConcatenatedFqns() {
+        // given
         var customizer = new NullableCustomizer();
         var openApi = new OpenAPI();
         var components = new Components();
@@ -124,17 +135,17 @@ class NullableCustomizerTest {
         components.addSchemas(concatenatedFqn, schema);
         openApi.setComponents(components);
 
-        assertDoesNotThrow(() -> customizer.customise(openApi));
+        // when
+        customizer.customise(openApi);
 
-        List<String> required = schema.getRequired();
-        assertTrue(
-                required == null || !required.contains("baseField"),
-                "baseField should NOT be required even with concatenated FQN"
-        );
+        // then
+        var required = schema.getRequired();
+        assertThat(required).as("baseField should NOT be required even with concatenated FQN").isNullOrEmpty();
     }
 
     @Test
     void shouldNotThrowWhenFieldNotFound() {
+        // given
         var customizer = new NullableCustomizer();
         var openApi = new OpenAPI();
         var components = new Components();
@@ -146,12 +157,50 @@ class NullableCustomizerTest {
         components.addSchemas(SubClass.class.getName(), schema);
         openApi.setComponents(components);
 
-        assertDoesNotThrow(() -> customizer.customise(openApi));
+        // when
+        customizer.customise(openApi);
 
-        List<String> required = schema.getRequired();
-        assertTrue(
-                required != null && required.contains("nonExistent"),
-                "nonExistent field should be considered required if not found and not nullable"
-        );
+        // then
+        var required = schema.getRequired();
+        assertThat(required).as("nonExistent field should be considered required if not found and not nullable")
+                .contains("nonExistent");
+    }
+
+    @Test
+    void shouldFindCustomNullableAnnotation() {
+        // given
+        var customizer = new NullableCustomizer();
+        var openApi = new OpenAPI();
+        var components = new Components();
+
+        var schema = new Schema<Object>();
+        schema.setName(CustomNullableClass.class.getName());
+        schema.addProperty("customNullableField", new StringSchema());
+
+        components.addSchemas(CustomNullableClass.class.getName(), schema);
+        openApi.setComponents(components);
+
+        // when
+        customizer.customise(openApi);
+
+        // then
+        var required = schema.getRequired();
+        assertThat(required).as("customNullableField should NOT be required").isNullOrEmpty();
+    }
+
+    public static class Nest {
+        @Retention(RetentionPolicy.RUNTIME)
+        public @interface Nullable {
+        }
+    }
+
+    public static class CustomNullableClass {
+        @Nest.Nullable
+        private String customNullableField;
+
+        @SuppressWarnings("NullAway")
+        public String getCustomNullableField() {
+            return customNullableField;
+        }
     }
 }
