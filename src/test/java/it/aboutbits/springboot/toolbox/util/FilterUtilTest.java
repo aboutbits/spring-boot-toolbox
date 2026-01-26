@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @NullMarked
 class FilterUtilTest {
@@ -40,7 +39,7 @@ class FilterUtilTest {
             var result = FilterUtil.filterToSet(emptyList, n -> n > 2);
 
             // then
-            assertTrue(result.isEmpty());
+            assertThat(result).isEmpty();
         }
 
         @Test
@@ -53,8 +52,9 @@ class FilterUtilTest {
             var result = FilterUtil.filterToSet(numbersWithDuplicates, n -> n >= 2);
 
             // then
-            assertThat(result).containsExactlyInAnyOrder(2, 3);
-            assertThat(result).hasSize(2);
+            assertThat(result)
+                    .hasSize(2)
+                    .containsExactlyInAnyOrder(2, 3);
         }
 
         @Test
@@ -80,7 +80,7 @@ class FilterUtilTest {
             var result = FilterUtil.filterToSet(emptyStreamable, n -> n > 2);
 
             // then
-            assertTrue(result.isEmpty());
+            assertThat(result).isEmpty();
         }
 
         @Test
@@ -93,8 +93,9 @@ class FilterUtilTest {
             var result = FilterUtil.filterToSet(numbersWithDuplicates, n -> n >= 2);
 
             // then
-            assertThat(result).containsExactlyInAnyOrder(2, 3);
-            assertThat(result).hasSize(2);
+            assertThat(result)
+                    .hasSize(2)
+                    .containsExactlyInAnyOrder(2, 3);
         }
     }
 
@@ -123,7 +124,7 @@ class FilterUtilTest {
             var result = FilterUtil.filterToList(emptyList, n -> n > 2);
 
             // then
-            assertTrue(result.isEmpty());
+            assertThat(result).isEmpty();
         }
 
         @Test
@@ -136,8 +137,9 @@ class FilterUtilTest {
             var result = FilterUtil.filterToList(numbersWithDuplicates, n -> n >= 2);
 
             // then
-            assertThat(result).containsExactly(2, 2, 3, 3, 3);
-            assertThat(result).hasSize(5);
+            assertThat(result)
+                    .hasSize(5)
+                    .containsExactly(2, 2, 3, 3, 3);
         }
 
         @Test
@@ -163,7 +165,7 @@ class FilterUtilTest {
             var result = FilterUtil.filterToList(emptyStreamable, n -> n > 2);
 
             // then
-            assertTrue(result.isEmpty());
+            assertThat(result).isEmpty();
         }
 
         @Test
@@ -176,8 +178,9 @@ class FilterUtilTest {
             var result = FilterUtil.filterToList(numbersWithDuplicates, n -> n >= 2);
 
             // then
-            assertThat(result).containsExactly(2, 2, 3, 3, 3);
-            assertThat(result).hasSize(5);
+            assertThat(result)
+                    .hasSize(5)
+                    .containsExactly(2, 2, 3, 3, 3);
         }
     }
 
@@ -207,7 +210,7 @@ class FilterUtilTest {
             var resultStream = FilterUtil.filterToStream(emptyList, n -> n > 2);
 
             // then
-            assertTrue(resultStream.toList().isEmpty());
+            assertThat(resultStream.toList()).isEmpty();
         }
 
         @Test
@@ -234,7 +237,7 @@ class FilterUtilTest {
             var resultStream = FilterUtil.filterToStream(emptyStreamable, n -> n > 2);
 
             // then
-            assertTrue(resultStream.toList().isEmpty());
+            assertThat(resultStream.toList()).isEmpty();
         }
 
         @Test
@@ -261,7 +264,7 @@ class FilterUtilTest {
             var resultStream = FilterUtil.filterToStream(emptyStream, n -> n > 2);
 
             // then
-            assertTrue(resultStream.toList().isEmpty());
+            assertThat(resultStream.toList()).isEmpty();
         }
     }
 }

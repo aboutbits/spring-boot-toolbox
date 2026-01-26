@@ -13,7 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 @ApplicationTest
 @NullMarked
@@ -141,12 +142,10 @@ class QueryTransformerTest {
 
             var query = entityManager.createQuery("select q, 'xxx' from QueryTransformerTestModel q");
 
-            assertThrows(
-                    IllegalStateException.class,
-                    () -> QueryTransformer
-                            .of(entityManager, TestModelContainer.class)
-                            .withQuery(query)
-                            .asSingleResult()
+            assertThatIllegalStateException().isThrownBy(() -> QueryTransformer
+                    .of(entityManager, TestModelContainer.class)
+                    .withQuery(query)
+                    .asSingleResult()
             );
         }
     }
@@ -172,11 +171,10 @@ class QueryTransformerTest {
         void givenQueryWithOneResult_shouldFail() {
             var query = entityManager.createQuery("select q, 'xxx' from QueryTransformerTestModel q");
 
-            assertThrows(
-                    EntityNotFoundException.class, () -> QueryTransformer
-                            .of(entityManager, TestModelContainer.class)
-                            .withQuery(query)
-                            .asSingleResultOrFail()
+            assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(() -> QueryTransformer
+                    .of(entityManager, TestModelContainer.class)
+                    .withQuery(query)
+                    .asSingleResultOrFail()
             );
         }
     }
@@ -221,12 +219,10 @@ class QueryTransformerTest {
 
             var query = entityManager.createQuery("select q, 'xxx' from QueryTransformerTestModel q");
 
-            assertThrows(
-                    TransformerRuntimeException.class,
-                    () -> QueryTransformer
-                            .of(entityManager, WrongContainer.class)
-                            .withQuery(query)
-                            .asList()
+            assertThatExceptionOfType(TransformerRuntimeException.class).isThrownBy(() -> QueryTransformer
+                    .of(entityManager, WrongContainer.class)
+                    .withQuery(query)
+                    .asList()
             );
         }
     }
@@ -351,12 +347,10 @@ class QueryTransformerTest {
         void givenQueryWithSelectDistinct_shouldFail() {
             var query = entityManager.createQuery("select distinct q, 'xxx' from QueryTransformerTestModel q");
 
-            assertThrows(
-                    IllegalStateException.class,
-                    () -> QueryTransformer
-                            .of(entityManager, TestModelContainer.class)
-                            .withQuery(query)
-                            .asPage(1, 2)
+            assertThatIllegalStateException().isThrownBy(() -> QueryTransformer
+                    .of(entityManager, TestModelContainer.class)
+                    .withQuery(query)
+                    .asPage(1, 2)
             );
         }
     }

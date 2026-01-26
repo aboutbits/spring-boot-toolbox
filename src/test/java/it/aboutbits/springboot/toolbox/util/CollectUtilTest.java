@@ -14,8 +14,6 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @NullMarked
 class CollectUtilTest {
@@ -60,7 +58,7 @@ class CollectUtilTest {
             var result = CollectUtil.collectToSet(emptyList, mapper);
 
             // then
-            assertTrue(result.isEmpty());
+            assertThat(result).isEmpty();
         }
 
         @Test
@@ -74,8 +72,9 @@ class CollectUtilTest {
             var result = CollectUtil.collectToSet(numbersWithDuplicates, mapper);
 
             // then
-            assertThat(result).containsExactlyInAnyOrder("1", "2", "3");
-            assertEquals(3, result.size());
+            assertThat(result)
+                    .containsExactlyInAnyOrder("1", "2", "3")
+                    .hasSize(3);
         }
 
         @Test
@@ -117,7 +116,7 @@ class CollectUtilTest {
             var result = CollectUtil.collectToSet(emptyStreamable, mapper);
 
             // then
-            assertTrue(result.isEmpty());
+            assertThat(result).isEmpty();
         }
 
         @Test
@@ -145,7 +144,7 @@ class CollectUtilTest {
             var result = CollectUtil.collectToSet(emptyStream, mapper);
 
             // then
-            assertTrue(result.isEmpty());
+            assertThat(result).isEmpty();
         }
 
         @Test
@@ -159,8 +158,9 @@ class CollectUtilTest {
             var result = CollectUtil.collectToSet(numbersWithDuplicates, mapper);
 
             // then
-            assertThat(result).containsExactlyInAnyOrder("1", "2", "3");
-            assertEquals(3, result.size());
+            assertThat(result)
+                    .containsExactlyInAnyOrder("1", "2", "3")
+                    .hasSize(3);
         }
     }
 
@@ -191,7 +191,7 @@ class CollectUtilTest {
             var result = CollectUtil.collectToList(emptyList, mapper);
 
             // then
-            assertTrue(result.isEmpty());
+            assertThat(result).isEmpty();
         }
 
         @Test
@@ -205,8 +205,9 @@ class CollectUtilTest {
             var result = CollectUtil.collectToList(numbersWithDuplicates, mapper);
 
             // then
-            assertThat(result).containsExactly("1", "2", "2", "3", "3", "3");
-            assertEquals(6, result.size());
+            assertThat(result)
+                    .containsExactly("1", "2", "2", "3", "3", "3")
+                    .hasSize(6);
         }
 
         @Test
@@ -234,7 +235,7 @@ class CollectUtilTest {
             var result = CollectUtil.collectToList(emptyStreamable, mapper);
 
             // then
-            assertTrue(result.isEmpty());
+            assertThat(result).isEmpty();
         }
 
         @Test
@@ -262,7 +263,7 @@ class CollectUtilTest {
             var result = CollectUtil.collectToList(emptyStream, mapper);
 
             // then
-            assertTrue(result.isEmpty());
+            assertThat(result).isEmpty();
         }
 
         @Test
@@ -276,8 +277,9 @@ class CollectUtilTest {
             var result = CollectUtil.collectToList(numbersWithDuplicates, mapper);
 
             // then
-            assertThat(result).containsExactly("1", "2", "2", "3", "3", "3");
-            assertEquals(6, result.size());
+            assertThat(result)
+                    .containsExactly("1", "2", "2", "3", "3", "3")
+                    .hasSize(6);
         }
     }
 
@@ -310,7 +312,7 @@ class CollectUtilTest {
             var result = resultStream.toList();
 
             // then
-            assertTrue(result.isEmpty());
+            assertThat(result).isEmpty();
         }
 
         @Test
@@ -340,7 +342,7 @@ class CollectUtilTest {
             var result = resultStream.toList();
 
             // then
-            assertTrue(result.isEmpty());
+            assertThat(result).isEmpty();
         }
 
         @Test
@@ -370,7 +372,7 @@ class CollectUtilTest {
             var result = resultStream.toList();
 
             // then
-            assertTrue(result.isEmpty());
+            assertThat(result).isEmpty();
         }
     }
 
