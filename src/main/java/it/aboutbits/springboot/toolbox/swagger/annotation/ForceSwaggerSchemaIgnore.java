@@ -1,15 +1,17 @@
 package it.aboutbits.springboot.toolbox.swagger.annotation;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to mark classes that should be included in Swagger schema even if unused.
+ * Annotation to mark classes that should be ignored when forcing Swagger schemas.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ForceSwaggerSchema {
-    boolean includeSubTypes() default true;
+@NullMarked
+public @interface ForceSwaggerSchemaIgnore {
 }
