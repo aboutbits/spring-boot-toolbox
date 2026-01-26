@@ -29,6 +29,7 @@ class ForceSchemaCustomizerTest {
         public record InnerRecord(String recordField) {
         }
 
+        @SuppressWarnings("checkstyle:FinalClass")
         private static class PrivateInnerClass {
             public String privateField;
         }
