@@ -8,11 +8,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to mark classes that should be included in Swagger schema even if unused.
+ * Annotation to mark classes that should be ignored when forcing Swagger schemas.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @NullMarked
-public @interface ForceSwaggerSchema {
-    boolean includeSubTypes() default true;
+public @interface ForceSwaggerSchemaIgnore {
 }
