@@ -1,4 +1,4 @@
-package it.aboutbits.springboot.toolbox.validation.validator;
+package it.aboutbits.springboot.toolbox.validation.validator.scaled_big_decimal;
 
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import jakarta.validation.ConstraintValidator;

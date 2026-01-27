@@ -1,9 +1,9 @@
-package it.aboutbits.springboot.toolbox.validation.validator;
+package it.aboutbits.springboot.toolbox.validation.validator.scaled_big_decimal;
 
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;
-import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -11,14 +11,14 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @NullMarked
-class MaxScaledBigDecimalValidatorTest {
+class MinScaledBigDecimalValidatorTest {
     private static final ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
 
-    record Sut(@Max(-50) ScaledBigDecimal value) {
+    record Sut(@Min(50) ScaledBigDecimal value) {
     }
 
     @ParameterizedTest
-    @ValueSource(doubles = {-100_000_000.99999, -50.000001, -50})
+    @ValueSource(doubles = {50, 50.0000001, 100_000_000.9999})
     void valid_shouldSucceed(double doubleValue) {
         var validator = VALIDATOR_FACTORY.getValidator();
 
@@ -30,7 +30,7 @@ class MaxScaledBigDecimalValidatorTest {
     }
 
     @ParameterizedTest
-    @ValueSource(doubles = {-49.999999, -49, 0, 100_000_000})
+    @ValueSource(doubles = {-1, -0.0000001, 0, 49, 49.999999})
     void inValid_shouldFail(double doubleValue) {
         var validator = VALIDATOR_FACTORY.getValidator();
 
