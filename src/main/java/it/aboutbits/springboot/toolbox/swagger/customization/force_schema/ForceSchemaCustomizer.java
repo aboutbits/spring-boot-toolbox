@@ -7,12 +7,16 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.Schema;
 import it.aboutbits.springboot.toolbox.reflection.util.ClassScannerUtil;
 import it.aboutbits.springboot.toolbox.swagger.annotation.ForceSwaggerSchema;
+import it.aboutbits.springboot.toolbox.swagger.annotation.ForceSwaggerSchemaIgnore;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -40,7 +44,31 @@ public class ForceSchemaCustomizer implements OpenApiCustomizer {
         // Scan for classes with @ForceSwaggerSchema annotation
         var annotatedClasses = classScanner.getClassesAnnotatedWith(ForceSwaggerSchema.class);
 
+        var classesToProcess = new HashSet<Class<?>>();
         for (var clazz : annotatedClasses) {
+            if (clazz.isAnnotationPresent(ForceSwaggerSchemaIgnore.class)) {
+                continue;
+            }
+            classesToProcess.add(clazz);
+            var annotation = clazz.getAnnotation(ForceSwaggerSchema.class);
+            if (annotation != null && annotation.includeSubTypes()) {
+                var subTypes = classScanner.getSubTypesOf(clazz);
+                for (var subType : subTypes) {
+                    if (!subType.isAnnotationPresent(ForceSwaggerSchemaIgnore.class)) {
+                        classesToProcess.add(subType);
+                    }
+                }
+
+                collectPublicNestedTypes(clazz, classesToProcess);
+                for (var subType : subTypes) {
+                    if (classesToProcess.contains(subType)) {
+                        collectPublicNestedTypes(subType, classesToProcess);
+                    }
+                }
+            }
+        }
+
+        for (var clazz : classesToProcess) {
             log.info("Forcing schema for class: {}", clazz.getName());
 
             if (clazz.isEnum()) {
@@ -73,6 +101,16 @@ public class ForceSchemaCustomizer implements OpenApiCustomizer {
         if (annotatedClasses.isEmpty()) {
             log.info("No classes with @ForceSwaggerSchema annotation found!");
             log.debug("Scanned packages: {}", String.join(", ", classScanner.getScannedPackages()));
+        }
+    }
+
+    private void collectPublicNestedTypes(Class<?> clazz, Set<Class<?>> collected) {
+        for (var nested : clazz.getDeclaredClasses()) {
+            if (Modifier.isPublic(nested.getModifiers()) && !nested.isAnnotationPresent(ForceSwaggerSchemaIgnore.class)) {
+                if (collected.add(nested)) {
+                    collectPublicNestedTypes(nested, collected);
+                }
+            }
         }
     }
 }
