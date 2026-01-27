@@ -19,7 +19,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Repeatable(RepeatedField.List.class)
 public @interface RepeatedField {
-
     String message() default "{shared.error.validation.repetitionMismatch}";
 
     String originalField();
