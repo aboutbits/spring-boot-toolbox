@@ -4,42 +4,42 @@
     <constraint-definition annotation="jakarta.validation.constraints.Max">
         <validated-by include-existing-validators="true">
             <value>
-                it.aboutbits.springboot.toolbox.validation.validator.MaxScaledBigDecimalValidator
+                it.aboutbits.springboot.toolbox.validation.validator.scaled_big_decimal.MaxScaledBigDecimalValidator
             </value>
         </validated-by>
     </constraint-definition>
     <constraint-definition annotation="jakarta.validation.constraints.Min">
         <validated-by include-existing-validators="true">
             <value>
-                it.aboutbits.springboot.toolbox.validation.validator.MinScaledBigDecimalValidator
+                it.aboutbits.springboot.toolbox.validation.validator.scaled_big_decimal.MinScaledBigDecimalValidator
             </value>
         </validated-by>
     </constraint-definition>
     <constraint-definition annotation="jakarta.validation.constraints.Negative">
         <validated-by include-existing-validators="true">
             <value>
-                it.aboutbits.springboot.toolbox.validation.validator.NegativeScaledBigDecimalValidator
+                it.aboutbits.springboot.toolbox.validation.validator.scaled_big_decimal.NegativeScaledBigDecimalValidator
             </value>
         </validated-by>
     </constraint-definition>
     <constraint-definition annotation="jakarta.validation.constraints.NegativeOrZero">
         <validated-by include-existing-validators="true">
             <value>
-                it.aboutbits.springboot.toolbox.validation.validator.NegativeOrZeroScaledBigDecimalValidator
+                it.aboutbits.springboot.toolbox.validation.validator.scaled_big_decimal.NegativeOrZeroScaledBigDecimalValidator
             </value>
         </validated-by>
     </constraint-definition>
     <constraint-definition annotation="jakarta.validation.constraints.Positive">
         <validated-by include-existing-validators="true">
             <value>
-                it.aboutbits.springboot.toolbox.validation.validator.PositiveScaledBigDecimalValidator
+                it.aboutbits.springboot.toolbox.validation.validator.scaled_big_decimal.PositiveScaledBigDecimalValidator
             </value>
         </validated-by>
     </constraint-definition>
     <constraint-definition annotation="jakarta.validation.constraints.PositiveOrZero">
         <validated-by include-existing-validators="true">
             <value>
-                it.aboutbits.springboot.toolbox.validation.validator.PositiveOrZeroScaledBigDecimalValidator
+                it.aboutbits.springboot.toolbox.validation.validator.scaled_big_decimal.PositiveOrZeroScaledBigDecimalValidator
             </value>
         </validated-by>
     </constraint-definition>
