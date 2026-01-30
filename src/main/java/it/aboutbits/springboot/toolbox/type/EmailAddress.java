@@ -26,6 +26,11 @@ public record EmailAddress(String value) implements CustomType<String>, Comparab
         this.value = value.toLowerCase();
     }
 
+    @SuppressWarnings("unused")
+    EmailAddress(EmailAddress other) {
+        this(other.value);
+    }
+
     @Override
     public String toString() {
         return value;
