@@ -46,3 +46,4 @@ build/
 
 ### Local Development ###
 application-local.yml
+/.output.txt

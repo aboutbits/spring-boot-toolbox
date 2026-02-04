@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.jspecify.annotations.Nullable;
 
 @Getter
 @Setter
@@ -19,4 +20,8 @@ public class SwaggerMeta {
     @JsonProperty("isMap")
     private Boolean isMap = null;
     private String mapKeyTypeFqn = null;
+
+    @Nullable
+    @JsonProperty("isNullable")
+    private Boolean isNullable = null;
 }
