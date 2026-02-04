@@ -36,7 +36,10 @@ public final class ClassScannerUtil {
 
         @SuppressWarnings("unchecked")
         public <T> Set<Class<? extends T>> getSubTypesOf(Class<T> clazz) {
-            return scanResult.getClassesImplementing(clazz).loadClasses()
+            var classInfoList = clazz.isInterface()
+                    ? scanResult.getClassesImplementing(clazz)
+                    : scanResult.getSubclasses(clazz);
+            return classInfoList.loadClasses()
                     .stream()
                     .map(item -> (Class<? extends T>) item)
                     .collect(Collectors.toSet());
