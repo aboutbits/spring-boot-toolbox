@@ -23,6 +23,11 @@ public record ScaledBigDecimal(
     public static final ScaledBigDecimal TWO = new ScaledBigDecimal(2);
     public static final ScaledBigDecimal TEN = new ScaledBigDecimal(10);
 
+    @SuppressWarnings("unused")
+    ScaledBigDecimal(ScaledBigDecimal other) {
+        this(other.value);
+    }
+
     public ScaledBigDecimal(BigDecimal value) {
         this.value = value.setScale(MATH_CONTEXT.getPrecision(), MATH_CONTEXT.getRoundingMode());
     }

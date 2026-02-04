@@ -22,6 +22,11 @@ public record Iban(String value) implements CustomType<String>, Comparable<Iban>
         this.value = value.toUpperCase();
     }
 
+    @SuppressWarnings("unused")
+    Iban(Iban other) {
+        this(other.value);
+    }
+
     @Override
     public String toString() {
         return value;

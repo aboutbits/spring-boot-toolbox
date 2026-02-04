@@ -63,6 +63,14 @@ public final class SwaggerMetaUtil {
         return OBJECT_MAPPER.writeValueAsString(meta);
     }
 
+    @SneakyThrows(JsonProcessingException.class)
+    public static String setIsNullable(@Nullable String currentMeta, boolean value) {
+        var meta = getSwaggerMeta(currentMeta);
+        meta.setIsNullable(!value ? null : true);
+
+        return OBJECT_MAPPER.writeValueAsString(meta);
+    }
+
     private static SwaggerMeta getSwaggerMeta(@Nullable String currentMeta) {
         var meta = new SwaggerMeta();
         if (currentMeta != null) {

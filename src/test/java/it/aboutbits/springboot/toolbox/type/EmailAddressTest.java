@@ -50,7 +50,7 @@ class EmailAddressTest {
         void null_shouldFail() {
             //noinspection DataFlowIssue
             assertThatIllegalArgumentException().isThrownBy(
-                    () -> new EmailAddress(null)
+                    () -> new EmailAddress((String) null)
             );
         }
     }
