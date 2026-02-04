@@ -31,7 +31,7 @@ class IbanTest {
         @Test
         void null_shouldFail() {
             assertThatIllegalArgumentException().isThrownBy(
-                    () -> new Iban(null)
+                    () -> new Iban((String) null)
             );
         }
     }

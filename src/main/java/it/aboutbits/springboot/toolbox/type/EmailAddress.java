@@ -1,7 +1,8 @@
 package it.aboutbits.springboot.toolbox.type;
 
 import it.aboutbits.springboot.toolbox.validation.util.EmailAddressValidator;
-import lombok.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A record representing an email address, validated and stored in lowercase.
@@ -15,8 +16,9 @@ import lombok.NonNull;
  * @param value the email address string
  * @throws IllegalArgumentException if the provided email address is not in a valid format
  */
+@NullMarked
 public record EmailAddress(String value) implements CustomType<String>, Comparable<EmailAddress> {
-    public EmailAddress(String value) {
+    public EmailAddress(@Nullable String value) {
         if (value == null || EmailAddressValidator.isNotValid(value)) {
             throw new IllegalArgumentException("Value is not a valid email address: " + value);
         }
@@ -24,14 +26,18 @@ public record EmailAddress(String value) implements CustomType<String>, Comparab
         this.value = value.toLowerCase();
     }
 
-    @NonNull
+    @SuppressWarnings("unused")
+    EmailAddress(EmailAddress other) {
+        this(other.value);
+    }
+
     @Override
     public String toString() {
         return value;
     }
 
     @Override
-    public int compareTo(@NonNull EmailAddress o) {
+    public int compareTo(EmailAddress o) {
         return value().compareTo(o.value());
     }
 }

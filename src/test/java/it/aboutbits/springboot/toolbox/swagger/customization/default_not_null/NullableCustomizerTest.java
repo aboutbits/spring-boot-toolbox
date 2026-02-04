@@ -2,13 +2,17 @@ package it.aboutbits.springboot.toolbox.swagger.customization.default_not_null;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
 import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,6 +51,47 @@ class NullableCustomizerTest {
         @org.jspecify.annotations.Nullable
         public String directMethod() {
             return directMethod;
+        }
+    }
+
+    // Test classes for nullable type parameters in collections
+    public static class ListWithNullableElements {
+        private List<@Nullable String> items;
+
+        public List<@Nullable String> getItems() {
+            return items;
+        }
+    }
+
+    public static class SetWithNullableElements {
+        private Set<@Nullable String> items;
+
+        public Set<@Nullable String> getItems() {
+            return items;
+        }
+    }
+
+    public static class NestedListWithNullableElements {
+        private List<List<@Nullable String>> nestedItems;
+
+        public List<List<@Nullable String>> getNestedItems() {
+            return nestedItems;
+        }
+    }
+
+    public static class ArrayWithNullableElements {
+        private @Nullable String[] items;
+
+        public @Nullable String[] getItems() {
+            return items;
+        }
+    }
+
+    public static class ListWithNonNullableElements {
+        private List<String> items;
+
+        public List<String> getItems() {
+            return items;
         }
     }
 
@@ -186,6 +231,162 @@ class NullableCustomizerTest {
         // then
         var required = schema.getRequired();
         assertThat(required).as("customNullableField should NOT be required").isNullOrEmpty();
+    }
+
+    @Test
+    void shouldAddDescriptionForListWithNullableElements() {
+        // given
+        var customizer = new NullableCustomizer();
+        var openApi = new OpenAPI();
+        var components = new Components();
+
+        var schema = new Schema<Object>();
+        schema.setName(ListWithNullableElements.class.getName());
+        var itemsProperty = new ArraySchema();
+        itemsProperty.setItems(new StringSchema());
+        schema.addProperty("items", itemsProperty);
+
+        components.addSchemas(ListWithNullableElements.class.getName(), schema);
+        openApi.setComponents(components);
+
+        // when
+        customizer.customise(openApi);
+
+        // then
+        var property = (ArraySchema) schema.getProperties().get("items");
+        assertThat(property.getItems().getDescription()).as("description should indicate nullable elements")
+                .isEqualTo("{\"isNullable\":true}");
+    }
+
+    @Test
+    void shouldAddDescriptionForSetWithNullableElements() {
+        // given
+        var customizer = new NullableCustomizer();
+        var openApi = new OpenAPI();
+        var components = new Components();
+
+        var schema = new Schema<Object>();
+        schema.setName(SetWithNullableElements.class.getName());
+        var itemsProperty = new ArraySchema();
+        itemsProperty.setItems(new StringSchema());
+        schema.addProperty("items", itemsProperty);
+
+        components.addSchemas(SetWithNullableElements.class.getName(), schema);
+        openApi.setComponents(components);
+
+        // when
+        customizer.customise(openApi);
+
+        // then
+        var property = (ArraySchema) schema.getProperties().get("items");
+        assertThat(property.getItems().getDescription()).as("description should indicate nullable elements")
+                .isEqualTo("{\"isNullable\":true}");
+    }
+
+    @Test
+    void shouldAddDescriptionForNestedListWithNullableElements() {
+        // given
+        var customizer = new NullableCustomizer();
+        var openApi = new OpenAPI();
+        var components = new Components();
+
+        var schema = new Schema<Object>();
+        schema.setName(NestedListWithNullableElements.class.getName());
+        var nestedItemsProperty = new ArraySchema();
+        var innerArray = new ArraySchema();
+        innerArray.setItems(new StringSchema());
+        nestedItemsProperty.setItems(innerArray);
+        schema.addProperty("nestedItems", nestedItemsProperty);
+
+        components.addSchemas(NestedListWithNullableElements.class.getName(), schema);
+        openApi.setComponents(components);
+
+        // when
+        customizer.customise(openApi);
+
+        // then
+        var property = (ArraySchema) schema.getProperties().get("nestedItems");
+        var innerItems = (ArraySchema) property.getItems();
+        assertThat(innerItems.getItems().getDescription()).as("description should indicate nested nullable elements")
+                .isEqualTo("{\"isNullable\":true}");
+    }
+
+    @Test
+    void shouldAddDescriptionForArrayWithNullableElements() {
+        // given
+        var customizer = new NullableCustomizer();
+        var openApi = new OpenAPI();
+        var components = new Components();
+
+        var schema = new Schema<Object>();
+        schema.setName(ArrayWithNullableElements.class.getName());
+        var itemsProperty = new ArraySchema();
+        itemsProperty.setItems(new StringSchema());
+        schema.addProperty("items", itemsProperty);
+
+        components.addSchemas(ArrayWithNullableElements.class.getName(), schema);
+        openApi.setComponents(components);
+
+        // when
+        customizer.customise(openApi);
+
+        // then
+        var property = (ArraySchema) schema.getProperties().get("items");
+        assertThat(property.getItems().getDescription()).as("description should indicate nullable elements")
+                .isEqualTo("{\"isNullable\":true}");
+    }
+
+    @Test
+    void shouldNotAddDescriptionForListWithNonNullableElements() {
+        // given
+        var customizer = new NullableCustomizer();
+        var openApi = new OpenAPI();
+        var components = new Components();
+
+        var schema = new Schema<Object>();
+        schema.setName(ListWithNonNullableElements.class.getName());
+        var itemsProperty = new ArraySchema();
+        itemsProperty.setItems(new StringSchema());
+        schema.addProperty("items", itemsProperty);
+
+        components.addSchemas(ListWithNonNullableElements.class.getName(), schema);
+        openApi.setComponents(components);
+
+        // when
+        customizer.customise(openApi);
+
+        // then
+        var property = schema.getProperties().get("items");
+        assertThat(property.getDescription()).as("description should be null for non-nullable elements")
+                .isNull();
+    }
+
+    @Test
+    void shouldAppendToExistingDescription() {
+        // given
+        var customizer = new NullableCustomizer();
+        var openApi = new OpenAPI();
+        var components = new Components();
+
+        var schema = new Schema<Object>();
+        schema.setName(ListWithNullableElements.class.getName());
+        var itemsProperty = new ArraySchema();
+        var itemsSchema = new StringSchema();
+        itemsSchema.setDescription("{\"isCustomType\":true}");
+        itemsProperty.setItems(itemsSchema);
+        schema.addProperty("items", itemsProperty);
+
+        components.addSchemas(ListWithNullableElements.class.getName(), schema);
+        openApi.setComponents(components);
+
+        // when
+        customizer.customise(openApi);
+
+        // then
+        var property = (ArraySchema) schema.getProperties().get("items");
+        assertThat(property.getItems().getDescription()).as(
+                        "description should append nullable info to existing description")
+                .isEqualTo("{\"isCustomType\":true,\"isNullable\":true}");
     }
 
     public static class Nest {

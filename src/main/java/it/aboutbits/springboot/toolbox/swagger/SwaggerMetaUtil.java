@@ -2,12 +2,13 @@ package it.aboutbits.springboot.toolbox.swagger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @Slf4j
+@NullMarked
 public final class SwaggerMetaUtil {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -15,7 +16,7 @@ public final class SwaggerMetaUtil {
     }
 
     @SneakyThrows(JsonProcessingException.class)
-    public static String setMapKeyTypeFqn(@Nullable String currentMeta, @NonNull String value) {
+    public static String setMapKeyTypeFqn(@Nullable String currentMeta, String value) {
         var meta = getSwaggerMeta(currentMeta);
         meta.setMapKeyTypeFqn(value);
 
@@ -31,7 +32,7 @@ public final class SwaggerMetaUtil {
     }
 
     @SneakyThrows(JsonProcessingException.class)
-    public static String setOriginalTypeFqn(@Nullable String currentMeta, @NonNull String value) {
+    public static String setOriginalTypeFqn(@Nullable String currentMeta, String value) {
         var meta = getSwaggerMeta(currentMeta);
         meta.setOriginalTypeFqn(value);
 
@@ -62,7 +63,15 @@ public final class SwaggerMetaUtil {
         return OBJECT_MAPPER.writeValueAsString(meta);
     }
 
-    private static SwaggerMeta getSwaggerMeta(String currentMeta) {
+    @SneakyThrows(JsonProcessingException.class)
+    public static String setIsNullable(@Nullable String currentMeta, boolean value) {
+        var meta = getSwaggerMeta(currentMeta);
+        meta.setIsNullable(!value ? null : true);
+
+        return OBJECT_MAPPER.writeValueAsString(meta);
+    }
+
+    private static SwaggerMeta getSwaggerMeta(@Nullable String currentMeta) {
         var meta = new SwaggerMeta();
         if (currentMeta != null) {
             try {

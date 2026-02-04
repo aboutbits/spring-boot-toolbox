@@ -31,7 +31,7 @@ class EmailAddressTest {
         @Test
         void null_shouldFail() {
             assertThatIllegalArgumentException().isThrownBy(
-                    () -> new EmailAddress(null)
+                    () -> new EmailAddress((String) null)
             );
         }
     }
