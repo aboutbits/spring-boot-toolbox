@@ -34,4 +34,8 @@ public class SwaggerMeta {
 
     @Nullable
     private String mapKeyTypeFqn = null;
+
+    @Nullable
+    @JsonProperty("isNullable")
+    private Boolean isNullable = null;
 }

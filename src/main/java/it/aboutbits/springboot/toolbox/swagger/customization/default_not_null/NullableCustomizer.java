@@ -2,12 +2,17 @@ package it.aboutbits.springboot.toolbox.swagger.customization.default_not_null;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.Schema;
+import it.aboutbits.springboot.toolbox.swagger.SwaggerMetaUtil;
 import org.jspecify.annotations.NullMarked;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedArrayType;
+import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 @NullMarked
@@ -57,7 +62,96 @@ public class NullableCustomizer implements OpenApiCustomizer {
             } else {
                 requiredProperties.remove(propertyName);
             }
+
+            // Check for nullable type parameters in collections/arrays
+            var annotatedType = getAnnotatedType(cls, propertyName);
+            if (annotatedType != null) {
+                var nullableDepths = new ArrayList<Integer>();
+                findNullableDepths(annotatedType, 0, nullableDepths);
+                // Add "nullable" description at each depth where nullable elements are found
+                for (var depth : nullableDepths) {
+                    addNullableDescriptionAtDepth(property, depth);
+                }
+            }
         });
+    }
+
+    @org.jspecify.annotations.Nullable
+    private static AnnotatedType getAnnotatedType(Class<?> cls, String propertyName) {
+        var currentClass = cls;
+        while (currentClass != null) {
+            try {
+                var field = currentClass.getDeclaredField(propertyName);
+                return field.getAnnotatedType();
+            } catch (NoSuchFieldException _) {
+            }
+
+            for (var method : currentClass.getDeclaredMethods()) {
+                if (method.getName().equals(propertyName)
+                        || method.getName().equals("get" + capitalize(propertyName))
+                        || method.getName().equals("is" + capitalize(propertyName))) {
+                    return method.getAnnotatedReturnType();
+                }
+            }
+
+            currentClass = currentClass.getSuperclass();
+        }
+        return null;
+    }
+
+    private static void findNullableDepths(AnnotatedType annotatedType, int depth, ArrayList<Integer> nullableDepths) {
+        if (annotatedType instanceof AnnotatedParameterizedType parameterizedType) {
+            var rawType = parameterizedType.getType();
+            if (rawType instanceof ParameterizedType pt) {
+                var rawClass = pt.getRawType();
+                if (rawClass instanceof Class<?> clazz && isCollectionType(clazz)) {
+                    var typeArgs = parameterizedType.getAnnotatedActualTypeArguments();
+                    for (var typeArg : typeArgs) {
+                        if (hasNullableAnnotation(typeArg)) {
+                            nullableDepths.add(depth);
+                        }
+                        // Recursively check nested type parameters
+                        findNullableDepths(typeArg, depth + 1, nullableDepths);
+                    }
+                }
+            }
+        } else if (annotatedType instanceof AnnotatedArrayType arrayType) {
+            var componentType = arrayType.getAnnotatedGenericComponentType();
+            if (hasNullableAnnotation(componentType)) {
+                nullableDepths.add(depth);
+            }
+            // Recursively check nested array types
+            findNullableDepths(componentType, depth + 1, nullableDepths);
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static void addNullableDescriptionAtDepth(Schema<?> schema, int depth) {
+        Schema currentSchema = schema;
+        for (int i = 0; i <= depth; i++) {
+            var items = currentSchema.getItems();
+            if (items == null) {
+                return; // Schema structure doesn't match expected depth
+            }
+            currentSchema = items;
+        }
+        currentSchema.setDescription(SwaggerMetaUtil.setIsNullable(
+                currentSchema.getDescription(),
+                true
+        ));
+    }
+
+    private static boolean isCollectionType(Class<?> clazz) {
+        return Collection.class.isAssignableFrom(clazz) || clazz.isArray();
+    }
+
+    private static boolean hasNullableAnnotation(AnnotatedType annotatedType) {
+        for (var annotation : annotatedType.getAnnotations()) {
+            if (annotation.annotationType().getSimpleName().equals("Nullable")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @org.jspecify.annotations.Nullable
