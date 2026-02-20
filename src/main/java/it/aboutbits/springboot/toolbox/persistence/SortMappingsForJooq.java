@@ -1,7 +1,6 @@
 package it.aboutbits.springboot.toolbox.persistence;
 
 import it.aboutbits.springboot.toolbox.parameter.SortParameter;
-import it.aboutbits.springboot.toolbox.persistence.SortMappings.Mapping;
 import org.jooq.Field;
 import org.jspecify.annotations.NullMarked;
 
