@@ -1,6 +1,7 @@
 package it.aboutbits.springboot.toolbox.persistence;
 
 import it.aboutbits.springboot.toolbox.parameter.SortParameter;
+import org.jooq.Field;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.HashMap;
@@ -16,6 +17,13 @@ public final class SortMappings<T extends Enum<?> & SortParameter.Definition> ex
             String column
     ) {
         return new Mapping<>(property, column);
+    }
+
+    public static <T extends Enum<?> & SortParameter.Definition> Mapping<T> map(
+            T property,
+            Field<?> column
+    ) {
+        return new Mapping<>(property, column.getName());
     }
 
     @SafeVarargs
