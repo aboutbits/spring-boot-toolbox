@@ -7,6 +7,8 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Sort;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +26,7 @@ import java.util.stream.Stream;
 @NullMarked
 public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
     private static final String DEFAULT_SORT_PROPERTY = "id";
-    private static final Sort.Direction DEFAULT_SORT_DIRETION = Sort.Direction.ASC;
+    private static final Sort.Direction DEFAULT_SORT_DIRECTION = Sort.Direction.ASC;
 
     @Accessors(fluent = true)
     @Getter
@@ -226,11 +228,11 @@ public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
      * @return an instance of {@link Sort} created using the transformed key-value mapping,
      * excluding default sorting behavior.
      */
-    public Sort buildSortWithoutDefault(Map<T, String> mapping) {
+    public Sort buildSortWithoutDefault(Map<T, ?> mapping) {
         var stringMapping = mapping.entrySet().stream()
                 .collect(Collectors.toMap(
                         entry -> entry.getKey().name(),
-                        Map.Entry::getValue
+                        entry -> convertToString(entry.getValue())
                 ));
 
         return buildSort(stringMapping, false);
@@ -246,14 +248,66 @@ public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
      *                The enumeration keys must implement the `name()` method to retrieve their string representation.
      * @return an instance of {@link Sort} created using the transformed key-value mapping with default sorting behavior.
      */
-    public Sort buildSort(Map<T, String> mapping) {
+    public Sort buildSort(Map<T, ?> mapping) {
         var stringMapping = mapping.entrySet().stream()
                 .collect(Collectors.toMap(
                         entry -> entry.getKey().name(),
-                        Map.Entry::getValue
+                        entry -> convertToString(entry.getValue())
                 ));
 
         return buildSort(stringMapping, true);
+    }
+
+    private static String convertToString(Object value) {
+        if (value instanceof String string) {
+            return string;
+        }
+
+        // Use reflection to get the column name from a mapped jOOQ Field<?> using the Field<?>.getName() method
+        // This allows us to have jOOQ as an optional dependency and not break existing projects that use Hibernate
+        try {
+            var getName = findAccessibleGetNameMethod(value.getClass());
+            if (getName == null) {
+                getName = value.getClass().getMethod("getName");
+                getName.setAccessible(true);
+            }
+
+            return (String) getName.invoke(value);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(
+                    "Cannot get the jOOQ Field name from the mapped SortMappings$Mapping column value [value.class.name=%s]".formatted(
+                            value.getClass().getName()
+                    ),
+                    e
+            );
+        }
+    }
+
+    private static @Nullable Method findAccessibleGetNameMethod(Class<?> clazz) {
+        if (Modifier.isPublic(clazz.getModifiers())) {
+            try {
+                var method = clazz.getDeclaredMethod("getName");
+                if (Modifier.isPublic(method.getModifiers())) {
+                    return method;
+                }
+            } catch (NoSuchMethodException _) {
+                // ignored, let's search in the interfaces or superclass
+            }
+        }
+
+        for (var interFace : clazz.getInterfaces()) {
+            var method = findAccessibleGetNameMethod(interFace);
+            if (method != null) {
+                return method;
+            }
+        }
+
+        var superclass = clazz.getSuperclass();
+        if (superclass != null) {
+            return findAccessibleGetNameMethod(superclass);
+        }
+
+        return null;
     }
 
     private Sort buildSort(Map<String, String> mapping, boolean withDefault) {
@@ -289,7 +343,7 @@ public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
     }
 
     private static Sort getMappedDefaultSort(Map<String, String> mapping) {
-        return Sort.by(DEFAULT_SORT_DIRETION, mapping.getOrDefault(DEFAULT_SORT_PROPERTY, DEFAULT_SORT_PROPERTY));
+        return Sort.by(DEFAULT_SORT_DIRECTION, mapping.getOrDefault(DEFAULT_SORT_PROPERTY, DEFAULT_SORT_PROPERTY));
     }
 
     public record SortField(
