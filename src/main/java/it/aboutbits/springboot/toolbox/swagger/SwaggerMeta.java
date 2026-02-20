@@ -16,26 +16,26 @@ public class SwaggerMeta {
     @Nullable
     private String originalTypeFqn = null;
 
-    @Nullable
     @JsonProperty("isIdentity")
+    @Nullable
     private Boolean isIdentity = null;
 
-    @Nullable
     @JsonProperty("isCustomType")
+    @Nullable
     private Boolean isCustomType = null;
 
-    @Nullable
     @JsonProperty("isNestedStructure")
+    @Nullable
     private Boolean isNestedStructure = null;
 
-    @Nullable
     @JsonProperty("isMap")
+    @Nullable
     private Boolean isMap = null;
 
     @Nullable
     private String mapKeyTypeFqn = null;
 
-    @Nullable
     @JsonProperty("isNullable")
+    @Nullable
     private Boolean isNullable = null;
 }
