@@ -13,29 +13,22 @@ import org.jspecify.annotations.Nullable;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NullMarked
 public class SwaggerMeta {
-    @Nullable
-    private String originalTypeFqn = null;
+    private @Nullable String originalTypeFqn = null;
 
     @JsonProperty("isIdentity")
-    @Nullable
-    private Boolean isIdentity = null;
+    private @Nullable Boolean isIdentity = null;
 
     @JsonProperty("isCustomType")
-    @Nullable
-    private Boolean isCustomType = null;
+    private @Nullable Boolean isCustomType = null;
 
     @JsonProperty("isNestedStructure")
-    @Nullable
-    private Boolean isNestedStructure = null;
+    private @Nullable Boolean isNestedStructure = null;
 
     @JsonProperty("isMap")
-    @Nullable
-    private Boolean isMap = null;
+    private @Nullable Boolean isMap = null;
 
-    @Nullable
-    private String mapKeyTypeFqn = null;
+    private @Nullable String mapKeyTypeFqn = null;
 
     @JsonProperty("isNullable")
-    @Nullable
-    private Boolean isNullable = null;
+    private @Nullable Boolean isNullable = null;
 }

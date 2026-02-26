@@ -62,26 +62,22 @@ public final class ConstraintViolationExceptionBuilder {
         }
 
         @Override
-        @Nullable
-        public String getMessageTemplate() {
+        public @Nullable String getMessageTemplate() {
             return null;
         }
 
         @Override
-        @Nullable
-        public Object getRootBean() {
+        public @Nullable Object getRootBean() {
             return null;
         }
 
         @Override
-        @Nullable
-        public Class<Object> getRootBeanClass() {
+        public @Nullable Class<Object> getRootBeanClass() {
             return null;
         }
 
         @Override
-        @Nullable
-        public Object getLeafBean() {
+        public @Nullable Object getLeafBean() {
             return null;
         }
 
@@ -91,8 +87,7 @@ public final class ConstraintViolationExceptionBuilder {
         }
 
         @Override
-        @Nullable
-        public Object getExecutableReturnValue() {
+        public @Nullable Object getExecutableReturnValue() {
             return null;
         }
 
@@ -102,20 +97,17 @@ public final class ConstraintViolationExceptionBuilder {
         }
 
         @Override
-        @Nullable
-        public Object getInvalidValue() {
+        public @Nullable Object getInvalidValue() {
             return null;
         }
 
         @Override
-        @Nullable
-        public ConstraintDescriptor<?> getConstraintDescriptor() {
+        public @Nullable ConstraintDescriptor<?> getConstraintDescriptor() {
             return null;
         }
 
         @Override
-        @Nullable
-        public <U> U unwrap(Class<U> type) {
+        public @Nullable <U> U unwrap(Class<U> type) {
             return null;
         }
     }
