@@ -3,6 +3,7 @@ package it.aboutbits.springboot.toolbox.persistence;
 import it.aboutbits.springboot.toolbox.parameter.SortParameter;
 import org.jooq.impl.DSL;
 import org.jspecify.annotations.NullMarked;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Sort;
 
@@ -18,6 +19,7 @@ class SortMappingsForJooqTest {
     }
 
     @Test
+    @DisplayName("Method map should return a mapping with a jOOQ Field object")
     void map_shouldReturnMappingWithFieldObject() {
         var field = DSL.field("my_column");
         var mapping = SortMappingsForJooq.map(ESort.Property1, field);
@@ -27,6 +29,7 @@ class SortMappingsForJooqTest {
     }
 
     @Test
+    @DisplayName("Method of should create a SortMappingsForJooq instance")
     void of_shouldCreateSortMappingsForJooq() {
         var field1 = DSL.field("col1");
         var mappings = SortMappingsForJooq.of(
@@ -38,6 +41,7 @@ class SortMappingsForJooqTest {
     }
 
     @Test
+    @DisplayName("Should build Spring Sort with jOOQ Fields correctly")
     void buildSpringSortWithJooqFields() {
         var mappings = SortMappingsForJooq.of(
                 SortMappingsForJooq.map(ESort.Property1, DSL.field("my_col"))

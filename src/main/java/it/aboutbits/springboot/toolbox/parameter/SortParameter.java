@@ -263,16 +263,23 @@ public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
             return string;
         }
 
-        // Use reflection to get the column name from a mapped jOOQ Field<?> using the Field<?>.getName() method
+        // Use reflection to get the column name from a jOOQ Field<?> using the Field<?>.getName() method
         // This allows us to have jOOQ as an optional dependency and not break existing projects that use Hibernate
         try {
-            var getName = findAccessibleGetNameMethod(value.getClass());
-            if (getName == null) {
-                getName = value.getClass().getMethod("getName");
-                getName.setAccessible(true);
+            var fieldClass = Class.forName("org.jooq.Field");
+            if (!fieldClass.isInstance(value)) {
+                throw new IllegalArgumentException(
+                        "Value must be either a String or org.jooq.Field, but was: " + value.getClass().getName()
+                );
             }
 
+            var getName = fieldClass.getMethod("getName");
             return (String) getName.invoke(value);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException(
+                    "jOOQ library not found. Cannot process Field<?> value. Make sure jOOQ is on the classpath.",
+                    e
+            );
         } catch (Exception e) {
             throw new IllegalArgumentException(
                     "Cannot get the jOOQ Field name from the mapped SortMappings$Mapping column value [value.class.name=%s]".formatted(
@@ -281,33 +288,6 @@ public final class SortParameter<T extends Enum<?> & SortParameter.Definition> {
                     e
             );
         }
-    }
-
-    private static @Nullable Method findAccessibleGetNameMethod(Class<?> clazz) {
-        if (Modifier.isPublic(clazz.getModifiers())) {
-            try {
-                var method = clazz.getDeclaredMethod("getName");
-                if (Modifier.isPublic(method.getModifiers())) {
-                    return method;
-                }
-            } catch (NoSuchMethodException _) {
-                // ignored, let's search in the interfaces or superclass
-            }
-        }
-
-        for (var interFace : clazz.getInterfaces()) {
-            var method = findAccessibleGetNameMethod(interFace);
-            if (method != null) {
-                return method;
-            }
-        }
-
-        var superclass = clazz.getSuperclass();
-        if (superclass != null) {
-            return findAccessibleGetNameMethod(superclass);
-        }
-
-        return null;
     }
 
     private Sort buildSort(Map<String, String> mapping, boolean withDefault) {
