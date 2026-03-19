@@ -113,6 +113,10 @@ public record ScaledBigDecimal(
         return new ScaledBigDecimal(value);
     }
 
+    public static ScaledBigDecimal valueOf(BigDecimal value) {
+        return new ScaledBigDecimal(value);
+    }
+
     public ScaledBigDecimal add(ScaledBigDecimal other) {
         return new ScaledBigDecimal(this.value().add(other.value()));
     }
