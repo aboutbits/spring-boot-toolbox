@@ -13,6 +13,7 @@ import java.math.RoundingMode;
  * It also provides a set of arithmetic operations that return new instances with the appropriate scale and rounding.
  */
 @NullMarked
+@SuppressWarnings("unused")
 public record ScaledBigDecimal(
         BigDecimal value
 ) implements CustomType<BigDecimal>, Comparable<ScaledBigDecimal> {
@@ -188,8 +189,16 @@ public record ScaledBigDecimal(
         return this.value().setScale(scale, RoundingMode.HALF_UP);
     }
 
+    public BigDecimal toBigDecimal(int scale, RoundingMode roundingMode) {
+        return this.value().setScale(scale, roundingMode);
+    }
+
     public ScaledBigDecimal roundToScale(int scale) {
         return new ScaledBigDecimal(this.value().setScale(scale, RoundingMode.HALF_UP));
+    }
+
+    public ScaledBigDecimal roundToScale(int scale, RoundingMode roundingMode) {
+        return new ScaledBigDecimal(this.value().setScale(scale, roundingMode));
     }
 
     @Override
@@ -203,8 +212,8 @@ public record ScaledBigDecimal(
             return true;
         }
 
-        if (o instanceof ScaledBigDecimal other) {
-            return this.value().compareTo(other.value()) == 0;
+        if (o instanceof ScaledBigDecimal(BigDecimal other)) {
+            return this.value().compareTo(other) == 0;
         }
 
         return false;
@@ -260,5 +269,41 @@ public record ScaledBigDecimal(
 
     public short shortValue() {
         return (short) intValue();
+    }
+
+    public boolean isZero() {
+        return this.value().compareTo(BigDecimal.ZERO) == 0;
+    }
+
+    public boolean isNegative() {
+        return this.value().compareTo(BigDecimal.ZERO) < 0;
+    }
+
+    public boolean isPositive() {
+        return this.value().compareTo(BigDecimal.ZERO) > 0;
+    }
+
+    public boolean isPositiveOrZero() {
+        return this.value().compareTo(BigDecimal.ZERO) >= 0;
+    }
+
+    public boolean isNegativeOrZero() {
+        return this.value().compareTo(BigDecimal.ZERO) <= 0;
+    }
+
+    public boolean isBiggerThan(ScaledBigDecimal other) {
+        return this.compareTo(other) > 0;
+    }
+
+    public boolean isEqualOrBiggerThan(ScaledBigDecimal other) {
+        return this.compareTo(other) >= 0;
+    }
+
+    public boolean isSmallerThan(ScaledBigDecimal other) {
+        return this.compareTo(other) < 0;
+    }
+
+    public boolean isEqualOrSmallerThan(ScaledBigDecimal other) {
+        return this.compareTo(other) <= 0;
     }
 }
