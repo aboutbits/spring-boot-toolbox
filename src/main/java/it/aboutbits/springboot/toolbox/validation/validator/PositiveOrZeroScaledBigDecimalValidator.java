@@ -12,6 +12,6 @@ public class PositiveOrZeroScaledBigDecimalValidator implements ConstraintValida
             return true;
         }
 
-        return value.compareTo(ScaledBigDecimal.ZERO) > -1;
+        return value.isPositiveOrZero();
     }
 }

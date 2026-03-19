@@ -12,6 +12,6 @@ public class NegativeScaledBigDecimalValidator implements ConstraintValidator<Ne
             return true;
         }
 
-        return value.compareTo(ScaledBigDecimal.ZERO) < 0;
+        return value.isNegative();
     }
 }
