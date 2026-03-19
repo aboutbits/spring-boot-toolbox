@@ -291,6 +291,10 @@ public record ScaledBigDecimal(
         return this.value().compareTo(BigDecimal.ZERO) <= 0;
     }
 
+    public boolean isEqual(ScaledBigDecimal other) {
+        return this.compareTo(other) == 0;
+    }
+
     public boolean isBiggerThan(ScaledBigDecimal other) {
         return this.compareTo(other) > 0;
     }
