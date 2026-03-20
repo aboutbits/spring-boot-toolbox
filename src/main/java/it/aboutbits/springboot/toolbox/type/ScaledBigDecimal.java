@@ -1,5 +1,6 @@
 package it.aboutbits.springboot.toolbox.type;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.jspecify.annotations.NullMarked;
 
 import java.math.BigDecimal;
@@ -275,42 +276,52 @@ public record ScaledBigDecimal(
         return (short) intValue();
     }
 
+    @JsonIgnore
     public boolean isZero() {
         return this.value().compareTo(BigDecimal.ZERO) == 0;
     }
 
+    @JsonIgnore
     public boolean isNegative() {
         return this.value().compareTo(BigDecimal.ZERO) < 0;
     }
 
+    @JsonIgnore
     public boolean isPositive() {
         return this.value().compareTo(BigDecimal.ZERO) > 0;
     }
 
+    @JsonIgnore
     public boolean isPositiveOrZero() {
         return this.value().compareTo(BigDecimal.ZERO) >= 0;
     }
 
+    @JsonIgnore
     public boolean isNegativeOrZero() {
         return this.value().compareTo(BigDecimal.ZERO) <= 0;
     }
 
+    @JsonIgnore
     public boolean isEqual(ScaledBigDecimal other) {
         return this.compareTo(other) == 0;
     }
 
+    @JsonIgnore
     public boolean isBiggerThan(ScaledBigDecimal other) {
         return this.compareTo(other) > 0;
     }
 
+    @JsonIgnore
     public boolean isEqualOrBiggerThan(ScaledBigDecimal other) {
         return this.compareTo(other) >= 0;
     }
 
+    @JsonIgnore
     public boolean isSmallerThan(ScaledBigDecimal other) {
         return this.compareTo(other) < 0;
     }
 
+    @JsonIgnore
     public boolean isEqualOrSmallerThan(ScaledBigDecimal other) {
         return this.compareTo(other) <= 0;
     }
