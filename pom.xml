@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.2</version>
+        <version>4.0.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -17,9 +17,9 @@
 
     <properties>
         <java.version>25</java.version>
-        <errorprone.version>2.46.0</errorprone.version>
+        <errorprone.version>2.48.0</errorprone.version>
         <jooq.version>3.20.11</jooq.version>
-        <nullaway.version>0.12.15</nullaway.version>
+        <nullaway.version>0.13.1</nullaway.version>
     </properties>
 
     <dependencyManagement>
@@ -100,7 +100,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.2</version>
         </dependency>
 
         <!-- Testing -->
@@ -142,19 +142,19 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>2.0.2</version>
+            <version>2.0.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers-junit-jupiter</artifactId>
-            <version>2.0.2</version>
+            <version>2.0.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers-postgresql</artifactId>
-            <version>2.0.2</version>
+            <version>2.0.4</version>
             <scope>test</scope>
         </dependency>
 
@@ -184,7 +184,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.14.1</version>
+                <version>3.15.0</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -255,7 +255,7 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>12.3.0</version>
+                        <version>13.3.0</version>
                     </dependency>
                     <dependency>
                         <groupId>it.aboutbits</groupId>
