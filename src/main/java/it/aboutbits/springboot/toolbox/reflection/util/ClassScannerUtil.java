@@ -6,16 +6,24 @@ import io.github.classgraph.ScanResult;
 import org.jspecify.annotations.NullMarked;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @NullMarked
 public final class ClassScannerUtil {
+    private static final Map<String, ClassScanner> CACHE = new ConcurrentHashMap<>();
+
     private ClassScannerUtil() {
     }
 
     public static ClassScanner getScannerForPackages(String... packages) {
-        return new ClassScanner(packages);
+        var cacheKey = Arrays.stream(packages)
+                .sorted()
+                .collect(Collectors.joining("|"));
+        return CACHE.computeIfAbsent(cacheKey, _ -> new ClassScanner(packages));
     }
 
     public static final class ClassScanner implements AutoCloseable {
@@ -54,7 +62,7 @@ public final class ClassScannerUtil {
 
         @Override
         public void close() {
-            scanResult.close();
+            // No-op: this scanner is cached and its lifecycle is managed by ClassScannerUtil.
         }
     }
 }
