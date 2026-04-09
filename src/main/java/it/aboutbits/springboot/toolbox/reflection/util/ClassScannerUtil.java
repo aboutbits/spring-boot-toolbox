@@ -26,7 +26,7 @@ public final class ClassScannerUtil {
         return CACHE.computeIfAbsent(cacheKey, _ -> new ClassScanner(packages));
     }
 
-    public static final class ClassScanner implements AutoCloseable {
+    public static final class ClassScanner {
         private final ScanResult scanResult;
         private final String[] packages;
 
@@ -58,11 +58,6 @@ public final class ClassScannerUtil {
             return result.stream().map(
                     ClassInfo::loadClass
             ).collect(Collectors.toSet());
-        }
-
-        @Override
-        public void close() {
-            // No-op: this scanner is cached and its lifecycle is managed by ClassScannerUtil.
         }
     }
 }
