@@ -44,6 +44,10 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends JsonDeseria
 
     @Override
     public T deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+        if (jsonParser.getCurrentToken() == null) {
+            return null;
+        }
+
         var value = typeConverter.apply(jsonParser);
 
         try {
