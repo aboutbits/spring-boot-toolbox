@@ -17,9 +17,9 @@
 
     <properties>
         <java.version>25</java.version>
-        <errorprone.version>2.48.0</errorprone.version>
-        <jooq.version>3.20.11</jooq.version>
-        <nullaway.version>0.13.1</nullaway.version>
+        <errorprone.version>2.49.0</errorprone.version>
+        <jooq.version>3.21.2</jooq.version>
+        <nullaway.version>0.13.2</nullaway.version>
     </properties>
 
     <dependencyManagement>
@@ -100,7 +100,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>3.0.2</version>
+            <version>3.0.3</version>
         </dependency>
 
         <!-- Testing -->
@@ -162,13 +162,13 @@
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5</artifactId>
-            <version>1.4.1</version>
+            <version>1.4.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5-api</artifactId>
-            <version>1.4.1</version>
+            <version>1.4.2</version>
             <scope>compile</scope>
         </dependency>
 
@@ -255,7 +255,7 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>13.3.0</version>
+                        <version>13.4.0</version>
                     </dependency>
                     <dependency>
                         <groupId>it.aboutbits</groupId>
