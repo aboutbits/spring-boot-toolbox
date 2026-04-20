@@ -1,6 +1,8 @@
 package it.aboutbits.springboot.toolbox.type;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import org.jspecify.annotations.NullMarked;
 
 import java.math.BigDecimal;
@@ -13,17 +15,19 @@ import java.math.RoundingMode;
  * This class provides various constructors for creating instances with different numerical types.
  * It also provides a set of arithmetic operations that return new instances with the appropriate scale and rounding.
  */
-@NullMarked
+@Getter
+@Accessors(fluent = true)
 @SuppressWarnings("unused")
-public record ScaledBigDecimal(
-        BigDecimal value
-) implements CustomType<BigDecimal>, Comparable<ScaledBigDecimal> {
+@NullMarked
+public class ScaledBigDecimal extends Number implements CustomType<BigDecimal>, Comparable<ScaledBigDecimal> {
     private static final MathContext MATH_CONTEXT = new MathContext(15, RoundingMode.HALF_UP);
 
     public static final ScaledBigDecimal ZERO = new ScaledBigDecimal(0);
     public static final ScaledBigDecimal ONE = new ScaledBigDecimal(1);
     public static final ScaledBigDecimal TWO = new ScaledBigDecimal(2);
     public static final ScaledBigDecimal TEN = new ScaledBigDecimal(10);
+
+    private final BigDecimal value;
 
     @SuppressWarnings("unused")
     ScaledBigDecimal(ScaledBigDecimal other) {
@@ -217,8 +221,8 @@ public record ScaledBigDecimal(
             return true;
         }
 
-        if (o instanceof ScaledBigDecimal(BigDecimal other)) {
-            return this.value().compareTo(other) == 0;
+        if (o instanceof ScaledBigDecimal other) {
+            return this.value().compareTo(other.value()) == 0;
         }
 
         return false;

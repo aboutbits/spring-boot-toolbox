@@ -1,5 +1,6 @@
 package it.aboutbits.springboot.toolbox.reflection.util;
 
+import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import org.jspecify.annotations.NullMarked;
 
 import java.lang.reflect.Constructor;
@@ -31,7 +32,7 @@ public final class RecordReflectionUtil {
             Class<T> recordClass,
             Class<?> type
     ) {
-        if (!recordClass.isRecord()) {
+        if (!recordClass.isRecord() && !ScaledBigDecimal.class.isAssignableFrom(recordClass)) {
             throw new IllegalArgumentException("Class must be a record: " + recordClass.getName());
         }
 
