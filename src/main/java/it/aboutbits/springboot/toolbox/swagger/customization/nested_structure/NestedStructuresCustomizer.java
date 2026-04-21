@@ -27,7 +27,7 @@ public class NestedStructuresCustomizer implements OpenApiCustomizer {
                                     true
                             ));
                         }
-                    } catch (ClassNotFoundException ignored) {
+                    } catch (ClassNotFoundException _) {
                         // do nothing
                     }
                 }
