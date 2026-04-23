@@ -1,6 +1,7 @@
 package it.aboutbits.springboot.toolbox.type;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.jspecify.annotations.NullMarked;
@@ -27,6 +28,7 @@ public class ScaledBigDecimal extends Number implements CustomType<BigDecimal>, 
     public static final ScaledBigDecimal TWO = new ScaledBigDecimal(2);
     public static final ScaledBigDecimal TEN = new ScaledBigDecimal(10);
 
+    @JsonProperty
     private final BigDecimal value;
 
     @SuppressWarnings("unused")
