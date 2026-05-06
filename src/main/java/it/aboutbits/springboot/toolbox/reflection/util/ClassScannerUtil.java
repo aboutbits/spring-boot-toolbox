@@ -1,41 +1,33 @@
 package it.aboutbits.springboot.toolbox.reflection.util;
 
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ClassInfo;
-import io.github.classgraph.ScanResult;
+import lombok.SneakyThrows;
 import org.jspecify.annotations.NullMarked;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.core.type.filter.AssignableTypeFilter;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @NullMarked
 public final class ClassScannerUtil {
-    private static final Map<String, ClassScanner> CACHE = new ConcurrentHashMap<>();
 
     private ClassScannerUtil() {
     }
 
     public static ClassScanner getScannerForPackages(String... packages) {
-        var cacheKey = Arrays.stream(packages)
-                .sorted()
-                .collect(Collectors.joining("|"));
-        return CACHE.computeIfAbsent(cacheKey, _ -> new ClassScanner(packages));
+        return new ClassScanner(packages);
     }
 
     public static final class ClassScanner {
-        private final ScanResult scanResult;
         private final String[] packages;
 
         private ClassScanner(String... packages) {
             this.packages = packages;
-            this.scanResult = new ClassGraph()
-                    .enableAllInfo()
-                    .acceptPackages(packages)
-                    .scan();
         }
 
         public String[] getScannedPackages() {
@@ -44,20 +36,36 @@ public final class ClassScannerUtil {
 
         @SuppressWarnings("unchecked")
         public <T> Set<Class<? extends T>> getSubTypesOf(Class<T> clazz) {
-            var classInfoList = clazz.isInterface()
-                    ? scanResult.getClassesImplementing(clazz)
-                    : scanResult.getSubclasses(clazz);
-            return classInfoList.loadClasses()
-                    .stream()
-                    .map(item -> (Class<? extends T>) item)
+            var scanner = createScanner();
+            scanner.addIncludeFilter(new AssignableTypeFilter(clazz));
+            return Arrays.stream(packages)
+                    .flatMap(pkg -> scanner.findCandidateComponents(pkg).stream())
+                    .map(bd -> (Class<? extends T>) loadClass(Objects.requireNonNull(bd.getBeanClassName())))
+                    .filter(c -> !c.equals(clazz))
                     .collect(Collectors.toSet());
         }
 
         public Set<Class<?>> getClassesAnnotatedWith(Class<? extends Annotation> clazz) {
-            var result = scanResult.getClassesWithAnnotation(clazz);
-            return result.stream().map(
-                    ClassInfo::loadClass
-            ).collect(Collectors.toSet());
+            var scanner = createScanner();
+            scanner.addIncludeFilter(new AnnotationTypeFilter(clazz));
+            return Arrays.stream(packages)
+                    .flatMap(pkg -> scanner.findCandidateComponents(pkg).stream())
+                    .map(bd -> loadClass(Objects.requireNonNull(bd.getBeanClassName())))
+                    .collect(Collectors.toSet());
+        }
+
+        private static ClassPathScanningCandidateComponentProvider createScanner() {
+            return new ClassPathScanningCandidateComponentProvider(false) {
+                @Override
+                protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
+                    return true;
+                }
+            };
+        }
+
+        @SneakyThrows(ClassNotFoundException.class)
+        private static Class<?> loadClass(String className) {
+            return Class.forName(className);
         }
     }
 }
