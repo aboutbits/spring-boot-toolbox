@@ -1,6 +1,7 @@
 package it.aboutbits.springboot.toolbox.autoconfiguration.web;
 
 import it.aboutbits.springboot.toolbox.reflection.util.ClassScannerUtil;
+import it.aboutbits.springboot.toolbox.reflection.util.CustomTypeReflectionUtil;
 import it.aboutbits.springboot.toolbox.type.CustomType;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +42,7 @@ public class CustomTypeScanner {
         this.relevantTypes = findAllCustomTypes(classScanner);
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public static Set<Class<? extends CustomType>> findAllCustomTypes(ClassScannerUtil.ClassScanner classScanner) {
         return classScanner.getSubTypesOf(CustomType.class).stream()
                 .filter(item ->
@@ -50,6 +51,27 @@ public class CustomTypeScanner {
                                         && !Modifier.isAbstract(item.getModifiers())
                                         && !item.isAnnotationPresent(DisableCustomTypeConfiguration.class)
                 )
+                .filter(item -> {
+                    if (item.isEnum()) {
+                        return true;
+                    }
+
+                    try {
+                        var constructor = CustomTypeReflectionUtil.getCustomTypeConstructor((Class<? extends CustomType<?>>) item);
+                        var wrappedType = constructor.getParameterTypes()[0];
+
+                        if (!CustomTypeReflectionUtil.isSupportedWrappedType(wrappedType)) {
+                            log.debug("CustomType {} has an unsupported wrapped type {} and will be ignored.", item.getName(), wrappedType.getName());
+                            return false;
+                        }
+
+                        return true;
+                    } catch (NoSuchMethodException _) {
+                        log.debug("CustomType {} is missing the required constructor and will be ignored.", item.getName());
+
+                        return false;
+                    }
+                })
                 .collect(Collectors.toSet());
     }
 
