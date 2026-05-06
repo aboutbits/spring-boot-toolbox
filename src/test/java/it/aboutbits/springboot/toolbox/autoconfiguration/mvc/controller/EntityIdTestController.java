@@ -4,6 +4,7 @@ import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithEntity
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithEnumEntityId;
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.CustomTypeEnumTestModel;
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.CustomTypeTestModel;
+import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.DirectEnumEntityId;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,6 +45,21 @@ public class EntityIdTestController {
 
     @PostMapping("/CustomTypeEnumTestModel.ID/as-body")
     public BodyWithEnumEntityId customTypeEnumTestModelIdAsBody(@RequestBody BodyWithEnumEntityId value) {
+        return value;
+    }
+
+    @GetMapping("/DirectEnumEntityId/as-path-variable/{value}")
+    public DirectEnumEntityId directEnumEntityIdAsPathVariable(@PathVariable DirectEnumEntityId value) {
+        return value;
+    }
+
+    @GetMapping("/DirectEnumEntityId/as-request-parameter")
+    public DirectEnumEntityId directEnumEntityIdAsRequestParameter(@RequestParam DirectEnumEntityId value) {
+        return value;
+    }
+
+    @PostMapping("/DirectEnumEntityId/as-body")
+    public DirectEnumEntityId directEnumEntityIdAsBody(@RequestBody DirectEnumEntityId value) {
         return value;
     }
 }

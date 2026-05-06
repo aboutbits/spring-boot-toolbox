@@ -23,24 +23,29 @@ import java.util.function.Function;
 @NullMarked
 public class CustomTypeDeserializer<T extends CustomType<?>> extends ValueDeserializer<T> {
     private final Class<T> customType;
-    private final Constructor<T> constructor;
+    private final @Nullable Constructor<T> constructor;
     private final Function<JsonParser, @Nullable Object> typeConverter;
 
     public CustomTypeDeserializer(Class<T> customType) {
         this.customType = customType;
 
-        try {
-            this.constructor = CustomTypeReflectionUtil.getCustomTypeConstructor(customType);
-        } catch (NoSuchMethodException e) {
-            throw new CustomTypeDeserializerException(
-                    "Unable to find constructor for type: " + customType.getName(),
-                    e
+        if (customType.isEnum()) {
+            this.constructor = null;
+            this.typeConverter = getEnumConverter(customType);
+        } else {
+            try {
+                this.constructor = CustomTypeReflectionUtil.getCustomTypeConstructor(customType);
+            } catch (NoSuchMethodException e) {
+                throw new CustomTypeDeserializerException(
+                        "Unable to find constructor for type: " + customType.getName(),
+                        e
+                );
+            }
+
+            this.typeConverter = getTypeConverter(
+                    constructor.getParameterTypes()[0]
             );
         }
-
-        this.typeConverter = getTypeConverter(
-                constructor.getParameterTypes()[0]
-        );
     }
 
     @Override
@@ -49,8 +54,17 @@ public class CustomTypeDeserializer<T extends CustomType<?>> extends ValueDeseri
     }
 
     @Override
-    public T deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) {
+    @SuppressWarnings("unchecked")
+    public @Nullable T deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) {
         var value = typeConverter.apply(jsonParser);
+
+        if (value == null) {
+            return null;
+        }
+
+        if (constructor == null) {
+            return (T) value;
+        }
 
         try {
             return constructor.newInstance(value);

@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      author: Junie
+      id: 2026-05-06-create-direct-enum-id-test-model-table
+      changes:
+        - createTable:
+            tableName: direct_enum_id_test_model
+            columns:
+              - column:
+                  name: id
+                  type: text
+                  constraints:
+                    nullable: false
+                    primaryKey: true

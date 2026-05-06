@@ -17,22 +17,27 @@ import java.util.function.Function;
 
 @NullMarked
 public final class CustomTypePropertyEditor<T extends CustomType<?>> extends PropertyEditorSupport {
-    private final Constructor<T> constructor;
+    private final @Nullable Constructor<T> constructor;
     private final Function<@Nullable String, @Nullable Object> typeConverter;
 
     public CustomTypePropertyEditor(Class<T> customType) {
-        try {
-            this.constructor = CustomTypeReflectionUtil.getCustomTypeConstructor(customType);
-        } catch (NoSuchMethodException e) {
-            throw new CustomTypeDeserializer.CustomTypeDeserializerException(
-                    "Unable to find constructor for type: " + customType.getName(),
-                    e
+        if (customType.isEnum()) {
+            this.constructor = null;
+            this.typeConverter = toEnumConverter(customType);
+        } else {
+            try {
+                this.constructor = CustomTypeReflectionUtil.getCustomTypeConstructor(customType);
+            } catch (NoSuchMethodException e) {
+                throw new CustomTypeDeserializer.CustomTypeDeserializerException(
+                        "Unable to find constructor for type: " + customType.getName(),
+                        e
+                );
+            }
+
+            this.typeConverter = getTextToTypeConverter(
+                    constructor.getParameters()[0].getType()
             );
         }
-
-        this.typeConverter = getTextToTypeConverter(
-                constructor.getParameters()[0].getType()
-        );
     }
 
     @SuppressWarnings("unchecked")
@@ -45,8 +50,13 @@ public final class CustomTypePropertyEditor<T extends CustomType<?>> extends Pro
     }
 
     @Override
-    public void setAsText(String text) throws IllegalArgumentException {
+    public void setAsText(@Nullable String text) throws IllegalArgumentException {
         var value = typeConverter.apply(text);
+
+        if (constructor == null) {
+            setValue(value);
+            return;
+        }
 
         try {
             setValue(

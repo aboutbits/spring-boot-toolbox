@@ -6,6 +6,7 @@ import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithEntity
 import it.aboutbits.springboot.toolbox.autoconfiguration.mvc.body.BodyWithEnumEntityId;
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.CustomTypeEnumTestModel;
 import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.CustomTypeTestModel;
+import it.aboutbits.springboot.toolbox.autoconfiguration.persistence.impl.jpa.DirectEnumEntityId;
 import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -112,6 +113,49 @@ class EntityIdBindingsForControllerTest {
             );
 
             var actual = jsonMapper.readValue(resultAsString, BodyWithEnumEntityId.class);
+
+            assertThat(actual).isEqualTo(value);
+        }
+    }
+
+    @Nested
+    class DirectEnumEntityIdTest {
+        @Test
+        void valueAsPathVariable() throws Exception {
+            var value = DirectEnumEntityId.VAL1;
+
+            var resultAsString = performGetAndReturnResult(
+                    String.format("/test/entity-id/DirectEnumEntityId/as-path-variable/%s", value)
+            );
+
+            var actual = jsonMapper.readValue(resultAsString, DirectEnumEntityId.class);
+
+            assertThat(actual).isEqualTo(value);
+        }
+
+        @Test
+        void valueAsRequestParameter() throws Exception {
+            var value = DirectEnumEntityId.VAL2;
+
+            var resultAsString = performGetAndReturnResult(
+                    String.format("/test/entity-id/DirectEnumEntityId/as-request-parameter?value=%s", value)
+            );
+
+            var actual = jsonMapper.readValue(resultAsString, DirectEnumEntityId.class);
+
+            assertThat(actual).isEqualTo(value);
+        }
+
+        @Test
+        void valueAsBody() throws Exception {
+            var value = DirectEnumEntityId.VAL1;
+
+            var resultAsString = performPostAndReturnResult(
+                    "/test/entity-id/DirectEnumEntityId/as-body",
+                    value
+            );
+
+            var actual = jsonMapper.readValue(resultAsString, DirectEnumEntityId.class);
 
             assertThat(actual).isEqualTo(value);
         }

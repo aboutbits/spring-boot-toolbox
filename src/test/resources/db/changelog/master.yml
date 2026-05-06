@@ -11,3 +11,6 @@ databaseChangeLog:
   - include:
       file: 2025-08-29-create-custom-type-enum-testing-table.yml
       relativeToChangelogFile: true
+  - include:
+      file: 2026-05-06-create-direct-enum-id-test-model-table.yml
+      relativeToChangelogFile: true
