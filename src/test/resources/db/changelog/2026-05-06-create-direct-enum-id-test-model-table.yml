@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      author: Junie
+      author: Thomas Sapelza
       id: 2026-05-06-create-direct-enum-id-test-model-table
       changes:
         - createTable:
