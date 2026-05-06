@@ -119,6 +119,7 @@ class EntityIdBindingsForControllerTest {
     }
 
     @Nested
+    @ArchIgnoreNoProductionCounterpart
     class DirectEnumEntityIdTest {
         @Test
         void valueAsPathVariable() throws Exception {
