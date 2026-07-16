@@ -1,7 +1,9 @@
 package it.aboutbits.springboot.toolbox.exception;
 
+import lombok.Getter;
 import org.jspecify.annotations.NullMarked;
 
+@Getter
 @NullMarked
 public class ClientRuntimeException extends RuntimeException {
 
