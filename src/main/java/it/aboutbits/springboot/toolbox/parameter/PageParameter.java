@@ -37,10 +37,13 @@ public final class PageParameter {
         if (actualSize > MAX_PAGE_SIZE) {
             log.warn("Page size exceeded maximum [actualSize={}, maxSize={}]", actualSize, MAX_PAGE_SIZE);
         }
+        if (actualSize < 1) {
+            log.warn("Page size below minimum [actualSize={}, minSize=1]", actualSize);
+        }
 
         pageInfo = new PageInfo(
                 Math.max(0, actualPage),
-                Math.min(actualSize, MAX_PAGE_SIZE),
+                Math.min(Math.max(1, actualSize), MAX_PAGE_SIZE),
                 true
         );
     }
