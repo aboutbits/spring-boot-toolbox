@@ -63,15 +63,10 @@ public class NullableCustomizer implements OpenApiCustomizer {
                 requiredProperties.remove(propertyName);
             }
 
-            // Check for nullable type parameters in collections/arrays
+            // Check for nullable type parameters in collections/arrays/maps
             var annotatedType = getAnnotatedType(cls, propertyName);
             if (annotatedType != null) {
-                var nullableDepths = new ArrayList<Integer>();
-                findNullableDepths(annotatedType, 0, nullableDepths);
-                // Add "nullable" description at each depth where nullable elements are found
-                for (var depth : nullableDepths) {
-                    addNullableDescriptionAtDepth(property, depth);
-                }
+                addNullableDescriptionToContainedTypes(annotatedType, property);
             }
         });
     }
@@ -99,50 +94,40 @@ public class NullableCustomizer implements OpenApiCustomizer {
         return null;
     }
 
-    private static void findNullableDepths(AnnotatedType annotatedType, int depth, ArrayList<Integer> nullableDepths) {
-        if (annotatedType instanceof AnnotatedParameterizedType parameterizedType) {
-            var rawType = parameterizedType.getType();
-            if (rawType instanceof ParameterizedType pt) {
-                var rawClass = pt.getRawType();
-                if (rawClass instanceof Class<?> clazz && isCollectionType(clazz)) {
-                    var typeArgs = parameterizedType.getAnnotatedActualTypeArguments();
-                    for (var typeArg : typeArgs) {
-                        if (hasNullableAnnotation(typeArg)) {
-                            nullableDepths.add(depth);
-                        }
-                        // Recursively check nested type parameters
-                        findNullableDepths(typeArg, depth + 1, nullableDepths);
-                    }
-                }
+    // Walks the type and its schema together: the element of a collection or array is described by the
+    // schema's items, the value of a map by its additionalProperties
+    private static void addNullableDescriptionToContainedTypes(AnnotatedType annotatedType, Schema<?> schema) {
+        if (annotatedType instanceof AnnotatedArrayType arrayType) {
+            addNullableDescriptionToContainedType(arrayType.getAnnotatedGenericComponentType(), schema.getItems());
+        } else if (annotatedType instanceof AnnotatedParameterizedType parameterizedType
+                && parameterizedType.getType() instanceof ParameterizedType type
+                && type.getRawType() instanceof Class<?> rawClass) {
+            var typeArguments = parameterizedType.getAnnotatedActualTypeArguments();
+            // The element of Collection<E> and the value of Map<K, V> are both the last type argument
+            var containedType = typeArguments[typeArguments.length - 1];
+            if (Collection.class.isAssignableFrom(rawClass)) {
+                addNullableDescriptionToContainedType(containedType, schema.getItems());
+            } else if (Map.class.isAssignableFrom(rawClass)
+                    && schema.getAdditionalProperties() instanceof Schema<?> valueSchema) {
+                addNullableDescriptionToContainedType(containedType, valueSchema);
             }
-        } else if (annotatedType instanceof AnnotatedArrayType arrayType) {
-            var componentType = arrayType.getAnnotatedGenericComponentType();
-            if (hasNullableAnnotation(componentType)) {
-                nullableDepths.add(depth);
-            }
-            // Recursively check nested array types
-            findNullableDepths(componentType, depth + 1, nullableDepths);
         }
     }
 
-    @SuppressWarnings("rawtypes")
-    private static void addNullableDescriptionAtDepth(Schema<?> schema, int depth) {
-        Schema currentSchema = schema;
-        for (int i = 0; i <= depth; i++) {
-            var items = currentSchema.getItems();
-            if (items == null) {
-                return; // Schema structure doesn't match expected depth
-            }
-            currentSchema = items;
+    private static void addNullableDescriptionToContainedType(
+            AnnotatedType containedType,
+            @org.jspecify.annotations.Nullable Schema<?> containedSchema
+    ) {
+        if (containedSchema == null) {
+            return; // Schema structure doesn't match the type
         }
-        currentSchema.setDescription(SwaggerMetaUtil.setIsNullable(
-                currentSchema.getDescription(),
-                true
-        ));
-    }
-
-    private static boolean isCollectionType(Class<?> clazz) {
-        return Collection.class.isAssignableFrom(clazz) || clazz.isArray();
+        if (hasNullableAnnotation(containedType)) {
+            containedSchema.setDescription(SwaggerMetaUtil.setIsNullable(
+                    containedSchema.getDescription(),
+                    true
+            ));
+        }
+        addNullableDescriptionToContainedTypes(containedType, containedSchema);
     }
 
     private static boolean hasNullableAnnotation(AnnotatedType annotatedType) {
