@@ -402,8 +402,8 @@ class NullableCustomizerTest {
         customizer.customise(openApi);
 
         // then
-        var property = schema.getProperties().get("items");
-        assertThat(property.getDescription()).as("description should be null for non-nullable elements")
+        var property = (ArraySchema) schema.getProperties().get("items");
+        assertThat(property.getItems().getDescription()).as("description should be null for non-nullable elements")
                 .isNull();
     }
 
