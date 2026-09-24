@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -138,6 +139,33 @@ class NullableCustomizerTest {
 
         public Map<String, String> getValues() {
             return values;
+        }
+    }
+
+    public static class MapWithNullableKeys {
+        private Map<@Nullable String, String> values;
+
+        public Map<@Nullable String, String> getValues() {
+            return values;
+        }
+    }
+
+    public static class StringKeyedMap<V> extends HashMap<String, V> {
+    }
+
+    public static class MapSubtypeWithNullableValues {
+        private StringKeyedMap<@Nullable String> values;
+
+        public StringKeyedMap<@Nullable String> getValues() {
+            return values;
+        }
+    }
+
+    public static class ArrayOfMapsWithNullableValues {
+        private Map<String, @Nullable String>[] items;
+
+        public Map<String, @Nullable String>[] getItems() {
+            return items;
         }
     }
 
@@ -538,6 +566,136 @@ class NullableCustomizerTest {
         var property = schema.getProperties().get("values");
         var valueSchema = (Schema<?>) property.getAdditionalProperties();
         assertThat(valueSchema.getDescription()).as("description should be null for non-nullable values")
+                .isNull();
+    }
+
+    @Test
+    void shouldAddDescriptionForArrayOfMapsWithNullableValues() {
+        // given
+        var customizer = new NullableCustomizer();
+        var openApi = new OpenAPI();
+        var components = new Components();
+
+        var schema = new Schema<Object>();
+        schema.setName(ArrayOfMapsWithNullableValues.class.getName());
+        var itemsProperty = new ArraySchema();
+        var itemMap = new MapSchema();
+        itemMap.setAdditionalProperties(new StringSchema());
+        itemsProperty.setItems(itemMap);
+        schema.addProperty("items", itemsProperty);
+
+        components.addSchemas(ArrayOfMapsWithNullableValues.class.getName(), schema);
+        openApi.setComponents(components);
+
+        // when
+        customizer.customise(openApi);
+
+        // then
+        var property = (ArraySchema) schema.getProperties().get("items");
+        var valueSchema = (Schema<?>) property.getItems().getAdditionalProperties();
+        assertThat(valueSchema.getDescription()).as("description should indicate nullable values of the elements")
+                .isEqualTo("{\"isNullable\":true}");
+    }
+
+    @Test
+    void shouldAddDescriptionForMapSubtypeWithNullableValues() {
+        // given
+        var customizer = new NullableCustomizer();
+        var openApi = new OpenAPI();
+        var components = new Components();
+
+        var schema = new Schema<Object>();
+        schema.setName(MapSubtypeWithNullableValues.class.getName());
+        var valuesProperty = new MapSchema();
+        valuesProperty.setAdditionalProperties(new StringSchema());
+        schema.addProperty("values", valuesProperty);
+
+        components.addSchemas(MapSubtypeWithNullableValues.class.getName(), schema);
+        openApi.setComponents(components);
+
+        // when
+        customizer.customise(openApi);
+
+        // then
+        var property = schema.getProperties().get("values");
+        var valueSchema = (Schema<?>) property.getAdditionalProperties();
+        assertThat(valueSchema.getDescription()).as("description should indicate nullable values of the map subtype")
+                .isEqualTo("{\"isNullable\":true}");
+    }
+
+    @Test
+    void shouldNotAddDescriptionForMapWithNullableKeys() {
+        // given
+        var customizer = new NullableCustomizer();
+        var openApi = new OpenAPI();
+        var components = new Components();
+
+        var schema = new Schema<Object>();
+        schema.setName(MapWithNullableKeys.class.getName());
+        var valuesProperty = new MapSchema();
+        valuesProperty.setAdditionalProperties(new StringSchema());
+        schema.addProperty("values", valuesProperty);
+
+        components.addSchemas(MapWithNullableKeys.class.getName(), schema);
+        openApi.setComponents(components);
+
+        // when
+        customizer.customise(openApi);
+
+        // then
+        var property = schema.getProperties().get("values");
+        var valueSchema = (Schema<?>) property.getAdditionalProperties();
+        assertThat(valueSchema.getDescription()).as("description should be null when only the keys are nullable")
+                .isNull();
+    }
+
+    @Test
+    void shouldNotThrowWhenMapHasNoValueSchema() {
+        // given
+        var customizer = new NullableCustomizer();
+        var openApi = new OpenAPI();
+        var components = new Components();
+
+        var schema = new Schema<Object>();
+        schema.setName(MapWithNullableValues.class.getName());
+        var valuesProperty = new MapSchema();
+        valuesProperty.setAdditionalProperties(true);
+        schema.addProperty("values", valuesProperty);
+
+        components.addSchemas(MapWithNullableValues.class.getName(), schema);
+        openApi.setComponents(components);
+
+        // when
+        customizer.customise(openApi);
+
+        // then
+        var property = schema.getProperties().get("values");
+        assertThat(property.getAdditionalProperties()).as("additionalProperties should stay untouched")
+                .isEqualTo(true);
+        assertThat(property.getDescription()).as("description should be null without a value schema")
+                .isNull();
+    }
+
+    @Test
+    void shouldNotThrowWhenListHasNoItemsSchema() {
+        // given
+        var customizer = new NullableCustomizer();
+        var openApi = new OpenAPI();
+        var components = new Components();
+
+        var schema = new Schema<Object>();
+        schema.setName(ListWithNullableElements.class.getName());
+        schema.addProperty("items", new StringSchema());
+
+        components.addSchemas(ListWithNullableElements.class.getName(), schema);
+        openApi.setComponents(components);
+
+        // when
+        customizer.customise(openApi);
+
+        // then
+        var property = schema.getProperties().get("items");
+        assertThat(property.getDescription()).as("description should be null without an items schema")
                 .isNull();
     }
 
