@@ -11,8 +11,12 @@ import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @NullMarked
@@ -102,24 +106,27 @@ public class NullableCustomizer implements OpenApiCustomizer {
         } else if (annotatedType instanceof AnnotatedParameterizedType parameterizedType
                 && parameterizedType.getType() instanceof ParameterizedType type
                 && type.getRawType() instanceof Class<?> rawClass) {
-            var typeArguments = parameterizedType.getAnnotatedActualTypeArguments();
-            // The element of Collection<E> and the value of Map<K, V> are both the last type argument
-            var containedType = typeArguments[typeArguments.length - 1];
             if (Collection.class.isAssignableFrom(rawClass)) {
-                addNullableDescriptionToContainedType(containedType, schema.getItems());
+                addNullableDescriptionToContainedType(
+                        findTypeArgumentFor(parameterizedType, rawClass, Collection.class, 0),
+                        schema.getItems()
+                );
             } else if (Map.class.isAssignableFrom(rawClass)
                     && schema.getAdditionalProperties() instanceof Schema<?> valueSchema) {
-                addNullableDescriptionToContainedType(containedType, valueSchema);
+                addNullableDescriptionToContainedType(
+                        findTypeArgumentFor(parameterizedType, rawClass, Map.class, 1),
+                        valueSchema
+                );
             }
         }
     }
 
     private static void addNullableDescriptionToContainedType(
-            AnnotatedType containedType,
+            @org.jspecify.annotations.Nullable AnnotatedType containedType,
             @org.jspecify.annotations.Nullable Schema<?> containedSchema
     ) {
-        if (containedSchema == null) {
-            return; // Schema structure doesn't match the type
+        if (containedType == null || containedSchema == null) {
+            return; // Type or schema structure doesn't expose the contained position
         }
         if (hasNullableAnnotation(containedType)) {
             containedSchema.setDescription(SwaggerMetaUtil.setIsNullable(
@@ -128,6 +135,76 @@ public class NullableCustomizer implements OpenApiCustomizer {
             ));
         }
         addNullableDescriptionToContainedTypes(containedType, containedSchema);
+    }
+
+    // The type argument that reaches the container's type parameter unchanged, e.g. the V of
+    // Foo<V> extends HashMap<String, V> for the value of Map<K, V>. Null when a supertype fixes that parameter
+    // or wraps it, like MultiValueMap<K, V> extends Map<K, List<V>>.
+    @org.jspecify.annotations.Nullable
+    private static AnnotatedType findTypeArgumentFor(
+            AnnotatedParameterizedType parameterizedType,
+            Class<?> rawClass,
+            Class<?> container,
+            int containerParameterIndex
+    ) {
+        var typeParameters = rawClass.getTypeParameters();
+        var typeArguments = parameterizedType.getAnnotatedActualTypeArguments();
+        var typeArgumentsByParameter = new HashMap<TypeVariable<?>, AnnotatedType>();
+        for (var i = 0; i < typeParameters.length; i++) {
+            typeArgumentsByParameter.put(typeParameters[i], typeArguments[i]);
+        }
+        return findTypeArgumentFor(rawClass, typeArgumentsByParameter, container, containerParameterIndex);
+    }
+
+    // Follows the type arguments up the supertypes of clazz, whose type parameters carry them unchanged
+    @org.jspecify.annotations.Nullable
+    private static AnnotatedType findTypeArgumentFor(
+            Class<?> clazz,
+            Map<TypeVariable<?>, AnnotatedType> typeArgumentsByParameter,
+            Class<?> container,
+            int containerParameterIndex
+    ) {
+        if (clazz == container) {
+            return typeArgumentsByParameter.get(clazz.getTypeParameters()[containerParameterIndex]);
+        }
+        var supertypes = new ArrayList<Type>(List.of(clazz.getGenericInterfaces()));
+        if (clazz.getGenericSuperclass() != null) {
+            supertypes.add(clazz.getGenericSuperclass());
+        }
+        for (var supertype : supertypes) {
+            var rawSupertype = supertype instanceof ParameterizedType parameterizedSupertype
+                    ? parameterizedSupertype.getRawType()
+                    : supertype;
+            if (rawSupertype instanceof Class<?> superclass && container.isAssignableFrom(superclass)) {
+                return findTypeArgumentFor(
+                        superclass,
+                        getTypeArgumentsBySupertypeParameter(supertype, superclass, typeArgumentsByParameter),
+                        container,
+                        containerParameterIndex
+                );
+            }
+        }
+        return null;
+    }
+
+    private static Map<TypeVariable<?>, AnnotatedType> getTypeArgumentsBySupertypeParameter(
+            Type supertype,
+            Class<?> superclass,
+            Map<TypeVariable<?>, AnnotatedType> typeArgumentsByParameter
+    ) {
+        var typeArgumentsBySupertypeParameter = new HashMap<TypeVariable<?>, AnnotatedType>();
+        if (supertype instanceof ParameterizedType parameterizedSupertype) {
+            var supertypeParameters = superclass.getTypeParameters();
+            var supertypeArguments = parameterizedSupertype.getActualTypeArguments();
+            for (var i = 0; i < supertypeArguments.length; i++) {
+                // Only a bare type parameter passes its type argument on; String fixes it, List<V> wraps it
+                if (supertypeArguments[i] instanceof TypeVariable<?> typeParameter
+                        && typeArgumentsByParameter.get(typeParameter) instanceof AnnotatedType typeArgument) {
+                    typeArgumentsBySupertypeParameter.put(supertypeParameters[i], typeArgument);
+                }
+            }
+        }
+        return typeArgumentsBySupertypeParameter;
     }
 
     private static boolean hasNullableAnnotation(AnnotatedType annotatedType) {
