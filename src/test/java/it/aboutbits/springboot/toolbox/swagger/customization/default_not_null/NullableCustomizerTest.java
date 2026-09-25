@@ -9,9 +9,11 @@ import io.swagger.v3.oas.models.media.StringSchema;
 import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import org.springframework.util.MultiValueMap;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -158,6 +160,33 @@ class NullableCustomizerTest {
 
         public StringKeyedMap<@Nullable String> getValues() {
             return values;
+        }
+    }
+
+    public static class MultiValueMapWithNullableValues {
+        private MultiValueMap<String, @Nullable String> values;
+
+        public MultiValueMap<String, @Nullable String> getValues() {
+            return values;
+        }
+    }
+
+    public static class TaggedList<E, T> extends ArrayList<E> {
+    }
+
+    public static class CollectionSubtypeWithNullableElements {
+        private TaggedList<@Nullable String, Integer> items;
+
+        public TaggedList<@Nullable String, Integer> getItems() {
+            return items;
+        }
+    }
+
+    public static class CollectionSubtypeWithNullableOtherTypeArgument {
+        private TaggedList<String, @Nullable Integer> items;
+
+        public TaggedList<String, @Nullable Integer> getItems() {
+            return items;
         }
     }
 
@@ -621,6 +650,84 @@ class NullableCustomizerTest {
         var valueSchema = (Schema<?>) property.getAdditionalProperties();
         assertThat(valueSchema.getDescription()).as("description should indicate nullable values of the map subtype")
                 .isEqualTo("{\"isNullable\":true}");
+    }
+
+    @Test
+    void shouldNotAddDescriptionToWrappedValueOfMapSubtype() {
+        // given
+        var customizer = new NullableCustomizer();
+        var openApi = new OpenAPI();
+        var components = new Components();
+
+        var schema = new Schema<Object>();
+        schema.setName(MultiValueMapWithNullableValues.class.getName());
+        var valuesProperty = new MapSchema();
+        var valueArray = new ArraySchema();
+        valueArray.setItems(new StringSchema());
+        valuesProperty.setAdditionalProperties(valueArray);
+        schema.addProperty("values", valuesProperty);
+
+        components.addSchemas(MultiValueMapWithNullableValues.class.getName(), schema);
+        openApi.setComponents(components);
+
+        // when
+        customizer.customise(openApi);
+
+        // then
+        var property = schema.getProperties().get("values");
+        var valueSchema = (ArraySchema) property.getAdditionalProperties();
+        assertThat(valueSchema.getDescription()).as("description should be null for the list wrapping the values")
+                .isNull();
+    }
+
+    @Test
+    void shouldAddDescriptionForCollectionSubtypeWithNullableElements() {
+        // given
+        var customizer = new NullableCustomizer();
+        var openApi = new OpenAPI();
+        var components = new Components();
+
+        var schema = new Schema<Object>();
+        schema.setName(CollectionSubtypeWithNullableElements.class.getName());
+        var itemsProperty = new ArraySchema();
+        itemsProperty.setItems(new StringSchema());
+        schema.addProperty("items", itemsProperty);
+
+        components.addSchemas(CollectionSubtypeWithNullableElements.class.getName(), schema);
+        openApi.setComponents(components);
+
+        // when
+        customizer.customise(openApi);
+
+        // then
+        var property = (ArraySchema) schema.getProperties().get("items");
+        assertThat(property.getItems().getDescription()).as("description should indicate nullable elements")
+                .isEqualTo("{\"isNullable\":true}");
+    }
+
+    @Test
+    void shouldNotAddDescriptionForCollectionSubtypeWithNullableOtherTypeArgument() {
+        // given
+        var customizer = new NullableCustomizer();
+        var openApi = new OpenAPI();
+        var components = new Components();
+
+        var schema = new Schema<Object>();
+        schema.setName(CollectionSubtypeWithNullableOtherTypeArgument.class.getName());
+        var itemsProperty = new ArraySchema();
+        itemsProperty.setItems(new StringSchema());
+        schema.addProperty("items", itemsProperty);
+
+        components.addSchemas(CollectionSubtypeWithNullableOtherTypeArgument.class.getName(), schema);
+        openApi.setComponents(components);
+
+        // when
+        customizer.customise(openApi);
+
+        // then
+        var property = (ArraySchema) schema.getProperties().get("items");
+        assertThat(property.getItems().getDescription()).as("description should be null when only another type argument is nullable")
+                .isNull();
     }
 
     @Test
