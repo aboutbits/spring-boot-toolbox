@@ -2,7 +2,6 @@ package it.aboutbits.springboot.toolbox.persistence.transformer;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.TypedQuery;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 import org.jspecify.annotations.NullMarked;
@@ -90,28 +89,9 @@ public final class QueryTransformer<T> {
             throw new IllegalStateException("Query not set!");
         }
 
-        var selectPattern = "(?i)select.*?[ \\t]*from ";
-        var queryString = unwrappedQuery.getQueryString().trim().replaceAll("\\R", " ");
-        var countQueryString = queryString.replaceFirst(selectPattern, "select count(*) from ");
-        countQueryString = countQueryString.replaceAll("(?i)\\s+order\\s+by\\s+.*$", "");
-
-        if (queryString.toLowerCase().contains("select distinct")) {
-            throw new IllegalStateException(
-                    "Pagination is not possible, if SELECT DISTINCT is present. Remove DISTINCT and use GROUP BY instead!");
-        }
-
-        if (countQueryString.equals(queryString)) {
-            throw new IllegalStateException("Unable to find SELECT ... FROM in query string!");
-        }
-
-        var parameters = unwrappedQuery.getParameters();
-        var countQuery = entityManager.createQuery(countQueryString, Long.class);
-        for (var parameter : parameters) {
-            var value = unwrappedQuery.getParameterValue(parameter.getName());
-            countQuery.setParameter(parameter.getName(), value);
-        }
-
-        var count = getCount(countQuery, queryString);
+        // Hibernate derives the count query from the parsed query, so subqueries, aliases and the order by do not
+        // matter. It counts the groups of a "group by" and the rows of a "select distinct".
+        var count = unwrappedQuery.getResultCount();
 
         var content = asList(pageNumber, pageSize);
 
@@ -137,26 +117,6 @@ public final class QueryTransformer<T> {
         var count = getCount(countQuery);
         var content = asList(pageNumber, pageSize);
         return new PageImpl<>(content, Pageable.ofSize(pageSize).withPage(pageNumber), count);
-    }
-
-    /**
-     * A "group by" clause generates a count for each group, counting the members of that group.
-     * So, if we find a "group by" inside the query string we just count the groups and do not sum the count within
-     * them.
-     */
-    private static long getCount(TypedQuery<Long> countQuery, String queryString) {
-        var countQueryResults = countQuery.getResultList();
-        if (countQueryResults == null || countQueryResults.isEmpty()) {
-            return 0L;
-        }
-
-        // Grouping query: count the groups and do not sum the count within them
-        if (queryString.toLowerCase().contains("group by")) {
-            return countQueryResults.size();
-        }
-
-        // Non-grouping query: return the first element, which is the result of count(*)
-        return countQueryResults.getFirst();
     }
 
     private static long getCount(jakarta.persistence.Query countQuery) {
