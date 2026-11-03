@@ -344,14 +344,73 @@ class QueryTransformerTest {
         }
 
         @Test
-        void givenQueryWithSelectDistinct_shouldFail() {
-            var query = entityManager.createQuery("select distinct q, 'xxx' from QueryTransformerTestModel q");
+        void givenQueryWithSelectDistinct_shouldCountTheDistinctRows() {
+            createTestModel("A");
+            createTestModel("B");
+            createTestModel("A");
+            createTestModel("C");
 
-            assertThatIllegalStateException().isThrownBy(() -> QueryTransformer
-                    .of(entityManager, TestModelContainer.class)
-                    .withQuery(query)
-                    .asPage(1, 2)
+            var query = entityManager.createQuery(
+                    "select distinct q.name from QueryTransformerTestModel q order by q.name"
             );
+
+            var result = QueryTransformer
+                    .of(entityManager, TestModelNameOnly.class)
+                    .withQuery(query)
+                    .asPage(0, 2);
+
+            assertThat(result.getTotalElements()).isEqualTo(3);
+            assertThat(result.getContent()).extracting(TestModelNameOnly::name).containsExactly("A", "B");
+        }
+
+        @Test
+        void givenQueryWithSubqueryInSelectAndOrderByAlias_shouldPass() {
+            createTestModel("A");
+            createTestModel("B");
+            createTestModel("A");
+
+            var query = entityManager.createQuery(
+                    // @formatter:off
+                    """
+                    select
+                        q.name as name,
+                        (select count(q2.id) from QueryTransformerTestModel q2 where q2.name = q.name)
+                    from QueryTransformerTestModel q
+                    order by name asc, q.id asc
+                    """
+                    // @formatter:on
+            );
+
+            var result = QueryTransformer
+                    .of(entityManager, TestModelNameWithCount.class)
+                    .withQuery(query)
+                    .asPage(0, 2);
+
+            assertThat(result.getTotalElements()).isEqualTo(3);
+            assertThat(result.getTotalPages()).isEqualTo(2);
+            assertThat(result.getContent()).containsExactly(
+                    new TestModelNameWithCount("A", 2),
+                    new TestModelNameWithCount("A", 2)
+            );
+        }
+
+        @Test
+        void givenQueryWithParameter_shouldCountWithTheParameter() {
+            createTestModel("A");
+            createTestModel("B");
+            createTestModel("A");
+
+            var query = entityManager.createQuery(
+                    "select q.name from QueryTransformerTestModel q where q.name = :name"
+            ).setParameter("name", "A");
+
+            var result = QueryTransformer
+                    .of(entityManager, TestModelNameOnly.class)
+                    .withQuery(query)
+                    .asPage(0, 1);
+
+            assertThat(result.getTotalElements()).isEqualTo(2);
+            assertThat(result.getContent()).hasSize(1);
         }
     }
 
@@ -363,6 +422,12 @@ class QueryTransformerTest {
 
     protected record TestModelNameOnly(
             String name
+    ) {
+    }
+
+    protected record TestModelNameWithCount(
+            String name,
+            long count
     ) {
     }
 
