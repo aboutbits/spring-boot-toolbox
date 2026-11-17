@@ -182,7 +182,7 @@
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit6-api</artifactId>
             <version>1.5.1</version>
-            <scope>compile</scope>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
