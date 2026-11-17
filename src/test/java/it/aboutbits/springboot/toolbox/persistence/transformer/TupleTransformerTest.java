@@ -107,9 +107,9 @@ class TupleTransformerTest {
 
             // then
             assertThat(result).isNotNull();
-            assertThat(result.scaledBigDecimal).isEqualByComparingTo(ScaledBigDecimal.valueOf(3.14));
-            assertThat(result.emailAddress).isEqualTo(new EmailAddress("info@aboutbits.it"));
-            assertThat(result.iban).isEqualTo(new Iban("IT27S0300203280975461985512"));
+            assertThat(result.scaledBigDecimal()).isEqualByComparingTo(ScaledBigDecimal.valueOf(3.14));
+            assertThat(result.emailAddress()).isEqualTo(new EmailAddress("info@aboutbits.it"));
+            assertThat(result.iban()).isEqualTo(new Iban("IT27S0300203280975461985512"));
         }
     }
 
@@ -132,12 +132,12 @@ class TupleTransformerTest {
 
             // then
             assertThat(result).isNotNull();
-            assertThat(result.longField).isEqualTo(7L);
-            assertThat(result.booleanBoxed).isTrue();
-            assertThat(result.string).isEqualTo("String123");
-            assertThat(result.booleanPrimitive).isFalse();
-            assertThat(result.anEnum).isEqualTo(SomeEnum.ENUM_1);
-            assertThat(result.uuid).isEqualTo(UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88"));
+            assertThat(result.longField()).isEqualTo(7L);
+            assertThat(result.booleanBoxed()).isTrue();
+            assertThat(result.string()).isEqualTo("String123");
+            assertThat(result.booleanPrimitive()).isFalse();
+            assertThat(result.anEnum()).isEqualTo(SomeEnum.ENUM_1);
+            assertThat(result.uuid()).isEqualTo(UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88"));
         }
 
         @Test
@@ -155,12 +155,12 @@ class TupleTransformerTest {
 
             // then
             assertThat(result).isNotNull();
-            assertThat(result.longField).isEqualTo(7L);
-            assertThat(result.booleanBoxed).isTrue();
-            assertThat(result.string).isEqualTo("String123");
-            assertThat(result.booleanPrimitive).isFalse();
-            assertThat(result.anEnum).isEqualTo(SomeEnum.ENUM_1);
-            assertThat(result.uuid).isEqualTo(UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88"));
+            assertThat(result.longField()).isEqualTo(7L);
+            assertThat(result.booleanBoxed()).isTrue();
+            assertThat(result.string()).isEqualTo("String123");
+            assertThat(result.booleanPrimitive()).isFalse();
+            assertThat(result.anEnum()).isEqualTo(SomeEnum.ENUM_1);
+            assertThat(result.uuid()).isEqualTo(UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88"));
         }
 
         @Test
@@ -182,13 +182,13 @@ class TupleTransformerTest {
 
             // then
             assertThat(result).isNotNull();
-            assertThat(result.dataRecord.longField).isEqualTo(7L);
-            assertThat(result.dataRecord.booleanBoxed).isTrue();
-            assertThat(result.dataRecord.string).isEqualTo("String123");
-            assertThat(result.dataRecord.booleanPrimitive).isFalse();
-            assertThat(result.dataRecord.anEnum).isEqualTo(SomeEnum.ENUM_1);
-            assertThat(result.dataRecord.uuid).isEqualTo(UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88"));
-            assertThat(result.someOtherField).isEqualTo(33);
+            assertThat(result.dataRecord().longField()).isEqualTo(7L);
+            assertThat(result.dataRecord().booleanBoxed()).isTrue();
+            assertThat(result.dataRecord().string()).isEqualTo("String123");
+            assertThat(result.dataRecord().booleanPrimitive()).isFalse();
+            assertThat(result.dataRecord().anEnum()).isEqualTo(SomeEnum.ENUM_1);
+            assertThat(result.dataRecord().uuid()).isEqualTo(UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88"));
+            assertThat(result.someOtherField()).isEqualTo(33);
         }
 
         @Test
@@ -204,12 +204,12 @@ class TupleTransformerTest {
 
             // then
             assertThat(result).isNotNull();
-            assertThat(result.longField).isNull();
-            assertThat(result.booleanBoxed).isNull();
-            assertThat(result.string).isEqualTo("String123");
-            assertThat(result.booleanPrimitive).isFalse();
-            assertThat(result.anEnum).isNull();
-            assertThat(result.uuid).isEqualTo(UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88"));
+            assertThat(result.longField()).isNull();
+            assertThat(result.booleanBoxed()).isNull();
+            assertThat(result.string()).isEqualTo("String123");
+            assertThat(result.booleanPrimitive()).isFalse();
+            assertThat(result.anEnum()).isNull();
+            assertThat(result.uuid()).isEqualTo(UUID.fromString("f255a993-0086-4b4d-a62f-3aa174501f88"));
         }
 
         @Test
@@ -243,23 +243,23 @@ class TupleTransformerTest {
             // then
             assertThat(result).isNotNull();
 
-            var firstRecord = result.dataRecords.getFirst();
-            assertThat(firstRecord.longField).isEqualTo(7L);
-            assertThat(firstRecord.booleanBoxed).isTrue();
-            assertThat(firstRecord.string).isEqualTo("String111");
-            assertThat(firstRecord.booleanPrimitive).isFalse();
-            assertThat(firstRecord.anEnum).isEqualTo(SomeEnum.ENUM_1);
-            assertThat(firstRecord.uuid).isEqualTo(UUID.fromString("c3221989-b494-4227-b7e1-2f84fdc048f7"));
+            var firstRecord = result.dataRecords().getFirst();
+            assertThat(firstRecord.longField()).isEqualTo(7L);
+            assertThat(firstRecord.booleanBoxed()).isTrue();
+            assertThat(firstRecord.string()).isEqualTo("String111");
+            assertThat(firstRecord.booleanPrimitive()).isFalse();
+            assertThat(firstRecord.anEnum()).isEqualTo(SomeEnum.ENUM_1);
+            assertThat(firstRecord.uuid()).isEqualTo(UUID.fromString("c3221989-b494-4227-b7e1-2f84fdc048f7"));
 
-            var secondRecord = result.dataRecords.get(1);
-            assertThat(secondRecord.longField).isZero();
-            assertThat(secondRecord.booleanBoxed).isNull();
-            assertThat(secondRecord.string).isEqualTo("String222");
-            assertThat(secondRecord.booleanPrimitive).isFalse();
-            assertThat(secondRecord.anEnum).isEqualTo(SomeEnum.ENUM_2);
-            assertThat(secondRecord.uuid).isEqualTo(UUID.fromString("25f6e0c2-4628-43a1-a703-e80926496fd1"));
+            var secondRecord = result.dataRecords().get(1);
+            assertThat(secondRecord.longField()).isZero();
+            assertThat(secondRecord.booleanBoxed()).isNull();
+            assertThat(secondRecord.string()).isEqualTo("String222");
+            assertThat(secondRecord.booleanPrimitive()).isFalse();
+            assertThat(secondRecord.anEnum()).isEqualTo(SomeEnum.ENUM_2);
+            assertThat(secondRecord.uuid()).isEqualTo(UUID.fromString("25f6e0c2-4628-43a1-a703-e80926496fd1"));
 
-            assertThat(result.someOtherField).isEqualTo(33);
+            assertThat(result.someOtherField()).isEqualTo(33);
         }
     }
 
