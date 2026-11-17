@@ -89,8 +89,8 @@ class QueryTransformerTest {
                     .asSingleResult();
 
             assertThat(result).isPresent();
-            assertThat(result.get().someText).isEqualTo("xxx");
-            assertThat(result.get().testModel.getName()).isEqualTo("abc");
+            assertThat(result.get().someText()).isEqualTo("xxx");
+            assertThat(result.get().testModel().getName()).isEqualTo("abc");
         }
 
         @Test
@@ -105,10 +105,10 @@ class QueryTransformerTest {
                     .asSingleResult();
 
             assertThat(result).isPresent();
-            assertThat(result.get().someText).isEqualTo("xxx");
-            assertThat(result.get().testModel.getName()).isEqualTo(testModel.getName());
-            assertThat(result.get().testModel.getEmail()).isEqualTo(testModel.getEmail());
-            assertThat(result.get().testModel.getScaledBigDecimalValue()).isEqualByComparingTo(testModel.getScaledBigDecimalValue());
+            assertThat(result.get().someText()).isEqualTo("xxx");
+            assertThat(result.get().testModel().getName()).isEqualTo(testModel.getName());
+            assertThat(result.get().testModel().getEmail()).isEqualTo(testModel.getEmail());
+            assertThat(result.get().testModel().getScaledBigDecimalValue()).isEqualByComparingTo(testModel.getScaledBigDecimalValue());
         }
 
         @Test
@@ -164,7 +164,7 @@ class QueryTransformerTest {
                     .withQuery(query)
                     .asSingleResultOrFail();
 
-            assertThat(result.someText).isEqualTo("xxx");
+            assertThat(result.someText()).isEqualTo("xxx");
         }
 
         @Test
@@ -210,7 +210,7 @@ class QueryTransformerTest {
 
             assertThat(result.getFirst().testModel().getId()).isEqualTo(testModel.getId());
             assertThat(result.getFirst().testModel().getName()).isEqualTo(testModel.getName());
-            assertThat(result.getFirst().someText).isEqualTo("xxx");
+            assertThat(result.getFirst().someText()).isEqualTo("xxx");
         }
 
         @Test
