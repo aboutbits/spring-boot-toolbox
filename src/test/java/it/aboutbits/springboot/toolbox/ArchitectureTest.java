@@ -7,7 +7,7 @@ import it.aboutbits.archunit.toolbox.rule.common.SortMappingsExhaustiveArchRule;
 import it.aboutbits.archunit.toolbox.support.ArchIgnoreNoProductionCounterpart;
 import org.jspecify.annotations.NullMarked;
 
-// The rules of CommonArchRuleCollection without ControllerRequestMappingsMustBeSecurityTested: the only controllers in this library are test fixtures for the MVC type conversion, and the library has no security to test.
+// SortMappingsExhaustiveArchRule instead of CommonArchRuleCollection, to leave out ControllerRequestMappingsMustBeSecurityTested: the only controllers in this library are test fixtures for the MVC type conversion, and the library has no security to test.
 @AnalyzeClasses(
         packagesOf = ArchitectureTest.class,
         cacheMode = CacheMode.PER_CLASS
