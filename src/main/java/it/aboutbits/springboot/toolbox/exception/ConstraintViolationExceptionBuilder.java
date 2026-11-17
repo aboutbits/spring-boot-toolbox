@@ -4,7 +4,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
 import jakarta.validation.metadata.ConstraintDescriptor;
-import org.hibernate.validator.internal.engine.path.PathImpl;
+import org.hibernate.validator.internal.engine.path.MutablePath;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -33,7 +33,10 @@ public final class ConstraintViolationExceptionBuilder {
 
     @SuppressWarnings({"unused", "UnusedReturnValue"})
     public ConstraintViolationExceptionBuilder causedBy(String propertyPath, String message) {
-        var constraintViolation = new CustomConstraintViolation(message, PathImpl.createPathFromString(propertyPath));
+        var constraintViolation = new CustomConstraintViolation(
+                message,
+                MutablePath.createPathFromString(propertyPath).materialize()
+        );
         constraintViolations.add(constraintViolation);
         return this;
     }
