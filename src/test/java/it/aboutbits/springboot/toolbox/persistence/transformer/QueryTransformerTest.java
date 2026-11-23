@@ -14,12 +14,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -654,6 +656,42 @@ class QueryTransformerTest {
 
             assertThat(result.getTotalElements()).isEqualTo(3);
             assertThat(result.getContent()).containsExactly(new TestModelNameOnly("Cx"));
+        }
+
+        // The count query binds an unnamed criteria parameter from its value. With TemporalType.DATE, the parameter is the date 2026-01-01, which equals the timestamp at midnight. Without the precision, it is the timestamp 2026-01-01 15:30, and no row matches. The page size is 1, so PageImpl cannot raise a wrong total to the size of the content.
+        @ParameterizedTest
+        @ValueSource(booleans = {false, true})
+        void givenCriteriaQueryWithUnnamedTemporalParameter_shouldCountWithThePrecision(boolean insideTransaction) {
+            createTestModel("A");
+            createTestModel("B");
+            createTestModel("C");
+
+            var day = Date.from(LocalDateTime.of(2026, 1, 1, 15, 30).atZone(ZoneId.systemDefault()).toInstant());
+            Supplier<Page<TestModelNameOnly>> pageSupplier = () -> {
+                var criteriaBuilder = entityManager.getCriteriaBuilder();
+                var criteriaQuery = criteriaBuilder.createQuery(String.class);
+                var root = criteriaQuery.from(QueryTransformerTestModel.class);
+                var dayParameter = criteriaBuilder.parameter(Date.class);
+                criteriaQuery
+                        .select(root.get("name"))
+                        .where(criteriaBuilder.equal(
+                                dayParameter,
+                                criteriaBuilder.literal(LocalDateTime.of(2026, 1, 1, 0, 0))
+                        ))
+                        .orderBy(criteriaBuilder.asc(root.get("name")));
+                var query = entityManager.createQuery(criteriaQuery).setParameter(dayParameter, day, TemporalType.DATE);
+
+                return QueryTransformer
+                        .of(entityManager, TestModelNameOnly.class)
+                        .withQuery(query)
+                        .asPage(0, 1);
+            };
+
+            var result = insideTransaction ? transactionTemplate.execute(_ -> pageSupplier.get()) : pageSupplier.get();
+
+            assertThat(result).isNotNull();
+            assertThat(result.getTotalElements()).isEqualTo(3);
+            assertThat(result.getContent()).containsExactly(new TestModelNameOnly("A"));
         }
 
         @Test
