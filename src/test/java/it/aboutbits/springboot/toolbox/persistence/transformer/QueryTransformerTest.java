@@ -6,6 +6,7 @@ import it.aboutbits.springboot.toolbox.persistence.transformer.impl.jpa.QueryTra
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.TemporalType;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Nested;
@@ -13,6 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -463,6 +467,61 @@ class QueryTransformerTest {
                     new TestModelCount(2, "A"),
                     new TestModelCount(1, "B")
             );
+        }
+
+        @Test
+        void givenQueryWithExplicitlyTypedParameter_shouldCountWithTheType() {
+            createTestModel("A");
+            createTestModel("B");
+            createTestModel("C");
+
+            // With TemporalType.DATE, the parameter is the date 2026-01-01, which equals the timestamp at midnight. Without the type, it is the timestamp 2026-01-01 15:30, and no row matches.
+            var day = Date.from(LocalDateTime.of(2026, 1, 1, 15, 30).atZone(ZoneId.systemDefault()).toInstant());
+            var query = entityManager.createQuery(
+                    "select q.name from QueryTransformerTestModel q where :day = {ts '2026-01-01 00:00:00'} order by q.name"
+            ).setParameter("day", day, TemporalType.DATE);
+
+            var result = QueryTransformer
+                    .of(entityManager, TestModelNameOnly.class)
+                    .withQuery(query)
+                    .asPage(0, 2);
+
+            assertThat(result.getTotalElements()).isEqualTo(3);
+            assertThat(result.getContent()).containsExactly(
+                    new TestModelNameOnly("A"),
+                    new TestModelNameOnly("B")
+            );
+        }
+
+        @Test
+        void givenCriteriaQuery_shouldCountWithTheParameters() {
+            createTestModel("A");
+            createTestModel("B");
+            createTestModel("A");
+            createTestModel("C");
+            createTestModel("D");
+
+            var criteriaBuilder = entityManager.getCriteriaBuilder();
+            var criteriaQuery = criteriaBuilder.createQuery(String.class);
+            var root = criteriaQuery.from(QueryTransformerTestModel.class);
+            var excludedName = criteriaBuilder.parameter(String.class);
+            criteriaQuery
+                    .select(root.get("name"))
+                    .distinct(true)
+                    .where(
+                            criteriaBuilder.notEqual(root.get("name"), excludedName),
+                            criteriaBuilder.notEqual(root.get("name"), "D")
+                    )
+                    .orderBy(criteriaBuilder.asc(root.get("name")));
+            var query = entityManager.createQuery(criteriaQuery).setParameter(excludedName, "B");
+
+            var result = QueryTransformer
+                    .of(entityManager, TestModelNameOnly.class)
+                    .withQuery(query)
+                    .asPage(1, 1);
+
+            assertThat(result.getTotalElements()).isEqualTo(2);
+            assertThat(result.getContent()).containsExactly(new TestModelNameOnly("C"));
         }
 
         @Test
