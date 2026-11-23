@@ -29,9 +29,7 @@ public final class QueryTransformer<T> {
         this.tupleTransformer = new TupleTransformer<>(outputClass);
     }
 
-    /**
-     * Pass the EntityManager that created the query, because {@link #asPage(int, int)} runs the count query on it.
-     */
+    /// Pass the `EntityManager` that created the query, because [#asPage(int, int)] runs the count query on it.
     public static <T> QueryTransformer<T> of(EntityManager entityManager, Class<T> outputClass) {
         return new QueryTransformer<>(entityManager, outputClass);
     }
@@ -48,9 +46,7 @@ public final class QueryTransformer<T> {
         return asPage(pageable.getPageNumber(), pageable.getPageSize());
     }
 
-    /**
-     * Runs the count query on the EntityManager given to {@link #of(EntityManager, Class)}, so it must be the EntityManager that created the query.
-     */
+    /// Runs the count query on the `EntityManager` given to [#of(EntityManager, Class)], so it must be the `EntityManager` that created the query.
     public Page<T> asPage(int pageNumber, int pageSize) {
         return isNative ? asPageNativeQuery(pageNumber, pageSize) : asPageQuery(pageNumber, pageSize);
     }
