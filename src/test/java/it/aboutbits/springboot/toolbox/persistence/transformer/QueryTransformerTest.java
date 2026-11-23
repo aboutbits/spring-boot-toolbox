@@ -11,6 +11,9 @@ import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -25,6 +28,9 @@ class QueryTransformerTest {
 
     @Autowired
     QueryTransformerTestModelRepository repository;
+
+    @Autowired
+    TransactionTemplate transactionTemplate;
 
     @Nested
     class AsSingleResult {
@@ -227,6 +233,7 @@ class QueryTransformerTest {
         }
     }
 
+    // The tests run without a transaction, unless they start one, so the shared EntityManager of Spring closes the EntityManager of a query after its first terminating call.
     @Nested
     class AsPage {
 
@@ -410,7 +417,74 @@ class QueryTransformerTest {
                     .asPage(0, 1);
 
             assertThat(result.getTotalElements()).isEqualTo(2);
-            assertThat(result.getContent()).hasSize(1);
+            assertThat(result.getContent()).containsExactly(new TestModelNameOnly("A"));
+        }
+
+        @Test
+        void givenQueryWithPositionalParameter_shouldCountWithTheParameter() {
+            createTestModel("A");
+            createTestModel("B");
+            createTestModel("A");
+            createTestModel("C");
+
+            var query = entityManager.createQuery(
+                    "select q.name from QueryTransformerTestModel q where q.name <> ?1 order by q.name, q.id"
+            ).setParameter(1, "B");
+
+            var result = QueryTransformer
+                    .of(entityManager, TestModelNameOnly.class)
+                    .withQuery(query)
+                    .asPage(1, 2);
+
+            assertThat(result.getTotalElements()).isEqualTo(3);
+            assertThat(result.getTotalPages()).isEqualTo(2);
+            assertThat(result.getContent()).containsExactly(new TestModelNameOnly("C"));
+        }
+
+        @Test
+        void givenQueryWithListParameterAndGroupBy_shouldCountTheGroups() {
+            createTestModel("A");
+            createTestModel("B");
+            createTestModel("A");
+            createTestModel("C");
+            createTestModel("D");
+
+            var query = entityManager.createQuery(
+                    "select count(q.id), q.name from QueryTransformerTestModel q where q.name in :names group by q.name order by q.name"
+            ).setParameter("names", List.of("A", "B", "C"));
+
+            var result = QueryTransformer
+                    .of(entityManager, TestModelCount.class)
+                    .withQuery(query)
+                    .asPage(0, 2);
+
+            assertThat(result.getTotalElements()).isEqualTo(3);
+            assertThat(result.getContent()).containsExactly(
+                    new TestModelCount(2, "A"),
+                    new TestModelCount(1, "B")
+            );
+        }
+
+        @Test
+        void givenQueryInsideTransaction_shouldPass() {
+            createTestModel("A");
+            createTestModel("B");
+            createTestModel("A");
+
+            var result = transactionTemplate.execute(_ -> {
+                var query = entityManager.createQuery(
+                        "select distinct q.name from QueryTransformerTestModel q where q.name <> :name order by q.name"
+                ).setParameter("name", "C");
+
+                return QueryTransformer
+                        .of(entityManager, TestModelNameOnly.class)
+                        .withQuery(query)
+                        .asPage(0, 1);
+            });
+
+            assertThat(result).isNotNull();
+            assertThat(result.getTotalElements()).isEqualTo(2);
+            assertThat(result.getContent()).containsExactly(new TestModelNameOnly("A"));
         }
     }
 

@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
+import org.hibernate.query.spi.AbstractSelectionQuery;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @NullMarked
@@ -91,11 +93,34 @@ public final class QueryTransformer<T> {
 
         // Hibernate derives the count query from the parsed query, so subqueries, aliases and the order by do not
         // matter. It counts the groups of a "group by" and the rows of a "select distinct".
-        var count = unwrappedQuery.getResultCount();
+        var count = createCountQuery(unwrappedQuery).getResultCount();
 
         var content = asList(pageNumber, pageSize);
 
         return new PageImpl<>(content, Pageable.ofSize(pageSize).withPage(pageNumber), count);
+    }
+
+    // Outside a transaction, the shared EntityManager of Spring closes the EntityManager of a query after its first terminating call. Since Spring Framework 7.0.11, getResultCount() is such a call, so the count runs on a new query and the original query stays open for the page content. The new query only needs the parameters, because getResultCount() ignores the hints, the lock mode, the flush mode and the entity graph of a query. A criteria query has no query string, so it keeps the count on the original query, which works only inside a transaction.
+    private Query<?> createCountQuery(Query<?> query) {
+        var queryString = query.getQueryString();
+        if (AbstractSelectionQuery.CRITERIA_HQL_STRING.equals(queryString)) {
+            return query;
+        }
+
+        var countQuery = entityManager.createQuery(queryString).unwrap(Query.class);
+        for (var parameter : query.getParameters()) {
+            if (!query.isBound(parameter)) {
+                continue;
+            }
+            var name = parameter.getName();
+            if (name != null) {
+                countQuery.setParameter(name, query.getParameterValue(name));
+            } else {
+                var position = Objects.requireNonNull(parameter.getPosition());
+                countQuery.setParameter(position, query.getParameterValue(position));
+            }
+        }
+        return countQuery;
     }
 
     private Page<T> asPageNativeQuery(int pageNumber, int pageSize) {
