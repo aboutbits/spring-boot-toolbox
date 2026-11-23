@@ -11,6 +11,8 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -524,6 +526,136 @@ class QueryTransformerTest {
             assertThat(result.getContent()).containsExactly(new TestModelNameOnly("C"));
         }
 
+        // The count query drops the select list of a query without "distinct", so the unnamed parameters of the select list are not in it. The bindings must still go to the right parameters.
+        @ParameterizedTest
+        @ValueSource(booleans = {false, true})
+        void givenCriteriaQueryWithValuesInSelectAndWhere_shouldCountWithTheRightValues(boolean distinct) {
+            createTestModel("A", null, ScaledBigDecimal.ZERO);
+            createTestModel("A", null, ScaledBigDecimal.ZERO);
+            createTestModel("A", "a@aboutbits.it", ScaledBigDecimal.ZERO);
+            createTestModel("B", null, ScaledBigDecimal.ZERO);
+            createTestModel("C", null, ScaledBigDecimal.ZERO);
+
+            var criteriaBuilder = entityManager.getCriteriaBuilder();
+            var criteriaQuery = criteriaBuilder.createTupleQuery();
+            var root = criteriaQuery.from(QueryTransformerTestModel.class);
+            var name = root.<String>get("name");
+            var kind = criteriaBuilder.<String>selectCase()
+                    .when(criteriaBuilder.isNull(root.get("email")), "none")
+                    .otherwise("some");
+            criteriaQuery
+                    .multiselect(name, kind)
+                    .distinct(distinct)
+                    .where(criteriaBuilder.notEqual(name, "C"))
+                    .orderBy(criteriaBuilder.asc(name), criteriaBuilder.asc(kind));
+
+            var result = QueryTransformer
+                    .of(entityManager, TestModelNameWithKind.class)
+                    .withQuery(entityManager.createQuery(criteriaQuery))
+                    .asPage(0, 2);
+
+            if (distinct) {
+                assertThat(result.getTotalElements()).isEqualTo(3);
+                assertThat(result.getContent()).containsExactly(
+                        new TestModelNameWithKind("A", "none"),
+                        new TestModelNameWithKind("A", "some")
+                );
+            } else {
+                assertThat(result.getTotalElements()).isEqualTo(4);
+                assertThat(result.getContent()).containsExactly(
+                        new TestModelNameWithKind("A", "none"),
+                        new TestModelNameWithKind("A", "none")
+                );
+            }
+        }
+
+        // The count query drops the select list of a query without "distinct", so the unnamed parameters of the select list are not in it. The bindings must still go to the right parameters.
+        @ParameterizedTest
+        @ValueSource(booleans = {false, true})
+        void givenCriteriaQueryWithParametersInSelectAndWhere_shouldCountWithTheRightValues(boolean distinct) {
+            createTestModel("A");
+            createTestModel("A");
+            createTestModel("B");
+            createTestModel("C");
+
+            var criteriaBuilder = entityManager.getCriteriaBuilder();
+            var criteriaQuery = criteriaBuilder.createTupleQuery();
+            var root = criteriaQuery.from(QueryTransformerTestModel.class);
+            var name = root.<String>get("name");
+            var suffix = criteriaBuilder.parameter(String.class);
+            var excludedName = criteriaBuilder.parameter(String.class);
+            criteriaQuery
+                    .multiselect(name, criteriaBuilder.concat(name, suffix), criteriaBuilder.concat(name, "!"))
+                    .distinct(distinct)
+                    .where(criteriaBuilder.notEqual(name, excludedName))
+                    .orderBy(criteriaBuilder.asc(name));
+            var query = entityManager.createQuery(criteriaQuery)
+                    .setParameter(suffix, "x")
+                    .setParameter(excludedName, "C");
+
+            var result = QueryTransformer
+                    .of(entityManager, TestModelNameWithSuffixes.class)
+                    .withQuery(query)
+                    .asPage(0, 2);
+
+            if (distinct) {
+                assertThat(result.getTotalElements()).isEqualTo(2);
+                assertThat(result.getContent()).containsExactly(
+                        new TestModelNameWithSuffixes("A", "Ax", "A!"),
+                        new TestModelNameWithSuffixes("B", "Bx", "B!")
+                );
+            } else {
+                assertThat(result.getTotalElements()).isEqualTo(3);
+                assertThat(result.getContent()).containsExactly(
+                        new TestModelNameWithSuffixes("A", "Ax", "A!"),
+                        new TestModelNameWithSuffixes("A", "Ax", "A!")
+                );
+            }
+        }
+
+        // For a "group by", the count query drops the order by, so the parameter is not in it.
+        @Test
+        void givenQueryWithGroupByAndParameterOnlyInOrderBy_shouldPass() {
+            createTestModel("A");
+            createTestModel("B");
+            createTestModel("C");
+            createTestModel("A");
+
+            var query = entityManager.createQuery(
+                    "select q.name from QueryTransformerTestModel q group by q.name order by case when q.name = :preferred then 0 else 1 end, q.name"
+            ).setParameter("preferred", "C");
+
+            var result = QueryTransformer
+                    .of(entityManager, TestModelNameOnly.class)
+                    .withQuery(query)
+                    .asPage(0, 2);
+
+            assertThat(result.getTotalElements()).isEqualTo(3);
+            assertThat(result.getContent()).containsExactly(
+                    new TestModelNameOnly("C"),
+                    new TestModelNameOnly("A")
+            );
+        }
+
+        @Test
+        void givenQueryWithParameterOnlyInSelect_shouldPass() {
+            createTestModel("A");
+            createTestModel("B");
+            createTestModel("C");
+
+            var query = entityManager.createQuery(
+                    "select concat(q.name, :suffix) from QueryTransformerTestModel q order by q.name"
+            ).setParameter("suffix", "x");
+
+            var result = QueryTransformer
+                    .of(entityManager, TestModelNameOnly.class)
+                    .withQuery(query)
+                    .asPage(1, 2);
+
+            assertThat(result.getTotalElements()).isEqualTo(3);
+            assertThat(result.getContent()).containsExactly(new TestModelNameOnly("Cx"));
+        }
+
         @Test
         void givenQueryInsideTransaction_shouldPass() {
             createTestModel("A");
@@ -550,6 +682,19 @@ class QueryTransformerTest {
     protected record TestModelCount(
             long count,
             String familyName
+    ) {
+    }
+
+    protected record TestModelNameWithKind(
+            String name,
+            String kind
+    ) {
+    }
+
+    protected record TestModelNameWithSuffixes(
+            String name,
+            String withParameter,
+            String withLiteral
     ) {
     }
 
