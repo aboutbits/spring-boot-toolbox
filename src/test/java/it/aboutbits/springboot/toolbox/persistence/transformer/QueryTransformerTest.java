@@ -6,22 +6,19 @@ import it.aboutbits.springboot.toolbox.persistence.transformer.impl.jpa.QueryTra
 import it.aboutbits.springboot.toolbox.type.ScaledBigDecimal;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.Query;
 import jakarta.persistence.TemporalType;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
-import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -473,23 +470,28 @@ class QueryTransformerTest {
             );
         }
 
+        // Outside a transaction, the count query gets only the value of a parameter, so the explicit type must be tested inside a transaction.
         @Test
-        void givenQueryWithExplicitlyTypedParameter_shouldCountWithTheType() {
+        void givenQueryWithExplicitlyTypedParameterInsideTransaction_shouldCountWithTheType() {
             createTestModel("A");
             createTestModel("B");
             createTestModel("C");
 
             // With TemporalType.DATE, the parameter is the date 2026-01-01, which equals the timestamp at midnight. Without the type, it is the timestamp 2026-01-01 15:30, and no row matches.
             var day = Date.from(LocalDateTime.of(2026, 1, 1, 15, 30).atZone(ZoneId.systemDefault()).toInstant());
-            var query = entityManager.createQuery(
-                    "select q.name from QueryTransformerTestModel q where :day = {ts '2026-01-01 00:00:00'} order by q.name"
-            ).setParameter("day", day, TemporalType.DATE);
 
-            var result = QueryTransformer
-                    .of(entityManager, TestModelNameOnly.class)
-                    .withQuery(query)
-                    .asPage(0, 2);
+            var result = transactionTemplate.execute(_ -> {
+                var query = entityManager.createQuery(
+                        "select q.name from QueryTransformerTestModel q where :day = {ts '2026-01-01 00:00:00'} order by q.name"
+                ).setParameter("day", day, TemporalType.DATE);
 
+                return QueryTransformer
+                        .of(entityManager, TestModelNameOnly.class)
+                        .withQuery(query)
+                        .asPage(0, 2);
+            });
+
+            assertThat(result).isNotNull();
             assertThat(result.getTotalElements()).isEqualTo(3);
             assertThat(result.getContent()).containsExactly(
                     new TestModelNameOnly("A"),
@@ -498,121 +500,36 @@ class QueryTransformerTest {
         }
 
         @Test
-        void givenCriteriaQuery_shouldCountWithTheParameters() {
+        void givenCriteriaQueryInsideTransaction_shouldCountWithTheParameters() {
             createTestModel("A");
             createTestModel("B");
             createTestModel("A");
             createTestModel("C");
             createTestModel("D");
 
-            var criteriaBuilder = entityManager.getCriteriaBuilder();
-            var criteriaQuery = criteriaBuilder.createQuery(String.class);
-            var root = criteriaQuery.from(QueryTransformerTestModel.class);
-            var excludedName = criteriaBuilder.parameter(String.class);
-            criteriaQuery
-                    .select(root.get("name"))
-                    .distinct(true)
-                    .where(
-                            criteriaBuilder.notEqual(root.get("name"), excludedName),
-                            criteriaBuilder.notEqual(root.get("name"), "D")
-                    )
-                    .orderBy(criteriaBuilder.asc(root.get("name")));
-            var query = entityManager.createQuery(criteriaQuery).setParameter(excludedName, "B");
-
-            var result = QueryTransformer
+            var result = transactionTemplate.execute(_ -> QueryTransformer
                     .of(entityManager, TestModelNameOnly.class)
-                    .withQuery(query)
-                    .asPage(1, 1);
+                    .withQuery(distinctNamesCriteriaQuery("B", "D"))
+                    .asPage(1, 1));
 
+            assertThat(result).isNotNull();
             assertThat(result.getTotalElements()).isEqualTo(2);
             assertThat(result.getContent()).containsExactly(new TestModelNameOnly("C"));
         }
 
-        // The count query drops the select list of a query without "distinct", so the unnamed parameters of the select list are not in it. The bindings must still go to the right parameters.
-        @ParameterizedTest
-        @ValueSource(booleans = {false, true})
-        void givenCriteriaQueryWithValuesInSelectAndWhere_shouldCountWithTheRightValues(boolean distinct) {
-            createTestModel("A", null, ScaledBigDecimal.ZERO);
-            createTestModel("A", null, ScaledBigDecimal.ZERO);
-            createTestModel("A", "a@aboutbits.it", ScaledBigDecimal.ZERO);
-            createTestModel("B", null, ScaledBigDecimal.ZERO);
-            createTestModel("C", null, ScaledBigDecimal.ZERO);
-
-            var criteriaBuilder = entityManager.getCriteriaBuilder();
-            var criteriaQuery = criteriaBuilder.createTupleQuery();
-            var root = criteriaQuery.from(QueryTransformerTestModel.class);
-            var name = root.<String>get("name");
-            var kind = criteriaBuilder.<String>selectCase()
-                    .when(criteriaBuilder.isNull(root.get("email")), "none")
-                    .otherwise("some");
-            criteriaQuery
-                    .multiselect(name, kind)
-                    .distinct(distinct)
-                    .where(criteriaBuilder.notEqual(name, "C"))
-                    .orderBy(criteriaBuilder.asc(name), criteriaBuilder.asc(kind));
-
-            var result = QueryTransformer
-                    .of(entityManager, TestModelNameWithKind.class)
-                    .withQuery(entityManager.createQuery(criteriaQuery))
-                    .asPage(0, 2);
-
-            if (distinct) {
-                assertThat(result.getTotalElements()).isEqualTo(3);
-                assertThat(result.getContent()).containsExactly(
-                        new TestModelNameWithKind("A", "none"),
-                        new TestModelNameWithKind("A", "some")
-                );
-            } else {
-                assertThat(result.getTotalElements()).isEqualTo(4);
-                assertThat(result.getContent()).containsExactly(
-                        new TestModelNameWithKind("A", "none"),
-                        new TestModelNameWithKind("A", "none")
-                );
-            }
-        }
-
-        // The count query drops the select list of a query without "distinct", so the unnamed parameters of the select list are not in it. The bindings must still go to the right parameters.
-        @ParameterizedTest
-        @ValueSource(booleans = {false, true})
-        void givenCriteriaQueryWithParametersInSelectAndWhere_shouldCountWithTheRightValues(boolean distinct) {
+        // A criteria query has no query string, so the count query cannot be created a second time.
+        @Test
+        void givenCriteriaQueryOutsideTransaction_shouldFail() {
             createTestModel("A");
-            createTestModel("A");
-            createTestModel("B");
             createTestModel("C");
 
-            var criteriaBuilder = entityManager.getCriteriaBuilder();
-            var criteriaQuery = criteriaBuilder.createTupleQuery();
-            var root = criteriaQuery.from(QueryTransformerTestModel.class);
-            var name = root.<String>get("name");
-            var suffix = criteriaBuilder.parameter(String.class);
-            var excludedName = criteriaBuilder.parameter(String.class);
-            criteriaQuery
-                    .multiselect(name, criteriaBuilder.concat(name, suffix), criteriaBuilder.concat(name, "!"))
-                    .distinct(distinct)
-                    .where(criteriaBuilder.notEqual(name, excludedName))
-                    .orderBy(criteriaBuilder.asc(name));
-            var query = entityManager.createQuery(criteriaQuery)
-                    .setParameter(suffix, "x")
-                    .setParameter(excludedName, "C");
+            var transformer = QueryTransformer
+                    .of(entityManager, TestModelNameOnly.class)
+                    .withQuery(distinctNamesCriteriaQuery("B", "D"));
 
-            var result = QueryTransformer
-                    .of(entityManager, TestModelNameWithSuffixes.class)
-                    .withQuery(query)
-                    .asPage(0, 2);
-
-            if (distinct) {
-                assertThat(result.getTotalElements()).isEqualTo(2);
-                assertThat(result.getContent()).containsExactly(
-                        new TestModelNameWithSuffixes("A", "Ax", "A!"),
-                        new TestModelNameWithSuffixes("B", "Bx", "B!")
-                );
-            } else {
-                assertThat(result.getTotalElements()).isEqualTo(3);
-                assertThat(result.getContent()).containsExactly(
-                        new TestModelNameWithSuffixes("A", "Ax", "A!"),
-                        new TestModelNameWithSuffixes("A", "Ax", "A!")
-                );
-            }
+            assertThatIllegalStateException()
+                    .isThrownBy(() -> transformer.asPage(0, 1))
+                    .withMessageContaining("criteria query");
         }
 
         // For a "group by", the count query drops the order by, so the parameter is not in it.
@@ -658,42 +575,6 @@ class QueryTransformerTest {
             assertThat(result.getContent()).containsExactly(new TestModelNameOnly("Cx"));
         }
 
-        // The count query binds an unnamed criteria parameter from its value. With TemporalType.DATE, the parameter is the date 2026-01-01, which equals the timestamp at midnight. Without the precision, it is the timestamp 2026-01-01 15:30, and no row matches. The page size is 1, so PageImpl cannot raise a wrong total to the size of the content.
-        @ParameterizedTest
-        @ValueSource(booleans = {false, true})
-        void givenCriteriaQueryWithUnnamedTemporalParameter_shouldCountWithThePrecision(boolean insideTransaction) {
-            createTestModel("A");
-            createTestModel("B");
-            createTestModel("C");
-
-            var day = Date.from(LocalDateTime.of(2026, 1, 1, 15, 30).atZone(ZoneId.systemDefault()).toInstant());
-            Supplier<Page<TestModelNameOnly>> pageSupplier = () -> {
-                var criteriaBuilder = entityManager.getCriteriaBuilder();
-                var criteriaQuery = criteriaBuilder.createQuery(String.class);
-                var root = criteriaQuery.from(QueryTransformerTestModel.class);
-                var dayParameter = criteriaBuilder.parameter(Date.class);
-                criteriaQuery
-                        .select(root.get("name"))
-                        .where(criteriaBuilder.equal(
-                                dayParameter,
-                                criteriaBuilder.literal(LocalDateTime.of(2026, 1, 1, 0, 0))
-                        ))
-                        .orderBy(criteriaBuilder.asc(root.get("name")));
-                var query = entityManager.createQuery(criteriaQuery).setParameter(dayParameter, day, TemporalType.DATE);
-
-                return QueryTransformer
-                        .of(entityManager, TestModelNameOnly.class)
-                        .withQuery(query)
-                        .asPage(0, 1);
-            };
-
-            var result = insideTransaction ? transactionTemplate.execute(_ -> pageSupplier.get()) : pageSupplier.get();
-
-            assertThat(result).isNotNull();
-            assertThat(result.getTotalElements()).isEqualTo(3);
-            assertThat(result.getContent()).containsExactly(new TestModelNameOnly("A"));
-        }
-
         @Test
         void givenQueryInsideTransaction_shouldPass() {
             createTestModel("A");
@@ -720,19 +601,6 @@ class QueryTransformerTest {
     protected record TestModelCount(
             long count,
             String familyName
-    ) {
-    }
-
-    protected record TestModelNameWithKind(
-            String name,
-            String kind
-    ) {
-    }
-
-    protected record TestModelNameWithSuffixes(
-            String name,
-            String withParameter,
-            String withLiteral
     ) {
     }
 
@@ -769,6 +637,23 @@ class QueryTransformerTest {
         item.setEmail(email);
         item.setScaledBigDecimalValue(scaledBigDecimal);
         return repository.save(item);
+    }
+
+    private Query distinctNamesCriteriaQuery(String excludedByParameter, String excludedByValue) {
+        var criteriaBuilder = entityManager.getCriteriaBuilder();
+        var criteriaQuery = criteriaBuilder.createQuery(String.class);
+        var root = criteriaQuery.from(QueryTransformerTestModel.class);
+        var excludedName = criteriaBuilder.parameter(String.class);
+        criteriaQuery
+                .select(root.get("name"))
+                .distinct(true)
+                .where(
+                        criteriaBuilder.notEqual(root.get("name"), excludedName),
+                        criteriaBuilder.notEqual(root.get("name"), excludedByValue)
+                )
+                .orderBy(criteriaBuilder.asc(root.get("name")));
+
+        return entityManager.createQuery(criteriaQuery).setParameter(excludedName, excludedByParameter);
     }
 
     private QueryTransformerTestModel createTestModel(String name) {

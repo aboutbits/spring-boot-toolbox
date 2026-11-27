@@ -2,24 +2,24 @@ package it.aboutbits.springboot.toolbox.persistence.transformer;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.Parameter;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
-import org.hibernate.query.criteria.JpaCriteriaQuery;
-import org.hibernate.query.spi.QueryImplementor;
-import org.hibernate.query.spi.QueryParameterBinding;
-import org.hibernate.query.spi.SqmQuery;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.LongSupplier;
 
 @NullMarked
 public final class QueryTransformer<T> {
+    private static final String CRITERIA_QUERY_STRING = "<criteria>";
+
     private final EntityManager entityManager;
     private final TupleTransformer<T> tupleTransformer;
     private @Nullable Query<?> unwrappedQuery = null;
@@ -92,67 +92,52 @@ public final class QueryTransformer<T> {
     }
 
     private Page<T> asPageQuery(int pageNumber, int pageSize) {
-        if (unwrappedQuery == null) {
+        var query = unwrappedQuery;
+        if (query == null) {
             throw new IllegalStateException("Query not set!");
         }
 
-        var count = count(unwrappedQuery);
+        // Outside a transaction, the shared EntityManager of Spring closes the EntityManager of a query after its first terminating call, so one query cannot give the content and the count. Spring Data JPA has the same rule for a paged repository query: inside a transaction it counts on the same query, outside it counts on a second query.
+        LongSupplier count = TransactionSynchronizationManager.isActualTransactionActive()
+                ? query::getResultCount
+                : countOnCopy(query);
 
         var content = asList(pageNumber, pageSize);
 
-        return new PageImpl<>(content, Pageable.ofSize(pageSize).withPage(pageNumber), count);
+        // The count runs only when the content does not show the total already.
+        return PageableExecutionUtils.getPage(content, Pageable.ofSize(pageSize).withPage(pageNumber), count);
     }
 
-    // Outside a transaction, the shared EntityManager of Spring closes the EntityManager of a query after its first terminating call. Since Spring Framework 7.0.11, getResultCount() is such a call, so the count runs on a new query and the original query stays open for the page content. The count does what getResultCount() of Hibernate does: it derives the count query from the parsed query (SQM), for HQL and criteria queries alike. So subqueries, aliases and the order by do not matter, and it counts the groups of a "group by" and the rows of a "select distinct". The count query shares the parameters of the parsed query, and each named or positional binding is copied with its type. Hints, the lock mode, the flush mode and the entity graph are not copied, because getResultCount() ignores them too. The code uses SPI of Hibernate: SqmQuery is SPI, QueryImplementor, QueryParameterBindings, QueryParameterBinding and ParameterMetadata are @Incubating, and the SQM statement belongs to the incubating package org.hibernate.query.sqm. It uses no class from a .internal package.
-    private long count(Query<?> query) {
-        var statement = query.unwrap(SqmQuery.class).getSqmStatement();
-        if (!(statement instanceof JpaCriteriaQuery<?> selectStatement)) {
-            throw new IllegalStateException("A page query must be a select query!");
+    // Reads the query string and the bound parameters at once, because the query is closed after the content call. The second query is created only when the count is needed, so no EntityManager stays open. Hibernate derives the count query from the parsed query, so subqueries, aliases and the order by do not matter, and it counts the groups of a "group by" and the rows of a "select distinct". Only the value of a parameter is copied, not an explicit bind type or temporal precision.
+    private LongSupplier countOnCopy(Query<?> query) {
+        var queryString = query.getQueryString();
+        // The Javadoc of getQueryString() names null for a criteria query, Hibernate returns the marker.
+        if (queryString == null || CRITERIA_QUERY_STRING.equals(queryString)) {
+            throw new IllegalStateException(
+                    "A criteria query can be paged in a transaction only. Add a transaction or use an HQL query."
+            );
         }
 
-        var countStatement = selectStatement.createCountQuery();
-        var countQuery = entityManager.createQuery(countStatement).unwrap(QueryImplementor.class);
-        var countParameters = countQuery.getParameterMetadata();
-        var countBindings = countQuery.getParameterBindings();
-        query.unwrap(QueryImplementor.class).getParameterBindings().visitBindings((parameter, binding) -> {
-            if (!isUnnamed(parameter) && binding.isBound() && countParameters.containsReference(parameter)) {
-                copyBinding(binding, countBindings.getBinding(parameter));
-            }
-        });
+        var bindings = query.getParameters().stream()
+                .filter(query::isBound)
+                .map(parameter -> new Binding(
+                        parameter.getName(),
+                        parameter.getPosition(),
+                        query.getParameterValue(parameter)
+                ))
+                .toList();
 
-        // Hibernate numbers the unnamed parameters of a criteria query in the order in which it reads the query, and the count query can have fewer of them, so the same number can mean a different parameter. Thus an unnamed parameter is found through the criteria parameter that both statements share. getParameters() leaves out the values of the criteria query, because the count query binds them itself.
-        if (query.getParameters().stream().anyMatch(QueryTransformer::isUnnamed)) {
-            for (var parameter : countStatement.getParameters()) {
-                if (isUnnamed(parameter) && query.isBound(parameter)) {
-                    countQuery.setParameter(parameter, query.getParameterValue(parameter));
+        return () -> {
+            var countQuery = entityManager.createQuery(queryString);
+            for (var binding : bindings) {
+                if (binding.name() != null) {
+                    countQuery.setParameter(binding.name(), binding.value());
+                } else if (binding.position() != null) {
+                    countQuery.setParameter(binding.position(), binding.value());
                 }
             }
-        }
-
-        return (long) countQuery.getSingleResult();
-    }
-
-    private static boolean isUnnamed(Parameter<?> parameter) {
-        return parameter.getName() == null && parameter.getPosition() == null;
-    }
-
-    @SuppressWarnings("deprecation")
-    private static <P> void copyBinding(QueryParameterBinding<P> source, QueryParameterBinding<?> target) {
-        var bindType = source.getBindType();
-        var temporalPrecision = source.getExplicitTemporalPrecision();
-        if (source.isMultiValued()) {
-            if (temporalPrecision != null) {
-                target.setBindValues(source.getBindValues(), temporalPrecision);
-            } else if (bindType != null) {
-                target.setBindValues(source.getBindValues(), bindType);
-            } else {
-                target.setBindValues(source.getBindValues());
-            }
-        } else if (temporalPrecision != null) {
-            target.setBindValue(source.getBindValue(), temporalPrecision);
-        } else {
-            target.setBindValue(source.getBindValue(), bindType);
-        }
+            return countQuery.unwrap(Query.class).getResultCount();
+        };
     }
 
     private Page<T> asPageNativeQuery(int pageNumber, int pageSize) {
@@ -183,5 +168,12 @@ public final class QueryTransformer<T> {
         }
         // Non-grouping query: return the first element, which is the result of count(*)
         return (long) countQueryResults.getFirst();
+    }
+
+    private record Binding(
+            @Nullable String name,
+            @Nullable Integer position,
+            @Nullable Object value
+    ) {
     }
 }
