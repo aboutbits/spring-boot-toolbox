@@ -446,6 +446,30 @@ class QueryTransformerTest {
             assertThat(result.getContent()).containsExactly(new TestModelNameOnly("C"));
         }
 
+        // The page is full, so the count runs on the copy of the query.
+        @Test
+        void givenQueryWithPositionalParameterOnFullPage_shouldCountWithTheParameter() {
+            createTestModel("A");
+            createTestModel("B");
+            createTestModel("A");
+            createTestModel("C");
+
+            var query = entityManager.createQuery(
+                    "select q.name from QueryTransformerTestModel q where q.name <> ?1 order by q.name, q.id"
+            ).setParameter(1, "B");
+
+            var result = QueryTransformer
+                    .of(entityManager, TestModelNameOnly.class)
+                    .withQuery(query)
+                    .asPage(0, 2);
+
+            assertThat(result.getTotalElements()).isEqualTo(3);
+            assertThat(result.getContent()).containsExactly(
+                    new TestModelNameOnly("A"),
+                    new TestModelNameOnly("A")
+            );
+        }
+
         @Test
         void givenQueryWithListParameterAndGroupBy_shouldCountTheGroups() {
             createTestModel("A");
@@ -470,7 +494,32 @@ class QueryTransformerTest {
             );
         }
 
-        // Outside a transaction, the count query gets only the value of a parameter, so the explicit type must be tested inside a transaction.
+        // Outside a transaction, the count query is a copy, and the copy must keep the explicit type of the parameter.
+        @Test
+        void givenQueryWithExplicitlyTypedParameter_shouldCountWithTheType() {
+            createTestModel("A");
+            createTestModel("B");
+            createTestModel("C");
+
+            // With TemporalType.DATE, the parameter is the date 2026-01-01, which equals the timestamp at midnight. Without the type, it is the timestamp 2026-01-01 15:30, and no row matches.
+            var day = Date.from(LocalDateTime.of(2026, 1, 1, 15, 30).atZone(ZoneId.systemDefault()).toInstant());
+
+            var query = entityManager.createQuery(
+                    "select q.name from QueryTransformerTestModel q where :day = {ts '2026-01-01 00:00:00'} order by q.name"
+            ).setParameter("day", day, TemporalType.DATE);
+
+            var result = QueryTransformer
+                    .of(entityManager, TestModelNameOnly.class)
+                    .withQuery(query)
+                    .asPage(0, 2);
+
+            assertThat(result.getTotalElements()).isEqualTo(3);
+            assertThat(result.getContent()).containsExactly(
+                    new TestModelNameOnly("A"),
+                    new TestModelNameOnly("B")
+            );
+        }
+
         @Test
         void givenQueryWithExplicitlyTypedParameterInsideTransaction_shouldCountWithTheType() {
             createTestModel("A");

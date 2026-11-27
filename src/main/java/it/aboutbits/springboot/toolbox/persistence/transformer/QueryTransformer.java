@@ -2,8 +2,12 @@ package it.aboutbits.springboot.toolbox.persistence.transformer;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.TemporalType;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
+import org.hibernate.query.spi.QueryImplementor;
+import org.hibernate.query.spi.QueryParameterBinding;
+import org.hibernate.type.BindableType;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
@@ -12,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.LongSupplier;
@@ -30,7 +36,7 @@ public final class QueryTransformer<T> {
         this.tupleTransformer = new TupleTransformer<>(outputClass);
     }
 
-    /// Pass the `EntityManager` that created the query, because [#asPage(int, int)] runs the count query on it.
+    /// Pass the `EntityManager` that created the query, because [#asPage(int, int)] can run the count query on a new `EntityManager` of the same factory.
     public static <T> QueryTransformer<T> of(EntityManager entityManager, Class<T> outputClass) {
         return new QueryTransformer<>(entityManager, outputClass);
     }
@@ -47,7 +53,7 @@ public final class QueryTransformer<T> {
         return asPage(pageable.getPageNumber(), pageable.getPageSize());
     }
 
-    /// Runs the count query on the `EntityManager` given to [#of(EntityManager, Class)], so it must be the `EntityManager` that created the query.
+    /// Outside a transaction, the count query runs on a new `EntityManager` from the factory of the `EntityManager` given to [#of(EntityManager, Class)], so it must be the `EntityManager` that created the query.
     public Page<T> asPage(int pageNumber, int pageSize) {
         return isNative ? asPageNativeQuery(pageNumber, pageSize) : asPageQuery(pageNumber, pageSize);
     }
@@ -108,7 +114,7 @@ public final class QueryTransformer<T> {
         return PageableExecutionUtils.getPage(content, Pageable.ofSize(pageSize).withPage(pageNumber), count);
     }
 
-    // Reads the query string and the bound parameters at once, because the query is closed after the content call. The second query is created only when the count is needed, so no EntityManager stays open. Hibernate derives the count query from the parsed query, so subqueries, aliases and the order by do not matter, and it counts the groups of a "group by" and the rows of a "select distinct". Only the value of a parameter is copied, not an explicit bind type or temporal precision.
+    // Reads the query string and the bound parameters at once, because the query is closed after the content call. The count query is created only when the count is needed. It runs on its own EntityManager, which is closed after the count: before Spring Framework 7.0.11, the shared EntityManager of Spring does not close the EntityManager of a query after getResultCount(), and the connection then stays open. Hibernate derives the count query from the parsed query, so subqueries, aliases and the order by do not matter, and it counts the groups of a "group by" and the rows of a "select distinct". Each named or positional binding is copied with its bind type and its temporal precision. For this, the code uses types of Hibernate that are @Incubating: QueryImplementor, QueryParameterBindings and QueryParameterBinding. It uses no class from a .internal package.
     private LongSupplier countOnCopy(Query<?> query) {
         var queryString = query.getQueryString();
         // The Javadoc of getQueryString() names null for a criteria query, Hibernate returns the marker.
@@ -118,25 +124,27 @@ public final class QueryTransformer<T> {
             );
         }
 
-        var bindings = query.getParameters().stream()
-                .filter(query::isBound)
-                .map(parameter -> new Binding(
-                        parameter.getName(),
-                        parameter.getPosition(),
-                        query.getParameterValue(parameter)
-                ))
-                .toList();
+        // The values are copied here, because the bindings of the original query belong to a query that is closed later.
+        var bindings = new ArrayList<Binding>();
+        query.unwrap(QueryImplementor.class).getParameterBindings().visitBindings((parameter, binding) -> {
+            if (binding.isBound()) {
+                bindings.add(Binding.of(parameter.getName(), parameter.getPosition(), binding));
+            }
+        });
 
         return () -> {
-            var countQuery = entityManager.createQuery(queryString);
-            for (var binding : bindings) {
-                if (binding.name() != null) {
-                    countQuery.setParameter(binding.name(), binding.value());
-                } else if (binding.position() != null) {
-                    countQuery.setParameter(binding.position(), binding.value());
+            try (var countEntityManager = entityManager.getEntityManagerFactory().createEntityManager()) {
+                var countQuery = countEntityManager.createQuery(queryString).unwrap(QueryImplementor.class);
+                var countBindings = countQuery.getParameterBindings();
+                for (var binding : bindings) {
+                    if (binding.name() != null) {
+                        binding.copyTo(countBindings.getBinding(binding.name()));
+                    } else if (binding.position() != null) {
+                        binding.copyTo(countBindings.getBinding(binding.position()));
+                    }
                 }
+                return countQuery.getResultCount();
             }
-            return countQuery.unwrap(Query.class).getResultCount();
         };
     }
 
@@ -173,7 +181,46 @@ public final class QueryTransformer<T> {
     private record Binding(
             @Nullable String name,
             @Nullable Integer position,
-            @Nullable Object value
+            @Nullable BindableType<?> bindType,
+            @Nullable TemporalType temporalPrecision,
+            boolean multiValued,
+            @Nullable Object value,
+            @Nullable Collection<?> values
     ) {
+        private static Binding of(
+                @Nullable String name,
+                @Nullable Integer position,
+                QueryParameterBinding<?> source
+        ) {
+            var multiValued = source.isMultiValued();
+            return new Binding(
+                    name,
+                    position,
+                    source.getBindType(),
+                    source.getExplicitTemporalPrecision(),
+                    multiValued,
+                    multiValued ? null : source.getBindValue(),
+                    multiValued ? new ArrayList<>(source.getBindValues()) : null
+            );
+        }
+
+        // The setters with a TemporalType are deprecated in Hibernate. They are used only for a parameter that was bound with an explicit temporal precision.
+        @SuppressWarnings({"deprecation", "unchecked", "rawtypes"})
+        private void copyTo(QueryParameterBinding<?> target) {
+            if (multiValued) {
+                var boundValues = values == null ? List.of() : values;
+                if (temporalPrecision != null) {
+                    target.setBindValues(boundValues, temporalPrecision);
+                } else if (bindType != null) {
+                    target.setBindValues((Collection) boundValues, (BindableType) bindType);
+                } else {
+                    target.setBindValues(boundValues);
+                }
+            } else if (temporalPrecision != null) {
+                target.setBindValue(value, temporalPrecision);
+            } else {
+                target.setBindValue(value, (BindableType) bindType);
+            }
+        }
     }
 }
